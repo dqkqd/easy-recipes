@@ -6,7 +6,7 @@ load_dotenv()
 
 
 class BaseConfig:
-    pass
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class Config(BaseConfig):
@@ -17,4 +17,8 @@ class Config(BaseConfig):
     DB_NAME = os.environ.get("DB_NAME")
 
     SQLALCHEMY_DATABASE_URI = f"postgresql://{DB_USER}:{DB_PASSWD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+
+class TestingConfig(BaseConfig):
+    TEST_DB_PATH = os.environ.get("TEST_DB_PATH")
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{TEST_DB_PATH}"
