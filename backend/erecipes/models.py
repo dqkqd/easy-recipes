@@ -40,11 +40,14 @@ class Recipe(BaseModelMixin):
     __tablename__ = "recipes"
 
     ingredients: Mapped[set["Ingredient"]] = relationship(
-        secondary=recipes_ingredients_association_table
+        secondary=recipes_ingredients_association_table, back_populates="recipes"
     )
 
 
 class Ingredient(BaseModelMixin):
     __tablename__ = "ingredients"
 
-    recipes: Mapped[set["Recipe"]] = relationship(secondary=recipes_ingredients_association_table)
+    recipes: Mapped[set["Recipe"]] = relationship(
+        secondary=recipes_ingredients_association_table,
+        back_populates="ingredients",
+    )
