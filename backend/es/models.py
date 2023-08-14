@@ -1,3 +1,4 @@
+from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -17,6 +18,7 @@ class Base(Model):
 
 
 db = SQLAlchemy(model_class=Base)
+migrate = Migrate()
 
 
 class IdModelMixin(db.Model):  # type: ignore

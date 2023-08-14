@@ -48,6 +48,7 @@ py-modules = []
 
 [tool.mypy]
 strict = true
+exclude = ["migrations"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore: 'flask.Markup' is deprecated"]
