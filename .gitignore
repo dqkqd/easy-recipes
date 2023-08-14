@@ -1,5 +1,11 @@
 __pycache__/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+
 build/
 *.egg-info/
 .venv/
 .python-version
+
+.dmypy.json

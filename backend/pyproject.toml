@@ -5,3 +5,43 @@ authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
 license = { text = "MIT" }
 
 dependencies = ["flask"]
+
+
+[project.optional-dependencies]
+dev = ["black", "pytest", "ruff", "mypy"]
+
+[tool.ruff]
+select = [
+    "A",
+    "B",
+    "C4",
+    "E",
+    "F",
+    "I",
+    "SIM",
+    "W",
+    "N",
+    "B",
+    "Q",
+    "SIM",
+    "PIE",
+    "PL",
+    "PT",
+    "RET",
+    "RUF",
+]
+line-length = 100
+fixable = ["ALL"]
+
+[tool.black]
+line-length = 100
+
+[tool.setuptools]
+py-modules = []
+
+[tool.mypy]
+strict = true
+
+[tool.pytest.ini_options]
+filterwarnings = ["ignore: 'flask.Markup' is deprecated"]
+addopts = "-vvv"
