@@ -4,7 +4,14 @@ version = "0.1"
 authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
 license = { text = "MIT" }
 
-dependencies = ["flask", "flask_migrate", "flask_sqlalchemy", "pydantic"]
+dependencies = [
+    "flask",
+    "flask_migrate",
+    "flask_sqlalchemy",
+    "psycopg2",
+    "pydantic",
+    "python-dotenv",
+]
 
 
 [project.optional-dependencies]
