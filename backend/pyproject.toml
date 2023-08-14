@@ -4,7 +4,7 @@ version = "0.1"
 authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
 license = { text = "MIT" }
 
-dependencies = ["flask"]
+dependencies = ["flask", "flask_migrate", "flask_sqlalchemy", "pydantic"]
 
 
 [project.optional-dependencies]
