@@ -1,0 +1,7 @@
+[project]
+name = "easy-recipes"
+version = "0.1"
+authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
+license = { text = "MIT" }
+
+dependencies = ["flask"]
