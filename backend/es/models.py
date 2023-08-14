@@ -25,23 +25,27 @@ class IdModelMixin(db.Model):  # type: ignore
     id: Mapped[int] = mapped_column(primary_key=True)  # noqa: A003
 
 
+class ImageModelMixin(db.Model):
+    __abstract__ = True
+    image: Mapped[str]  # @TODO(dqk): add default link
+
+
 recipes_ingredients_association_table = db.Table(
     "recipes_ingredients",
-    db.Column("recipe_id", db.Integer, db.ForeignKey("recipe.id"), primary_key=True),
-    db.Column("ingredient_id", db.Integer, db.ForeignKey("ingredient.id"), primary_key=True),
+    db.Column("recipe_id", db.Integer, db.ForeignKey("recipes.id"), primary_key=True),
+    db.Column("ingredient_id", db.Integer, db.ForeignKey("ingredients.id"), primary_key=True),
 )
 
 
-class Recipe(IdModelMixin):
+class Recipe(IdModelMixin, ImageModelMixin):
     __tablename__ = "recipes"
 
-    image: Mapped[str]  # @TODO(dqk): add default link
     ingredients: Mapped[set["Ingredient"]] = relationship(
         secondary=recipes_ingredients_association_table
     )
 
 
-class Ingredient(IdModelMixin):
+class Ingredient(IdModelMixin, ImageModelMixin):
     __tablename__ = "ingredients"
 
     recipes: Mapped[set["Recipe"]] = relationship(secondary=recipes_ingredients_association_table)
