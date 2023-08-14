@@ -21,15 +21,11 @@ db = SQLAlchemy(model_class=Base)
 migrate = Migrate()
 
 
-class IdModelMixin(db.Model):  # type: ignore
+class BaseModelMixin(db.Model):  # type: ignore
     __abstract__ = True
 
     id: Mapped[int] = mapped_column(primary_key=True)  # noqa: A003
-
-
-class ImageModelMixin(db.Model):  # type: ignore
-    __abstract__ = True
-
+    name: Mapped[str] = mapped_column(unique=True)
     image: Mapped[str]  # @TODO(dqk): add default link
 
 
@@ -40,7 +36,7 @@ recipes_ingredients_association_table = db.Table(
 )
 
 
-class Recipe(IdModelMixin, ImageModelMixin):
+class Recipe(BaseModelMixin):
     __tablename__ = "recipes"
 
     ingredients: Mapped[set["Ingredient"]] = relationship(
@@ -48,7 +44,7 @@ class Recipe(IdModelMixin, ImageModelMixin):
     )
 
 
-class Ingredient(IdModelMixin, ImageModelMixin):
+class Ingredient(BaseModelMixin):
     __tablename__ = "ingredients"
 
     recipes: Mapped[set["Recipe"]] = relationship(secondary=recipes_ingredients_association_table)
