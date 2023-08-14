@@ -29,6 +29,7 @@ class IdModelMixin(db.Model):  # type: ignore
 
 class ImageModelMixin(db.Model):  # type: ignore
     __abstract__ = True
+
     image: Mapped[str]  # @TODO(dqk): add default link
 
 
