@@ -27,7 +27,7 @@ class IdModelMixin(db.Model):  # type: ignore
     id: Mapped[int] = mapped_column(primary_key=True)  # noqa: A003
 
 
-class ImageModelMixin(db.Model):
+class ImageModelMixin(db.Model):  # type: ignore
     __abstract__ = True
     image: Mapped[str]  # @TODO(dqk): add default link
 

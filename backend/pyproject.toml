@@ -15,7 +15,14 @@ dependencies = [
 
 
 [project.optional-dependencies]
-dev = ["black", "pytest", "ruff", "mypy"]
+dev = [
+    "black",
+    "pytest",
+    "ruff",
+    "mypy",
+    "sqlalchemy[mypy]",
+    "types-Flask-Migrate",
+]
 
 [tool.ruff]
 select = [
@@ -49,6 +56,7 @@ py-modules = []
 [tool.mypy]
 strict = true
 exclude = ["migrations"]
+plugins = ["sqlalchemy.ext.mypy.plugin"]
 
 [tool.pytest.ini_options]
 filterwarnings = ["ignore: 'flask.Markup' is deprecated"]
