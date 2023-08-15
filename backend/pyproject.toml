@@ -46,6 +46,7 @@ select = [
 ]
 line-length = 100
 fixable = ["ALL"]
+ignore = ["PLR2004"]
 
 [tool.black]
 line-length = 100
