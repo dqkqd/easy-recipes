@@ -8,6 +8,7 @@ dependencies = [
     "flask",
     "flask_migrate",
     "flask_sqlalchemy",
+    "gunicorn",
     "psycopg2",
     "pydantic",
     "python-dotenv",

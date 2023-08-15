@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easy-recipes
+  labels:
+    app: easy-recipes
+spec:
+  replicas: 1 # Working locally
+  selector:
+    matchLabels:
+      app: easy-recipes
+  template:
+    metadata:
+      labels:
+        app: easy-recipes
+    spec:
+      containers:
+      - name: easy-recipes
+        image: easy_recipes:latest
+        imagePullPolicy: Never # Working locally
+        ports:
+        - containerPort: 8080
