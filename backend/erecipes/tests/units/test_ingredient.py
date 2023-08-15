@@ -71,9 +71,11 @@ def test_422_create_invalid_image(client: FlaskClient) -> None:
     raise NotImplementedError("valid url but invalid image")
 
 
+@pytest.mark.skip()
 def test_401_create_unauthorize(client: FlaskClient) -> None:
     raise NotImplementedError
 
 
+@pytest.mark.skip()
 def test_403_create_no_permission(client: FlaskClient) -> None:
     raise NotImplementedError
