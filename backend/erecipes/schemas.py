@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, FileUrl, HttpUrl, field_validator
+from pydantic import BaseModel, ConfigDict, FileUrl, HttpUrl, conlist, field_validator
 
 from erecipes.config import BaseConfig
 
@@ -25,3 +25,16 @@ class IngredientBase(UniqueNamedModel):
 
 class Ingredient(IngredientBase):
     id: int  # noqa: A003
+
+
+class RecipeBase(UniqueNamedModel):
+    image: HttpUrl | FileUrl = BaseConfig.DEFAULT_RECIPE_IMAGE.as_uri()
+
+
+class RecipeCreate(RecipeBase):
+    ingredients: list[int] = conlist(min_length=1)
+
+
+class RecipeInDb(RecipeBase):
+    id: int  # noqa: A003
+    Ingredient: list[Ingredient] = conlist(min_length=1)

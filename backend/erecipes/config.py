@@ -17,6 +17,10 @@ class BaseConfig:
     if not os.path.isfile(DEFAULT_INGREDIENT_IMAGE):
         raise FileNotFoundError(DEFAULT_INGREDIENT_IMAGE)
 
+    DEFAULT_RECIPE_IMAGE = BASE_DIR.parent / "static" / "images" / "default-recipe-image.jpg"
+    if not os.path.isfile(DEFAULT_RECIPE_IMAGE):
+        raise FileNotFoundError(DEFAULT_RECIPE_IMAGE)
+
 
 class Config(BaseConfig):
     DB_USER = os.environ.get("DB_USER")
