@@ -5,6 +5,7 @@ WORKDIR /backend
 
 COPY ./pyproject.toml .
 
+RUN pip install --upgrade pip
 RUN pip install ".[dev]"
 
 COPY . .
