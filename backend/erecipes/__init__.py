@@ -12,8 +12,9 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from erecipes.routes import recipe
+    from erecipes.routes import ingredient, recipe
 
     app.register_blueprint(recipe.api)
+    app.register_blueprint(ingredient.api)
 
     return app
