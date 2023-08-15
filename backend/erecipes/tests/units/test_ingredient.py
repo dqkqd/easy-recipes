@@ -83,6 +83,25 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
     }
 
 
+@pytest.mark.usefixtures("app_context")
+def test_200_create_name_stripped(client: FlaskClient) -> None:
+    response = client.post(
+        "/ingredients/",
+        json={
+            "name": " eggs ",
+        },
+    )
+    assert response.status_code == 200
+    ingredient = schemas.Ingredient.model_validate(
+        models.Ingredient.query.filter_by(id=1).first_or_404()
+    )
+    assert ingredient.model_dump(mode="json") == {
+        "id": 1,
+        "name": "eggs",
+        "image": BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri(),
+    }
+
+
 @pytest.mark.skip("Update after implementing front-end")
 def test_200_create_uploaded_image_url(client: FlaskClient) -> None:
     raise NotImplementedError("save user uploaded image")
