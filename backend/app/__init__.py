@@ -1,5 +1,4 @@
 from flask import Flask
-from flask_migrate import upgrade
 
 from app.config import BaseConfig, Config
 
@@ -12,9 +11,6 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
 
     db.init_app(app)
     migrate.init_app(app, db)
-
-    with app.app_context():
-        upgrade()
 
     from app.routes import ingredient, recipe
 
