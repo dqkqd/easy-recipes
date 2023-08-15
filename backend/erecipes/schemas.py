@@ -32,9 +32,9 @@ class RecipeBase(UniqueNamedModel):
 
 
 class RecipeCreate(RecipeBase):
-    ingredients: list[int] = conlist(min_length=1)
+    ingredients: list[int] = conlist(int, min_length=1)
 
 
 class RecipeInDb(RecipeBase):
     id: int  # noqa: A003
-    Ingredient: list[Ingredient] = conlist(min_length=1)
+    Ingredient: list[Ingredient] = conlist(Ingredient, min_length=1)
