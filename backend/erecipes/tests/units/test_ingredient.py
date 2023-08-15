@@ -4,7 +4,7 @@ import pytest
 from flask.testing import FlaskClient
 
 
-def test_200_create_ingredient(client: FlaskClient) -> None:
+def test_200_create_basic(client: FlaskClient) -> None:
     response = client.post(
         "/ingredients/",
         json={
