@@ -1,6 +1,6 @@
 from pydantic import BaseModel, ConfigDict, Field, FileUrl, HttpUrl, field_validator
 
-from erecipes.config import BaseConfig
+from app.config import BaseConfig
 
 
 class Base(BaseModel):

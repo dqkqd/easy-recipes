@@ -5,9 +5,9 @@ import pytest
 from flask import Flask
 from flask.testing import FlaskClient
 
-from erecipes import create_app
-from erecipes.config import TestingConfig
-from erecipes.models import db
+from app import create_app
+from app.config import TestingConfig
+from app.models import db
 
 
 @pytest.fixture()

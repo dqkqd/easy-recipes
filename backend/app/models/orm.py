@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from erecipes.models import db
+from app.models import db
 
 
 class BaseModelMixin(db.Model):  # type: ignore

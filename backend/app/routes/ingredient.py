@@ -2,8 +2,8 @@ from flask import Blueprint, jsonify, request
 from pydantic import ValidationError
 from werkzeug import Response
 
-from erecipes.errors import ERecipesError, catch_error
-from erecipes.models import orm, schema
+from app.errors import ERecipesError, catch_error
+from app.models import orm, schema
 
 api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 

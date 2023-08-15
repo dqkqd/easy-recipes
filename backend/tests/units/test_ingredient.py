@@ -3,8 +3,8 @@ import json
 import pytest
 from flask.testing import FlaskClient
 
-from erecipes.config import BaseConfig
-from erecipes.models import orm, schema
+from app.config import BaseConfig
+from app.models import orm, schema
 
 
 @pytest.mark.usefixtures("app_context")

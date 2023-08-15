@@ -4,7 +4,7 @@ from typing import Any, Callable
 from flask import abort, jsonify
 from werkzeug import Response
 
-from erecipes.models import db
+from app.models import db
 
 
 class ERecipesError(Exception):
