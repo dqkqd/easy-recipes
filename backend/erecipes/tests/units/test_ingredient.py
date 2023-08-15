@@ -3,9 +3,8 @@ import json
 import pytest
 from flask.testing import FlaskClient
 
-from erecipes import schemas
 from erecipes.config import BaseConfig
-from erecipes.models import orm
+from erecipes.models import orm, schema
 
 
 @pytest.mark.usefixtures("app_context")
@@ -22,13 +21,14 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert response.status_code == 200
     assert data == {"id": 1}
 
-    ingredient = schemas.Ingredient.model_validate(
+    ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
         "name": "eggs",
         "image": "https://valid-egg-url.com/",
+        "recipes": [],
     }
 
 
@@ -43,13 +43,14 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
     assert response.status_code == 200
     data = json.loads(response.data)
     assert data == {"id": 1}
-    ingredient = schemas.Ingredient.model_validate(
+    ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
         "name": "eggs",
         "image": BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri(),
+        "recipes": [],
     }
 
 
@@ -62,13 +63,14 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
         },
     )
     assert response.status_code == 200
-    ingredient = schemas.Ingredient.model_validate(
+    ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
         "name": "eggs",
         "image": BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri(),
+        "recipes": [],
     }
 
 
