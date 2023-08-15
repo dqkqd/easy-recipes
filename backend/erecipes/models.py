@@ -28,6 +28,20 @@ class BaseModelMixin(db.Model):  # type: ignore
     name: Mapped[str] = mapped_column(unique=True)
     image: Mapped[str]  # @TODO(dqk): add default link
 
+    @property
+    def unique_name(self) -> str:
+        count = self.query.filter_by(name=self.name).count()
+        return self.name if count == 0 else f"{self.name}_{count}"
+
+    def insert(self) -> None:
+        """Insert with unique name"""
+        try:
+            super().insert()
+        except Exception:
+            db.session.rollback()
+            self.name = self.unique_name
+            super().insert()
+
 
 recipes_ingredients_association_table = db.Table(
     "recipes_ingredients",

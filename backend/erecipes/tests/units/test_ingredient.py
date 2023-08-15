@@ -30,8 +30,35 @@ def test_200_create_basic(client: FlaskClient) -> None:
     }
 
 
+@pytest.mark.usefixtures("app_context")
 def test_200_create_duplicated_name(client: FlaskClient) -> None:
-    raise NotImplementedError
+    response = client.post(
+        "/ingredients/",
+        json={
+            "name": "eggs",
+            "image": "https://valid-egg1-url.com/",
+        },
+    )
+
+    # add the same ingredient with different name
+    response = client.post(
+        "/ingredients/",
+        json={
+            "name": "eggs",
+            "image": "https://valid-egg2-url.com/",
+        },
+    )
+    data = json.loads(response.data)
+    assert response.status_code == 200
+    assert data == {"id": 2}
+    ingredient = schemas.Ingredient.model_validate(
+        models.Ingredient.query.filter_by(id=2).first_or_404()
+    )
+    assert ingredient.model_dump(mode="json") == {
+        "id": 2,
+        "name": "eggs_1",
+        "image": "https://valid-egg2-url.com/",
+    }
 
 
 def test_200_create_use_default_image_url(client: FlaskClient) -> None:
