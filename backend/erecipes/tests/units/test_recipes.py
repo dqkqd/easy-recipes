@@ -5,7 +5,7 @@ from flask.testing import FlaskClient
 
 def test_get_recipes_no_recipes(client: FlaskClient) -> None:
     response = client.get("/recipes/")
-    assert response.status_code == 200  # noqa: PLR2004
+    assert response.status_code == 200
 
     data = json.loads(response.data)
     assert len(data["recipes"]) == 0
@@ -16,7 +16,7 @@ def test_get_recipes_has_recipes(client: FlaskClient) -> None:
     raise NotImplementedError("Get recipes per pages")
 
     response = client.get("/recipes/")
-    assert response.status_code == 200  # noqa: PLR2004
+    assert response.status_code == 200
 
     data = json.loads(response.data)
     assert len(data) > 0
