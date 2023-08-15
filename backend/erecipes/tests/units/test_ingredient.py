@@ -3,20 +3,31 @@ import json
 import pytest
 from flask.testing import FlaskClient
 
+from erecipes import models, schemas
 
+
+@pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
     response = client.post(
         "/ingredients/",
         json={
             "name": "eggs",
-            "image": "https://valid-egg-url.com",
+            "image": "https://valid-egg-url.com/",
         },
     )
 
     data = json.loads(response.data)
     assert response.status_code == 200
-
     assert data == {"id": 1}
+
+    ingredient = schemas.Ingredient.model_validate(
+        models.Ingredient.query.filter_by(id=1).first_or_404()
+    )
+    assert ingredient.model_dump(mode="json") == {
+        "id": 1,
+        "name": "eggs",
+        "image": "https://valid-egg-url.com/",
+    }
 
 
 def test_200_create_duplicated_name(client: FlaskClient) -> None:

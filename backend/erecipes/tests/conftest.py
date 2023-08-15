@@ -31,3 +31,10 @@ def app() -> Iterator[Flask]:
 @pytest.fixture()
 def client(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+@pytest.fixture()
+def app_context(app: Flask) -> None:  # noqa: PT004
+    """https://flask-sqlalchemy.palletsprojects.com/en/3.0.x/contexts/#tests"""
+    with app.app_context():
+        yield
