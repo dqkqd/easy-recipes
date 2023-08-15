@@ -1,5 +1,6 @@
 import json
 
+import pytest
 from flask.testing import FlaskClient
 
 
@@ -11,6 +12,7 @@ def test_get_recipes_no_recipes(client: FlaskClient) -> None:
     assert len(data["recipes"]) == 0
 
 
+@pytest.mark.skip()
 def test_get_recipes_has_recipes(client: FlaskClient) -> None:
     raise NotImplementedError("Implement a fixture that automatically add mock data")
     raise NotImplementedError("Get recipes per pages")
