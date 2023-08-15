@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: easy-recipes
+  labels:
+    app: easy-recipes
+spec:
+  type: NodePort
+  ports:
+    - port: 8080
+  selector:
+    app: easy-recipes
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: easy-recipes
+  labels:
+    app: easy-recipes
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: easy-recipes
+  template:
+    metadata:
+      labels:
+        app: easy-recipes
+    spec:
+      containers:
+        - name: easy-recipes
+          image: easy_recipes:latest
+          envFrom:
+            - configMapRef:
+                name: config-env-file
+          env:
+            - name: POSTGRES_HOST
+              value: postgres
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8080
