@@ -7,7 +7,7 @@ class Base(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class UniqueNamedModel(Base):
+class NamedModel(Base):
     name: str
 
     @field_validator("name")
@@ -19,7 +19,7 @@ class UniqueNamedModel(Base):
         return v
 
 
-class IngredientBase(UniqueNamedModel):
+class IngredientBase(NamedModel):
     image: HttpUrl | FileUrl = BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
 
 
@@ -27,7 +27,7 @@ class Ingredient(IngredientBase):
     id: int  # noqa: A003
 
 
-class RecipeBase(UniqueNamedModel):
+class RecipeBase(NamedModel):
     image: HttpUrl | FileUrl = BaseConfig.DEFAULT_RECIPE_IMAGE.as_uri()
 
 
