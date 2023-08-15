@@ -1,24 +1,6 @@
-from flask_migrate import Migrate
-from flask_sqlalchemy import SQLAlchemy
-from flask_sqlalchemy.model import Model
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-
-class Base(Model):
-    def insert(self) -> None:
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self) -> None:
-        db.session.delete(self)
-        db.session.commit()
-
-    def update(self) -> None:
-        db.session.commit()
-
-
-db = SQLAlchemy(model_class=Base)
-migrate = Migrate()
+from erecipes.models import db
 
 
 class BaseModelMixin(db.Model):  # type: ignore

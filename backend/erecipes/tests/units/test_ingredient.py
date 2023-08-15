@@ -3,8 +3,9 @@ import json
 import pytest
 from flask.testing import FlaskClient
 
-from erecipes import models, schemas
+from erecipes import schemas
 from erecipes.config import BaseConfig
+from erecipes.models import orm
 
 
 @pytest.mark.usefixtures("app_context")
@@ -22,7 +23,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert data == {"id": 1}
 
     ingredient = schemas.Ingredient.model_validate(
-        models.Ingredient.query.filter_by(id=1).first_or_404()
+        orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
@@ -53,7 +54,7 @@ def test_200_create_duplicated_name(client: FlaskClient) -> None:
     assert response.status_code == 200
     assert data == {"id": 2}
     ingredient = schemas.Ingredient.model_validate(
-        models.Ingredient.query.filter_by(id=2).first_or_404()
+        orm.Ingredient.query.filter_by(id=2).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 2,
@@ -74,7 +75,7 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert data == {"id": 1}
     ingredient = schemas.Ingredient.model_validate(
-        models.Ingredient.query.filter_by(id=1).first_or_404()
+        orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
@@ -93,7 +94,7 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
     )
     assert response.status_code == 200
     ingredient = schemas.Ingredient.model_validate(
-        models.Ingredient.query.filter_by(id=1).first_or_404()
+        orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
