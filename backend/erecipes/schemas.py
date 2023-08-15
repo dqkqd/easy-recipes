@@ -7,9 +7,8 @@ class Base(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class IngredientBase(Base):
+class UniqueNamedModel(Base):
     name: str
-    image: HttpUrl | FileUrl = BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
 
     @field_validator("name")
     @classmethod
@@ -18,6 +17,10 @@ class IngredientBase(Base):
         if not v:
             raise ValueError("Invalid name.")
         return v
+
+
+class IngredientBase(UniqueNamedModel):
+    image: HttpUrl | FileUrl = BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
 
 
 class Ingredient(IngredientBase):
