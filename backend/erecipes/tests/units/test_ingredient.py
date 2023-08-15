@@ -83,10 +83,12 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
     }
 
 
+@pytest.mark.skip("Update after implementing front-end")
 def test_200_create_uploaded_image_url(client: FlaskClient) -> None:
     raise NotImplementedError("save user uploaded image")
 
 
+@pytest.mark.skip("Update after implementing front-end")
 def test_200_create_crop_user_uploaded_image(client: FlaskClient) -> None:
     raise NotImplementedError
 
@@ -122,15 +124,16 @@ def test_422_create_invalid_name_or_url(
     assert data == {"message": error_message}
 
 
+@pytest.mark.skip("Update after implementing front-end")
 def test_422_create_invalid_image(client: FlaskClient) -> None:
     raise NotImplementedError("valid url but invalid image")
 
 
-@pytest.mark.skip()
+@pytest.mark.skip("Update after implementing authorization")
 def test_401_create_unauthorize(client: FlaskClient) -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip()
+@pytest.mark.skip("Update after implementing authorization")
 def test_403_create_no_permission(client: FlaskClient) -> None:
     raise NotImplementedError
