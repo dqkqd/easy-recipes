@@ -1,12 +1,21 @@
 import os
+from pathlib import Path
 
 from dotenv import load_dotenv
 
 load_dotenv()
 
+BASE_DIR = Path(__file__).parent
+
 
 class BaseConfig:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+    DEFAULT_INGREDIENT_IMAGE = (
+        BASE_DIR.parent / "static" / "images" / "default-ingredient-image.jpg"
+    )
+    if not os.path.isfile(DEFAULT_INGREDIENT_IMAGE):
+        raise FileNotFoundError(DEFAULT_INGREDIENT_IMAGE)
 
 
 class Config(BaseConfig):

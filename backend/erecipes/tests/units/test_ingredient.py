@@ -4,6 +4,7 @@ import pytest
 from flask.testing import FlaskClient
 
 from erecipes import models, schemas
+from erecipes.config import BaseConfig
 
 
 @pytest.mark.usefixtures("app_context")
@@ -61,8 +62,25 @@ def test_200_create_duplicated_name(client: FlaskClient) -> None:
     }
 
 
+@pytest.mark.usefixtures("app_context")
 def test_200_create_use_default_image_url(client: FlaskClient) -> None:
-    raise NotImplementedError
+    response = client.post(
+        "/ingredients/",
+        json={
+            "name": "eggs",
+        },
+    )
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data == {"id": 1}
+    ingredient = schemas.Ingredient.model_validate(
+        models.Ingredient.query.filter_by(id=1).first_or_404()
+    )
+    assert ingredient.model_dump(mode="json") == {
+        "id": 1,
+        "name": "eggs",
+        "image": BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri(),
+    }
 
 
 def test_200_create_uploaded_image_url(client: FlaskClient) -> None:
@@ -83,7 +101,6 @@ def test_200_create_crop_user_uploaded_image(client: FlaskClient) -> None:
         ("", "https://valid-ingredient-url.com", "Invalid name."),
         (" ", "https://valid-ingredient-url.com", "Invalid name."),
         # invalid url
-        # @TODO(dqk): handle empty url by using default image
         ("egg", "https://invalid-ingredient-url", "Invalid image."),
         ("egg", " ", "Invalid image."),
     ],
