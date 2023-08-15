@@ -99,11 +99,11 @@ def test_200_create_crop_user_uploaded_image(client: FlaskClient) -> None:
         # invalid name
         (None, None, "Invalid name."),
         (None, "https://valid-ingredient-url.com", "Invalid name."),
-        (None, "https://invalid-ingredient-url", "Invalid name."),
+        (None, "invalid-url.com", "Invalid name."),
         ("", "https://valid-ingredient-url.com", "Invalid name."),
         (" ", "https://valid-ingredient-url.com", "Invalid name."),
         # invalid url
-        ("egg", "https://invalid-ingredient-url", "Invalid image."),
+        ("egg", "invalid-url.com", "Invalid image."),
         ("egg", " ", "Invalid image."),
     ],
 )
