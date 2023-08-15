@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict, FileUrl, HttpUrl
+from pydantic import BaseModel, ConfigDict, FileUrl, HttpUrl, field_validator
 
 from erecipes.config import BaseConfig
 
@@ -10,6 +10,14 @@ class Base(BaseModel):
 class IngredientBase(Base):
     name: str
     image: HttpUrl | FileUrl = BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
+
+    @field_validator("name")
+    @classmethod
+    def remove_trailing_spaces(cls, v: str) -> str:
+        v = v.strip()
+        if not v:
+            raise ValueError("Invalid name.")
+        return v
 
 
 class Ingredient(IngredientBase):
