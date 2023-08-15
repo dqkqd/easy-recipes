@@ -46,8 +46,8 @@ def test_200_create_crop_user_uploaded_image(client: FlaskClient) -> None:
         (" ", "https://valid-ingredient-url.com", "Invalid name."),
         # invalid url
         # @TODO(dqk): handle empty url by using default image
-        ("egg", "https://invalid-ingredient-url", "Invalid image url."),
-        ("egg", " ", "Invalid image url."),
+        ("egg", "https://invalid-ingredient-url", "Invalid image."),
+        ("egg", " ", "Invalid image."),
     ],
 )
 def test_422_create_invalid_name_or_url(
