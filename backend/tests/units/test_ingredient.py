@@ -18,8 +18,8 @@ def test_200_create_basic(client: FlaskClient) -> None:
     )
 
     data = json.loads(response.data)
-    assert response.status_code == 200
     assert data == {"id": 1}
+    assert response.status_code == 200
 
     ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404()
@@ -40,9 +40,10 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
             "name": "eggs",
         },
     )
-    assert response.status_code == 200
     data = json.loads(response.data)
     assert data == {"id": 1}
+    assert response.status_code == 200
+
     ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404()
     )
@@ -111,8 +112,8 @@ def test_422_create_invalid_name_or_url(
 
     data = json.loads(response.data)
 
-    assert response.status_code == 422
     assert data == {"message": error_message}
+    assert response.status_code == 422
 
 
 @pytest.mark.skip("Update after implementing front-end")
