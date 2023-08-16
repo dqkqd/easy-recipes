@@ -44,10 +44,11 @@ select = [
     "PT",
     "RET",
     "RUF",
+    "TD",
 ]
 line-length = 100
 fixable = ["ALL"]
-ignore = ["PLR2004"]
+ignore = ["PLR2004", "TD003"]
 
 [tool.black]
 line-length = 100
