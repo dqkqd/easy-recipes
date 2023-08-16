@@ -8,6 +8,8 @@ services:
     ports:
       - 8000:8080
     depends_on:
+      - fileserver
+      - test_fileserver
       - database
       - test_database
 
@@ -29,6 +31,30 @@ services:
     ports:
       - 5434:5432
 
+  fileserver:
+    build:
+      context: ./fileserver
+      dockerfile: Dockerfile
+    volumes:
+      - fileserver_data:/usr/share/nginx/html
+    env_file:
+      - env-file.example
+    ports:
+      - 6432:80
+
+  test_fileserver:
+    build:
+      context: ./fileserver
+      dockerfile: Dockerfile
+    volumes:
+      - fileserver_test_data:/usr/share/nginx/html
+    env_file:
+      - env-file.example
+    ports:
+      - 6433:80
+
 volumes:
   postgres_data:
   postgres_test_data:
+  fileserver_data:
+  fileserver_test_data:
