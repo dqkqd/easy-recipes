@@ -18,9 +18,9 @@ dependencies = [
 [project.optional-dependencies]
 dev = [
     "black",
+    "mypy",
     "pytest",
     "ruff",
-    "mypy",
     "sqlalchemy[mypy]",
     "types-Flask-Migrate",
 ]
@@ -31,24 +31,24 @@ select = [
     "B",
     "C4",
     "E",
+    "ERA",
     "F",
     "I",
-    "SIM",
-    "W",
     "N",
-    "B",
-    "Q",
-    "SIM",
     "PIE",
     "PL",
     "PT",
+    "Q",
     "RET",
     "RUF",
+    "SIM",
     "TD",
+    "W",
 ]
 line-length = 100
 fixable = ["ALL"]
 ignore = ["PLR2004", "TD003"]
+exclude = ["migrations"]
 
 [tool.black]
 line-length = 100
