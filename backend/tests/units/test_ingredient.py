@@ -124,3 +124,18 @@ def test_401_create_unauthorize(client: FlaskClient) -> None:  # noqa: ARG001
 @pytest.mark.skip("Update after implementing authorization")
 def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
     raise NotImplementedError
+
+
+def test_200_get_ingredient_basic(client: FlaskClient) -> None:
+    ingredient_data = mock_data.ingredient_create_data()
+    client.post("/ingredients/", json=ingredient_data)
+
+    response = client.get("/ingredients/1")
+    data = json.loads(response.data)
+
+    assert response.status_code == 200
+    assert data == {
+        "id": 1,
+        "recipes": [],
+        **ingredient_data,
+    }
