@@ -76,6 +76,11 @@ def test_200_create_crop_user_uploaded_image(client: FlaskClient) -> None:  # no
     raise NotImplementedError
 
 
+@pytest.mark.skip()
+def test_200_create_ingredient_with_added_recipes() -> None:
+    raise NotImplementedError
+
+
 @pytest.mark.parametrize(
     ("name", "image", "error_message"),
     [
@@ -116,6 +121,11 @@ def test_422_create_invalid_image(client: FlaskClient) -> None:  # noqa: ARG001
     raise NotImplementedError(msg)
 
 
+@pytest.mark.skip()
+def test_422_create_ingredient_with_invalid_recipes() -> None:
+    raise NotImplementedError
+
+
 @pytest.mark.skip("Update after implementing authorization")
 def test_401_create_unauthorize(client: FlaskClient) -> None:  # noqa: ARG001
     raise NotImplementedError
@@ -154,6 +164,11 @@ def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
 
         assert response.status_code == 200
         assert data["id"] == ingredient_id
+
+
+@pytest.mark.skip()
+def test_200_get_ingredient_with_added_recipes() -> None:
+    raise NotImplementedError
 
 
 @pytest.mark.skip()
