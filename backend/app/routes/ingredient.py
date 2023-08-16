@@ -3,6 +3,7 @@ from werkzeug import Response
 
 from app.errors import catch_error
 from app.models import orm, schema
+from app.models.repositories.ingredient import IngredientRepository
 
 api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 
@@ -11,10 +12,7 @@ api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 @catch_error
 def create_ingredient() -> Response:
     body = request.get_json()
-
-    # @TODO(dqk): download and crop user upload image
-    ingredient_base = schema.IngredientCreate(**body)
-    ingredient_in_db = orm.Ingredient(**ingredient_base.model_dump(mode="json"))
-    ingredient_in_db.insert()
-
+    with IngredientRepository.get_repository(orm.db) as repo:
+        ingredient_create = schema.IngredientCreate(**body)
+        ingredient_in_db = repo.create_ingredient(ingredient_create)
     return jsonify({"id": ingredient_in_db.id})
