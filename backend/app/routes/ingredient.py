@@ -1,8 +1,7 @@
 from flask import Blueprint, jsonify, request
-from pydantic import ValidationError
 from werkzeug import Response
 
-from app.errors import ERecipesError, catch_error
+from app.errors import catch_error
 from app.models import orm, schema
 
 api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
@@ -14,11 +13,7 @@ def create_ingredient() -> Response:
     body = request.get_json()
 
     # @TODO(dqk): download and crop user upload image
-    try:
-        ingredient_base = schema.IngredientCreate(**body)
-    except ValidationError as exc:
-        raise ERecipesError(f"Invalid {exc.errors()[0]['loc'][0]}.", 422) from exc
-
+    ingredient_base = schema.IngredientCreate(**body)
     ingredient_in_db = orm.Ingredient(**ingredient_base.model_dump(mode="json"))
     ingredient_in_db.insert()
 

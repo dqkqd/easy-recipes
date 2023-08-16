@@ -2,6 +2,7 @@ from functools import wraps
 from typing import Any, Callable
 
 from flask import abort, jsonify
+from pydantic import ValidationError
 from werkzeug import Response
 
 from app.models import db
@@ -38,6 +39,8 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
             return f(*args, **kwargs)
         except ERecipesError as e:
             raise e
+        except ValidationError as e:
+            raise ERecipesError(f"Invalid {e.errors()[0]['loc'][0]}.", 422) from e
         except Exception as e:
             # @TODO(dqk): should log this instead print out
             print(e)
