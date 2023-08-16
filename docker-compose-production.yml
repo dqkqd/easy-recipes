@@ -9,7 +9,6 @@ services:
       - 8000:8080
     depends_on:
       - database
-      - test_database
 
   database:
     image: postgres:15.4
@@ -20,15 +19,5 @@ services:
     ports:
       - 5433:5432
 
-  test_database:
-    image: postgres:15.4
-    volumes:
-      - postgres_test_data:/var/lib/postgresql/data/
-    env_file:
-      - env-file.example
-    ports:
-      - 5434:5432
-
 volumes:
   postgres_data:
-  postgres_test_data:
