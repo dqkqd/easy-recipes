@@ -4,8 +4,8 @@ import pytest
 from flask.testing import FlaskClient
 
 from app.config import BaseConfig
-from app.models import schema
 from app.models.database import orm
+from app.models.schemas import schema
 
 
 @pytest.mark.usefixtures("app_context")
