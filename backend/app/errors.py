@@ -1,7 +1,7 @@
 from functools import wraps
 from typing import Any, Callable
 
-from flask import jsonify
+from flask import current_app, jsonify
 from pydantic import ValidationError
 from werkzeug import Response
 
@@ -39,6 +39,8 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
         except ValidationError as e:
             raise ERecipesError.from_validation_error(e) from e
         except Exception as e:
+            if current_app.config.get("DEBUG"):
+                raise e
             raise ERecipesError.from_exception(e) from e
 
     return wrapper
