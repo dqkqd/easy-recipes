@@ -34,7 +34,7 @@ class ERecipesError(Exception):
         return ERecipesError(str(e), 422)
 
 
-def to_handleable_error(f: Callable[[], Any]) -> Callable[[], Any]:
+def to_handleable_error(f: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(f)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
