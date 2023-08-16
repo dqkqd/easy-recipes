@@ -1,0 +1,17 @@
+__pycache__/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.hypothesis/
+
+build/
+*.egg-info/
+.venv/
+.env
+.python-version
+
+.dmypy.json
+
+instance/
+.git
+.gitignore
