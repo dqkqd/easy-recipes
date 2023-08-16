@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from functools import wraps
 from typing import TYPE_CHECKING, Any, Callable
 
@@ -8,6 +9,8 @@ from pydantic import ValidationError
 
 if TYPE_CHECKING:
     from werkzeug import Response
+
+logger = logging.getLogger(__name__)
 
 
 class ERecipesError(Exception):
@@ -41,12 +44,12 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
         except ValidationError as e:
             raise ERecipesError.from_validation_error(e) from e
         except Exception as e:  # noqa: BLE001
-            if current_app.config.get("DEBUG"):
-                raise
             raise ERecipesError.from_exception(e) from e
 
     return wrapper
 
 
 def handle_error(e: ERecipesError) -> tuple[Response, int]:
+    if current_app.debug:
+        logger.exception("Exception occured.")
     return jsonify(e.info()), e.status_code
