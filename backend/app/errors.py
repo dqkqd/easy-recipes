@@ -5,7 +5,7 @@ from flask import jsonify
 from pydantic import ValidationError
 from werkzeug import Response
 
-from app.models import db
+from app.utils import cleanup_resources
 
 
 class ERecipesError(Exception):
@@ -29,17 +29,6 @@ class ERecipesError(Exception):
         return ERecipesError(str(e), 422)
 
 
-def cleanup_resources(
-    f: Callable[[ERecipesError], tuple[Response, int]]
-) -> Callable[[Exception], tuple[Response, int]]:
-    @wraps(f)
-    def wrapper(*args: Any, **kwargs: Any) -> tuple[Response, int]:
-        db.session.rollback()
-        return f(*args, **kwargs)
-
-    return wrapper
-
-
 def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
     @wraps(f)
     def wrapper(*args: Any, **kwargs: Any) -> Any:
@@ -55,6 +44,6 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
     return wrapper
 
 
-@cleanup_resources
 def handle_error(e: ERecipesError) -> tuple[Response, int]:
+    cleanup_resources()
     return jsonify(e.info()), e.status_code
