@@ -43,11 +43,12 @@ select = [
     "RUF",
     "SIM",
     "TD",
+    "TRY",
     "W",
 ]
 line-length = 100
 fixable = ["ALL"]
-ignore = ["PLR2004", "TD003"]
+ignore = ["PLR2004", "TD003", "TRY003"]
 exclude = ["migrations"]
 
 [tool.black]

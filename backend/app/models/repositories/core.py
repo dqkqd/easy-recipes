@@ -34,10 +34,10 @@ class SQLAlchemyRepository(AbstractRepository):
     def _get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
         try:
             yield cls(db)
-        except Exception as e:
+        except Exception:
             db.session.rollback()
             db.session.close()
-            raise e
+            raise
 
     @classmethod
     @contextmanager

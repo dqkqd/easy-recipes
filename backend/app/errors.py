@@ -32,13 +32,13 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
     def wrapper(*args: Any, **kwargs: Any) -> Any:
         try:
             return f(*args, **kwargs)
-        except ERecipesError as e:
-            raise e
+        except ERecipesError:
+            raise
         except ValidationError as e:
             raise ERecipesError.from_validation_error(e) from e
         except Exception as e:
             if current_app.config.get("DEBUG"):
-                raise e
+                raise
             raise ERecipesError.from_exception(e) from e
 
     return wrapper
