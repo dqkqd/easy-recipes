@@ -33,5 +33,5 @@ class Config(BaseConfig):
 
 
 class TestingConfig(BaseConfig):
-    TEST_DB_PATH = os.environ.get("TEST_DB_PATH")
+    TEST_DB_PATH = os.environ.get("TEST_DB_PATH", "test.db")
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{TEST_DB_PATH}"
