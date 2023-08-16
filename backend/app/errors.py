@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, Callable
 
 from flask import current_app, jsonify
 from pydantic import ValidationError
+from werkzeug.exceptions import HTTPException
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -30,6 +31,16 @@ class ERecipesError(Exception):
         return ERecipesError(f"Invalid {e.errors()[0]['loc'][0]}.", 422)
 
     @classmethod
+    def from_http_exception(cls, e: HTTPException) -> ERecipesError:
+        message: str | None = None
+        match e.code:
+            case 404:
+                message = "Not Found."
+            case _:
+                raise NotImplementedError
+        return cls(message, e.code)
+
+    @classmethod
     def from_exception(cls, e: Exception) -> ERecipesError:
         return ERecipesError(str(e), 422)
 
@@ -43,6 +54,8 @@ def to_handleable_error(f: Callable[..., Any]) -> Callable[..., Any]:
             raise
         except ValidationError as e:
             raise ERecipesError.from_validation_error(e) from e
+        except HTTPException as e:
+            raise ERecipesError.from_http_exception(e) from e
         except Exception as e:  # noqa: BLE001
             raise ERecipesError.from_exception(e) from e
 
