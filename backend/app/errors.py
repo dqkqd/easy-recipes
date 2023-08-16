@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Any, Callable
+from typing import Any, Callable, Self
 
 from flask import abort, jsonify
 from pydantic import ValidationError
@@ -19,6 +19,10 @@ class ERecipesError(Exception):
 
     def info(self) -> dict[str, str]:
         return {"message": self.message}
+
+    @classmethod
+    def from_validation_error(cls, e: ValidationError) -> Self:
+        return ERecipesError(f"Invalid {e.errors()[0]['loc'][0]}.", 422)
 
 
 def cleanup_resources(
@@ -40,7 +44,7 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
         except ERecipesError as e:
             raise e
         except ValidationError as e:
-            raise ERecipesError(f"Invalid {e.errors()[0]['loc'][0]}.", 422) from e
+            raise ERecipesError.from_validation_error(e) from e
         except Exception as e:
             # @TODO(dqk): should log this instead print out
             print(e)
