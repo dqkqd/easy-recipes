@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING
 import pytest
 
 from app.config import BaseConfig
-from app.models.database import orm
-from app.models.schemas import schema
+from app.models.database import db
+from app.models.repositories.ingredient import IngredientRepository
 from tests import mock_data
 
 if TYPE_CHECKING:
@@ -26,14 +26,13 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    ingredient = schema.IngredientInDB.model_validate(
-        orm.Ingredient.query.filter_by(id=1).first_or_404(),
-    )
-    assert ingredient.model_dump(mode="json") == {
-        "id": 1,
-        "recipes": [],
-        **ingredient_data,
-    }
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+        assert ingredient.model_dump(mode="json") == {
+            "id": 1,
+            "recipes": [],
+            **ingredient_data,
+        }
 
 
 @pytest.mark.usefixtures("app_context")
@@ -48,10 +47,9 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    ingredient = schema.IngredientInDB.model_validate(
-        orm.Ingredient.query.filter_by(id=1).first_or_404(),
-    )
-    assert str(ingredient.image) == BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+        assert str(ingredient.image) == BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
 
 
 @pytest.mark.usefixtures("app_context")
@@ -62,10 +60,9 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
         json=ingredient_data,
     )
     assert response.status_code == 200
-    ingredient = schema.IngredientInDB.model_validate(
-        orm.Ingredient.query.filter_by(id=1).first_or_404(),
-    )
-    assert ingredient.name == "eggs"
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+        assert ingredient.name == "eggs"
 
 
 @pytest.mark.skip("Update after implementing front-end")
