@@ -7,7 +7,7 @@ from flask.testing import FlaskClient
 
 from app import create_app
 from app.config import TestingConfig
-from app.models import db
+from app.models.database import db
 
 
 @pytest.fixture()
