@@ -12,4 +12,4 @@ COPY . .
 
 EXPOSE 8080
 
-ENTRYPOINT ["gunicorn", "-b", ":8080", "app:create_app()"]
+CMD ["gunicorn", "-b", ":8080", "app:create_app()"]
