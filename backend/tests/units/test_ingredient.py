@@ -8,6 +8,7 @@ import pytest
 from app.config import BaseConfig
 from app.models.database import orm
 from app.models.schemas import schema
+from tests import mock_data
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -15,12 +16,10 @@ if TYPE_CHECKING:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
+    ingredient_data = mock_data.ingredient_create_data()
     response = client.post(
         "/ingredients/",
-        json={
-            "name": "eggs",
-            "image": "https://valid-egg-url.com/",
-        },
+        json=ingredient_data,
     )
 
     data = json.loads(response.data)
@@ -32,19 +31,18 @@ def test_200_create_basic(client: FlaskClient) -> None:
     )
     assert ingredient.model_dump(mode="json") == {
         "id": 1,
-        "name": "eggs",
-        "image": "https://valid-egg-url.com/",
         "recipes": [],
+        **ingredient_data,
     }
 
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_use_default_image_url(client: FlaskClient) -> None:
+    ingredient_data = mock_data.ingredient_create_data()
+    ingredient_data.pop("image")
     response = client.post(
         "/ingredients/",
-        json={
-            "name": "eggs",
-        },
+        json=ingredient_data,
     )
     data = json.loads(response.data)
     assert data == {"id": 1}
@@ -53,32 +51,21 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
     ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404(),
     )
-    assert ingredient.model_dump(mode="json") == {
-        "id": 1,
-        "name": "eggs",
-        "image": BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri(),
-        "recipes": [],
-    }
+    assert str(ingredient.image) == BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
 
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
+    ingredient_data = mock_data.ingredient_create_data(name="  eggs  ")
     response = client.post(
         "/ingredients/",
-        json={
-            "name": " eggs ",
-        },
+        json=ingredient_data,
     )
     assert response.status_code == 200
     ingredient = schema.IngredientInDB.model_validate(
         orm.Ingredient.query.filter_by(id=1).first_or_404(),
     )
-    assert ingredient.model_dump(mode="json") == {
-        "id": 1,
-        "name": "eggs",
-        "image": BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri(),
-        "recipes": [],
-    }
+    assert ingredient.name == "eggs"
 
 
 @pytest.mark.skip("Update after implementing front-end")
