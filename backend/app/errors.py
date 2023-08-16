@@ -1,7 +1,7 @@
 from functools import wraps
-from typing import Any, Callable, Self
+from typing import Any, Callable
 
-from flask import abort, jsonify
+from flask import jsonify
 from pydantic import ValidationError
 from werkzeug import Response
 
@@ -21,8 +21,12 @@ class ERecipesError(Exception):
         return {"message": self.message}
 
     @classmethod
-    def from_validation_error(cls, e: ValidationError) -> Self:
+    def from_validation_error(cls, e: ValidationError) -> "ERecipesError":
         return ERecipesError(f"Invalid {e.errors()[0]['loc'][0]}.", 422)
+
+    @classmethod
+    def from_exception(cls, e: Exception) -> "ERecipesError":
+        return ERecipesError(str(e), 422)
 
 
 def cleanup_resources(
@@ -46,9 +50,7 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
         except ValidationError as e:
             raise ERecipesError.from_validation_error(e) from e
         except Exception as e:
-            # @TODO(dqk): should log this instead print out
-            print(e)
-            abort(422)
+            raise ERecipesError.from_exception(e) from e
 
     return wrapper
 
@@ -56,8 +58,3 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
 @cleanup_resources
 def handle_error(e: ERecipesError) -> tuple[Response, int]:
     return jsonify(e.info()), e.status_code
-
-
-@cleanup_resources
-def unprocessable(_e: Exception) -> tuple[Response, int]:
-    return jsonify({"message": "Unprocessable."}), 422
