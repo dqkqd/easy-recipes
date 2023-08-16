@@ -1,4 +1,5 @@
 from pydantic import BaseModel, ConfigDict, Field, FileUrl, HttpUrl, field_validator
+from pydantic_core import Url
 
 from app.config import BaseConfig
 
@@ -13,7 +14,7 @@ class IDModelMixin(Base):
 
 class IngredientBase(Base):
     name: str
-    image: HttpUrl | FileUrl = BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri()
+    image: HttpUrl | FileUrl = Url(BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri())
 
     @field_validator("name")
     @classmethod
@@ -39,7 +40,7 @@ class IngredientInDB(IDModelMixin, IngredientBase):
 
 class RecipeBase(Base):
     name: str
-    image: HttpUrl | FileUrl = BaseConfig.DEFAULT_RECIPE_IMAGE.as_uri()
+    image: HttpUrl | FileUrl = Url(BaseConfig.DEFAULT_RECIPE_IMAGE.as_uri())
 
     @field_validator("name")
     @classmethod

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
-from typing import Self
+from typing import Iterator, Self
 
 from flask import current_app, has_app_context
 from flask_sqlalchemy import SQLAlchemy
@@ -27,11 +27,11 @@ class SQLAlchemyRepository(AbstractRepository):
     def delete(self, instance: Model) -> None:
         self.db.session.delete(instance)
 
-    def commit(self):
+    def commit(self) -> None:
         self.db.session.commit()
 
     @classmethod
-    def _get_repository(cls, db: SQLAlchemy) -> Self:
+    def _get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
         try:
             yield cls(db)
         except Exception as e:
@@ -41,7 +41,7 @@ class SQLAlchemyRepository(AbstractRepository):
 
     @classmethod
     @contextmanager
-    def get_repository(cls, db: SQLAlchemy) -> Self:
+    def get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
         if has_app_context():
             yield from cls._get_repository(db)
         else:
