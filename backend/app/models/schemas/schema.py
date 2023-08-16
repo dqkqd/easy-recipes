@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, Field, FileUrl, HttpUrl, field_valid
 from pydantic_core import Url
 
 from app.config import BaseConfig
+from app.models.schemas.validator import validate_trailing_spaces
 
 
 class Base(BaseModel):
@@ -19,10 +20,7 @@ class IngredientBase(Base):
     @field_validator("name")
     @classmethod
     def remove_trailing_spaces(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError("Invalid name.")
-        return v
+        return validate_trailing_spaces(v)
 
 
 class IngredientCreate(IngredientBase):
@@ -45,10 +43,7 @@ class RecipeBase(Base):
     @field_validator("name")
     @classmethod
     def remove_trailing_spaces(cls, v: str) -> str:
-        v = v.strip()
-        if not v:
-            raise ValueError("Invalid name.")
-        return v
+        return validate_trailing_spaces(v)
 
 
 class RecipeCreate(RecipeBase):
