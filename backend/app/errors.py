@@ -5,8 +5,6 @@ from flask import current_app, jsonify
 from pydantic import ValidationError
 from werkzeug import Response
 
-from app.utils import cleanup_resources
-
 
 class ERecipesError(Exception):
     status_code = 400
@@ -47,5 +45,4 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
 
 
 def handle_error(e: ERecipesError) -> tuple[Response, int]:
-    cleanup_resources()
     return jsonify(e.info()), e.status_code
