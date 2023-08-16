@@ -9,6 +9,7 @@ dependencies = [
     "flask_migrate",
     "flask_sqlalchemy",
     "gunicorn",
+    "pillow",
     "psycopg2",
     "pydantic",
     "python-dotenv",
@@ -23,6 +24,7 @@ dev = [
     "ruff",
     "sqlalchemy[mypy]",
     "types-Flask-Migrate",
+    "types-Pillow",
 ]
 
 [tool.ruff]
