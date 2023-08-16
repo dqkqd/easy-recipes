@@ -9,6 +9,23 @@ from app.models.schemas import schema
 api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 
 
+@api.route("/")
+@to_handleable_error
+def get_ingredients() -> Response:
+    msg = "TODO"
+    raise NotImplementedError(msg)
+
+
+@api.route("/<int:id>")
+@to_handleable_error
+def get_ingredient(id: int) -> Response:  # noqa: A002
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient_in_db = repo.get_ingredient(id=id)
+        # TODO(dqk): exclude unwanted items
+        # TODO(dqk): transfer image_url into base64 image
+        return jsonify(ingredient_in_db.model_dump(mode="json"))
+
+
 @api.route("/", methods=["POST"])
 @to_handleable_error
 def create_ingredient() -> Response:
