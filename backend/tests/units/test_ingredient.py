@@ -139,3 +139,18 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
         "recipes": [],
         **ingredient_data,
     }
+
+
+def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
+    num_datas = 5
+
+    ingredient_datas = [mock_data.ingredient_create_data() for _ in range(num_datas)]
+    for data in ingredient_datas:
+        client.post("/ingredients/", json=data)
+
+    for ingredient_id in range(1, num_datas + 1):
+        response = client.get(f"/ingredients/{ingredient_id}")
+        data = json.loads(response.data)
+
+        assert response.status_code == 200
+        assert data["id"] == ingredient_id
