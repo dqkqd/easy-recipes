@@ -6,10 +6,10 @@ WORKDIR /backend
 COPY ./pyproject.toml .
 
 RUN pip install --upgrade pip
-RUN pip install ".[dev]"
+RUN pip install .
 
 COPY . .
 
 EXPOSE 8080
 
-CMD ["gunicorn", "-b", ":8080", "app:create_app()"]
+ENTRYPOINT ["gunicorn", "-b", ":8080", "app:create_app()"]
