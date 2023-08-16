@@ -156,6 +156,16 @@ def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
         assert data["id"] == ingredient_id
 
 
+@pytest.mark.skip()
+def test_200_get_ingredient_should_give_proper_image() -> None:
+    raise NotImplementedError
+
+
+@pytest.mark.skip()
+def test_200_get_ingredient_unwated_items_are_not_exposed() -> None:
+    raise NotImplementedError
+
+
 def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
     response = client.get("/ingredients/1")
     data = json.loads(response.data)

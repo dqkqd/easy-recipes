@@ -21,8 +21,6 @@ def get_ingredients() -> Response:
 def get_ingredient(id: int) -> Response:  # noqa: A002
     with IngredientRepository.get_repository(db) as repo:
         ingredient_in_db = repo.get_ingredient(id=id)
-        # TODO(dqk): exclude unwanted items
-        # TODO(dqk): transfer image_url into base64 image
         return jsonify(ingredient_in_db.model_dump(mode="json"))
 
 
