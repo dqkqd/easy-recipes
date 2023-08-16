@@ -154,3 +154,10 @@ def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
 
         assert response.status_code == 200
         assert data["id"] == ingredient_id
+
+
+def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
+    response = client.get("/ingredients/1")
+    data = json.loads(response.data)
+    assert data == {"message": "Not Found."}
+    assert response.status_code == 404
