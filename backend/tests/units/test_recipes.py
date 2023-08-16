@@ -14,8 +14,10 @@ def test_get_recipes_no_recipes(client: FlaskClient) -> None:
 
 @pytest.mark.skip()
 def test_get_recipes_has_recipes(client: FlaskClient) -> None:
-    raise NotImplementedError("Implement a fixture that automatically add mock data")
-    raise NotImplementedError("Get recipes per pages")
+    msg = "Implement a fixture that automatically add mock data"
+    raise NotImplementedError(msg)
+    msg = "Get recipes per pages"
+    raise NotImplementedError(msg)
 
     response = client.get("/recipes/")
     assert response.status_code == 200
@@ -23,4 +25,5 @@ def test_get_recipes_has_recipes(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert len(data) > 0
 
-    raise NotImplementedError("Make sure responsed data is equal ...")
+    msg = "Make sure responsed data is equal ..."
+    raise NotImplementedError(msg)

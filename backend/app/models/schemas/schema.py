@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from pydantic import BaseModel, ConfigDict, Field, FileUrl, HttpUrl, field_validator
 from pydantic_core import Url
 
@@ -33,7 +35,7 @@ class IngredientUpdate(IngredientBase):
 
 class IngredientInDB(IDModelMixin, IngredientBase):
     model_config = ConfigDict(from_attributes=True)
-    recipes: list["RecipeInDB"] = Field(default_factory=list)
+    recipes: list[RecipeInDB] = Field(default_factory=list)
 
 
 class RecipeBase(Base):

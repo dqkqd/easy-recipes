@@ -14,11 +14,11 @@ class BaseConfig:
     DEFAULT_INGREDIENT_IMAGE = (
         BASE_DIR.parent / "static" / "images" / "default-ingredient-image.jpg"
     )
-    if not os.path.isfile(DEFAULT_INGREDIENT_IMAGE):
+    if not Path(DEFAULT_INGREDIENT_IMAGE).is_file():
         raise FileNotFoundError(DEFAULT_INGREDIENT_IMAGE)
 
     DEFAULT_RECIPE_IMAGE = BASE_DIR.parent / "static" / "images" / "default-recipe-image.jpg"
-    if not os.path.isfile(DEFAULT_RECIPE_IMAGE):
+    if not Path(DEFAULT_RECIPE_IMAGE).is_file():
         raise FileNotFoundError(DEFAULT_RECIPE_IMAGE)
 
 

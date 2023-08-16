@@ -26,30 +26,15 @@ dev = [
 ]
 
 [tool.ruff]
-select = [
-    "A",
-    "B",
-    "C4",
-    "E",
-    "ERA",
-    "F",
-    "I",
-    "N",
-    "PIE",
-    "PL",
-    "PT",
-    "Q",
-    "RET",
-    "RUF",
-    "SIM",
-    "TD",
-    "TRY",
-    "W",
-]
+select = ["ALL"]
 line-length = 100
 fixable = ["ALL"]
-ignore = ["PLR2004", "TD003", "TRY003"]
+ignore = ["ANN101", "ANN102", "ANN401", "D", "PLR2004", "TD003", "TRY003"]
 exclude = ["migrations"]
+
+[tool.ruff.per-file-ignores]
+"test*.py" = ["S101", "INP001"]
+
 
 [tool.black]
 line-length = 100

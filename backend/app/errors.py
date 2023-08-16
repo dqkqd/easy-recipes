@@ -1,15 +1,19 @@
+from __future__ import annotations
+
 from functools import wraps
-from typing import Any, Callable
+from typing import TYPE_CHECKING, Any, Callable
 
 from flask import current_app, jsonify
 from pydantic import ValidationError
-from werkzeug import Response
+
+if TYPE_CHECKING:
+    from werkzeug import Response
 
 
 class ERecipesError(Exception):
     status_code = 400
 
-    def __init__(self, message: str, status_code: int | None = None):
+    def __init__(self, message: str, status_code: int | None = None) -> None:
         super().__init__()
         self.message = message
         if status_code is not None:
@@ -19,11 +23,11 @@ class ERecipesError(Exception):
         return {"message": self.message}
 
     @classmethod
-    def from_validation_error(cls, e: ValidationError) -> "ERecipesError":
+    def from_validation_error(cls, e: ValidationError) -> ERecipesError:
         return ERecipesError(f"Invalid {e.errors()[0]['loc'][0]}.", 422)
 
     @classmethod
-    def from_exception(cls, e: Exception) -> "ERecipesError":
+    def from_exception(cls, e: Exception) -> ERecipesError:
         return ERecipesError(str(e), 422)
 
 
@@ -36,7 +40,7 @@ def catch_error(f: Callable[[], Any]) -> Callable[[], Any]:
             raise
         except ValidationError as e:
             raise ERecipesError.from_validation_error(e) from e
-        except Exception as e:
+        except Exception as e:  # noqa: BLE001
             if current_app.config.get("DEBUG"):
                 raise
             raise ERecipesError.from_exception(e) from e

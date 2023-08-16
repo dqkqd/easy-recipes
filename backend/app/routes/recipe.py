@@ -8,7 +8,6 @@ api = Blueprint("recipes", __name__, url_prefix="/recipes")
 
 @api.route("/")
 def get_recipes() -> Response:
-    # TODO(dqk): filter model's fields
+    # TODO(dqk): filter model's fields  # noqa: FIX002
     recipes = Recipe.query.all()
-    print(recipes)
     return jsonify({"recipes": recipes})
