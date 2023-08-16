@@ -8,7 +8,7 @@ class BaseModelMixin(db.Model):  # type: ignore
 
     id: Mapped[int] = mapped_column(primary_key=True)  # noqa: A003
     name: Mapped[str]
-    image: Mapped[str]  # TODO(dqk): add default link
+    image: Mapped[str]
 
 
 recipes_ingredients_association_table = db.Table(
