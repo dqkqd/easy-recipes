@@ -1,11 +1,16 @@
+# share config
 POSTGRES_DB=postgresdb
 POSTGRES_USER=user
-POSTGRES_HOST=database
 POSTGRES_PASSWORD=password
 POSTGRES_PORT=5432
 
-TEST_DB_PATH=database.db
-
-FILE_SERVER_HOST=fileserver
 FILE_SERVER_PORT=5433
 FILE_SEVER_IMAGE_DIRECTORY=images
+
+# production
+POSTGRES_HOST=database
+FILE_SERVER_HOST=fileserver
+
+# development
+TEST_POSTGRES_HOST=test_database
+TEST_FILE_SERVER_HOST=test_fileserver
