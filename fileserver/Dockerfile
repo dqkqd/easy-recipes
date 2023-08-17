@@ -1,2 +1,15 @@
-FROM nginx
-COPY . /usr/share/nginx/html
+FROM python:3.11-alpine
+
+# set a directory for the app
+WORKDIR /fileserver
+
+COPY ./pyproject.toml .
+
+RUN pip install --upgrade pip
+RUN pip install ".[dev]"
+
+COPY . .
+
+EXPOSE 8080
+
+ENTRYPOINT ["gunicorn", "-b", ":8080", "app:create_app()"]
