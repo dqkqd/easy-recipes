@@ -82,37 +82,39 @@ def test_200_create_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
 
 
+@pytest.mark.parametrize("name", [None, "", " "])
+def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
+    ingredient_data = mock_data.ingredient_create_data(client.application)
+    ingredient_data["name"] = name
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert data == {"message": "Invalid name."}
+    assert response.status_code == 422
+
+
 @pytest.mark.parametrize(
-    ("name", "image", "error_message"),
+    ("image", "err_msg"),
     [
-        # invalid name
-        (None, None, "Invalid name."),
-        (None, "https://valid-ingredient-url.com", "Invalid name."),
-        (None, "invalid-url.com", "Invalid name."),
-        ("", "https://valid-ingredient-url.com", "Invalid name."),
-        (" ", "https://valid-ingredient-url.com", "Invalid name."),
-        # invalid url
-        ("egg", "invalid-url.com", "Invalid image."),
-        ("egg", " ", "Invalid image."),
+        ("this is not a url", "Invalid image."),  # TODO(dqk): Change how we create error message
+        (
+            f"http://this-url-does-not-exist-{mock_data.random_str(100)}.com",
+            "Provided url does not exist.",
+        ),
     ],
 )
-def test_422_create_invalid_name_or_url(
+def test_422_create_invalid_url(
     client: FlaskClient,
-    name: str | None,
     image: str | None,
-    error_message: str,
+    err_msg: str,
 ) -> None:
-    payload = {}
-    if name is not None:
-        payload["name"] = name
-    if image is not None:
-        payload["image"] = image
-
-    response = client.post("/ingredients/", json=payload)
+    ingredient_data = mock_data.ingredient_create_data(client.application)
+    ingredient_data["image"] = image
+    response = client.post("/ingredients/", json=ingredient_data)
 
     data = json.loads(response.data)
 
-    assert data == {"message": error_message}
+    assert data == {"message": err_msg}
     assert response.status_code == 422
 
 
