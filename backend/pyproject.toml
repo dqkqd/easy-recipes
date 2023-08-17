@@ -10,7 +10,7 @@ dependencies = [
     "flask_sqlalchemy",
     "gunicorn",
     "pillow",
-    "psycopg2",
+    "psycopg2-binary",
     "pydantic",
     "requests",
     "vulture",

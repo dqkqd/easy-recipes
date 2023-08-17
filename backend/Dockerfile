@@ -1,4 +1,4 @@
-FROM python:3.11
+FROM python:3.11-alpine
 
 # set a directory for the app
 WORKDIR /backend
