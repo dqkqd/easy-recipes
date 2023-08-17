@@ -3,9 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, FileUrl, HttpUrl, field_validator
-from pydantic_core import Url
 
-from app.config import BaseConfig
 from app.image.b64image import Base64Image
 from app.models.schemas.validator import validate_trailing_spaces
 
@@ -20,7 +18,7 @@ class IDModelMixin(Base):
 
 class IngredientBase(Base):
     name: str
-    image: HttpUrl | FileUrl = Url(BaseConfig.DEFAULT_INGREDIENT_IMAGE.as_uri())
+    image: HttpUrl
 
     @field_validator("name")
     @classmethod
@@ -63,7 +61,7 @@ class IngredientPublic(IDModelMixin):
 
 class RecipeBase(Base):
     name: str
-    image: HttpUrl | FileUrl = Url(BaseConfig.DEFAULT_RECIPE_IMAGE.as_uri())
+    image: HttpUrl
 
     @field_validator("name")
     @classmethod
