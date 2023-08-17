@@ -3,12 +3,14 @@ from pathlib import Path
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 
 from app import constants
+from app.errors import to_http_error
 from app.filename_handler import UniqueFilenameHandler
 
 api = Blueprint("api", __name__)
 
 
 @api.route("/images/<path:name>")
+@to_http_error
 def get_image(name: Path) -> Response:
     return send_from_directory(
         current_app.config["IMAGE_FOLDER"],
@@ -18,6 +20,7 @@ def get_image(name: Path) -> Response:
 
 
 @api.route("/images/default/ingredient")
+@to_http_error
 def get_default_ingredient_image() -> Response:
     return send_from_directory(
         constants.STATIC_FOLDER,
@@ -26,6 +29,7 @@ def get_default_ingredient_image() -> Response:
 
 
 @api.route("/images/default/recipe")
+@to_http_error
 def get_default_recipe_image() -> Response:
     return send_from_directory(
         constants.STATIC_FOLDER,
@@ -34,6 +38,7 @@ def get_default_recipe_image() -> Response:
 
 
 @api.route("/images/", methods=["POST"])
+@to_http_error
 def upload_image() -> Response:
     """https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/"""
     if "file" not in request.files:

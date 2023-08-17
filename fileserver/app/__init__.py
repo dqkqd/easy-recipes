@@ -29,4 +29,10 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
     from app.api import api
 
     app.register_blueprint(api)
+
+    from app.errors import not_found, unprocessable
+
+    app.register_error_handler(404, not_found)
+    app.register_error_handler(422, unprocessable)
+
     return app
