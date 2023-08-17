@@ -27,6 +27,6 @@ def random_invalid_url() -> str:
 def ingredient_create_data(app: Flask, name: str | None = None) -> dict[str, Any]:
     ingredient = schema.IngredientCreate(
         name=name if name is not None else random_str(),
-        image=default_ingredient_image_uri(app),
+        image=Url(default_ingredient_image_uri(app)),
     )
     return ingredient.model_dump(mode="json")
