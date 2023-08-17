@@ -13,6 +13,7 @@ dependencies = [
     "psycopg2",
     "pydantic",
     "requests",
+    "vulture",
 ]
 
 
@@ -61,3 +62,7 @@ plugins = ["sqlalchemy.ext.mypy.plugin"]
 [tool.pytest.ini_options]
 filterwarnings = ["ignore: 'flask.Markup' is deprecated"]
 addopts = "-vvv"
+
+[tool.vulture]
+exclude = ["migrations/", ".venv/"]
+min_confidence = 61
