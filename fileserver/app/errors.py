@@ -16,7 +16,7 @@ def to_http_error(f):  # noqa: ANN201, ANN001
         except exceptions.HTTPException:
             raise
         except Exception as e:
-            logger.exception()
+            logger.exception("")
             raise exceptions.UnprocessableEntity from e
 
     return wrapper
@@ -28,3 +28,7 @@ def not_found(_e: exceptions.NotFound) -> Response:
 
 def unprocessable(_e: exceptions.UnprocessableEntity) -> Response:
     return jsonify({"message": "Unprocessable."}), 422
+
+
+def no_uploaded_image(_e: exceptions.BadRequestKeyError) -> Response:
+    return jsonify({"message": "No image provided."}), 400

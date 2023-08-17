@@ -34,9 +34,11 @@ def test_200_upload_image(client: FlaskClient) -> None:
     assert saved_file.read_bytes() == default_image.read_bytes()
 
 
-@pytest.mark.skip()
-def test_200_upload_empty_image_would_use_default(client: FlaskClient) -> None:
-    raise NotImplementedError
+def test_422_upload_no_image(client: FlaskClient) -> None:
+    response = client.post("/images/")
+    assert response.status_code == 400
+    data = json.loads(response.data)
+    assert data == {"message": "No image provided."}
 
 
 @pytest.mark.skip()

@@ -32,10 +32,6 @@ def get_default_image() -> Response:
 @to_http_error
 def upload_image() -> Response:
     """https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/"""
-    if "file" not in request.files:
-        msg = "file does not exist"
-        raise KeyError(msg)
-
     file = request.files["file"]
     handler = UniqueFilenameHandler()
 

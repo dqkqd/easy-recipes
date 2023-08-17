@@ -30,9 +30,10 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
 
     app.register_blueprint(image_api)
 
-    from app.errors import not_found, unprocessable
+    from app import errors
 
-    app.register_error_handler(404, not_found)
-    app.register_error_handler(422, unprocessable)
+    app.register_error_handler(400, errors.no_uploaded_image)
+    app.register_error_handler(404, errors.not_found)
+    app.register_error_handler(422, errors.unprocessable)
 
     return app
