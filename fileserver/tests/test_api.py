@@ -1,14 +1,10 @@
 import json
-from typing import TYPE_CHECKING
+from pathlib import Path
 
-import pytest
 from flask.testing import FlaskClient
 
 from app import constants
 from app.filename_handler import UniqueFilenameHandler
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def test_200_get_default_image(client: FlaskClient) -> None:
@@ -41,6 +37,15 @@ def test_422_upload_no_image(client: FlaskClient) -> None:
     assert data == {"message": "No image provided."}
 
 
-@pytest.mark.skip()
-def test_200_upload_too_big_image(client: FlaskClient) -> None:
-    raise NotImplementedError
+def test_200_upload_too_big_image(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(constants.MAX_CONTENT_LENGTH + 1))
+    assert file.stat().st_size == constants.MAX_CONTENT_LENGTH + 1
+
+    files = {"file": file.open("rb")}
+    response = client.post("/images/", data=files)
+    assert response.status_code == 413
+
+    data = json.loads(response.data)
+    assert data == {"message": "File too large."}
