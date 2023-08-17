@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
+from werkzeug import exceptions
 
 from app import constants
 from app.errors import to_http_error
@@ -19,7 +20,7 @@ def get_image(encrypted_filename: str) -> Response:
     handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
     file = image_folder / handler.filename
     if not file.exists():
-        raise FileNotFoundError(file)
+        raise exceptions.NotFound(file)
 
     return send_from_directory(
         image_folder,
