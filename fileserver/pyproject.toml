@@ -17,7 +17,7 @@ fixable = ["ALL"]
 ignore = ["D"]
 
 [tool.ruff.per-file-ignores]
-
+"test*.py" = ["S101", "PLR2004"]
 
 [tool.black]
 line-length = 100
