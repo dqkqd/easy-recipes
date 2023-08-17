@@ -12,6 +12,7 @@ dependencies = [
     "pillow",
     "psycopg2",
     "pydantic",
+    "requests",
 ]
 
 
