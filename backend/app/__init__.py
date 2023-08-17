@@ -5,8 +5,10 @@ from flask import Flask
 from app.config import BaseConfig, Config
 
 
-def create_app(config: type[BaseConfig] = Config) -> Flask:
+def create_app(config_cls: type[BaseConfig] = Config) -> Flask:
     app = Flask(__name__)
+
+    config = config_cls()
     app.config.from_object(config)
 
     from app.models.database import db, migrate
