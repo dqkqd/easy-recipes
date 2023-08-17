@@ -6,10 +6,10 @@ from app import constants
 from app.errors import to_http_error
 from app.filename_handler import UniqueFilenameHandler
 
-api = Blueprint("api", __name__)
+image_api = Blueprint("api", __name__, url_prefix="/images")
 
 
-@api.route("/images/<path:name>")
+@image_api.route("/<path:name>")
 @to_http_error
 def get_image(name: Path) -> Response:
     return send_from_directory(
@@ -19,7 +19,7 @@ def get_image(name: Path) -> Response:
     )
 
 
-@api.route("/images/default/ingredient")
+@image_api.route("/default/ingredient")
 @to_http_error
 def get_default_ingredient_image() -> Response:
     return send_from_directory(
@@ -28,7 +28,7 @@ def get_default_ingredient_image() -> Response:
     )
 
 
-@api.route("/images/default/recipe")
+@image_api.route("/default/recipe")
 @to_http_error
 def get_default_recipe_image() -> Response:
     return send_from_directory(
@@ -37,7 +37,7 @@ def get_default_recipe_image() -> Response:
     )
 
 
-@api.route("/images/", methods=["POST"])
+@image_api.route("/", methods=["POST"])
 @to_http_error
 def upload_image() -> Response:
     """https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/"""

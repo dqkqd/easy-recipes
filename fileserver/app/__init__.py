@@ -26,9 +26,9 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
 
     setup_images_folder(app)
 
-    from app.api import api
+    from app.api import image_api
 
-    app.register_blueprint(api)
+    app.register_blueprint(image_api)
 
     from app.errors import not_found, unprocessable
 
