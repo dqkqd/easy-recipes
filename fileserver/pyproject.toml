@@ -4,7 +4,7 @@ version = "0.1"
 authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
 license = { text = "MIT" }
 
-dependencies = ["flask", "gunicorn", "pillow", "pydantic"]
+dependencies = ["cryptography", "flask", "gunicorn", "pillow", "pydantic"]
 
 
 [project.optional-dependencies]
@@ -14,7 +14,7 @@ dev = ["black", "mypy", "pytest", "ruff", "vulture"]
 select = ["ALL"]
 line-length = 100
 fixable = ["ALL"]
-ignore = ["D"]
+ignore = ["D", "TD003", "FIX002", "ANN101", "ANN102"]
 
 [tool.ruff.per-file-ignores]
 "test*.py" = ["S101", "PLR2004"]
