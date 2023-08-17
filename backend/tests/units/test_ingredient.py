@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
+    ingredient_data = mock_data.ingredient_create_data(client.application)
     response = client.post(
         "/ingredients/",
         json=ingredient_data,
@@ -38,7 +38,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_use_default_image_url(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
+    ingredient_data = mock_data.ingredient_create_data(client.application)
     ingredient_data.pop("image")
     response = client.post(
         "/ingredients/",
@@ -50,12 +50,12 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
 
     with IngredientRepository.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
-        assert ingredient.image == Url(default_ingredient_image_uri())
+        assert ingredient.image == Url(default_ingredient_image_uri(client.application))
 
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data(name="  eggs  ")
+    ingredient_data = mock_data.ingredient_create_data(client.application, name="  eggs  ")
     response = client.post(
         "/ingredients/",
         json=ingredient_data,
@@ -138,7 +138,7 @@ def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
 
 
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
+    ingredient_data = mock_data.ingredient_create_data(client.application)
     client.post("/ingredients/", json=ingredient_data)
 
     response = client.get("/ingredients/1")
@@ -155,7 +155,9 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
 def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
     num_datas = 5
 
-    ingredient_datas = [mock_data.ingredient_create_data() for _ in range(num_datas)]
+    ingredient_datas = [
+        mock_data.ingredient_create_data(client.application) for _ in range(num_datas)
+    ]
     for data in ingredient_datas:
         client.post("/ingredients/", json=data)
 

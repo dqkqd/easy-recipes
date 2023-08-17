@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, current_app, jsonify, request
 from werkzeug import Response
 
 from app.errors import to_handleable_error
@@ -30,7 +30,7 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 def create_ingredient() -> Response:
     body = request.get_json()
     if "image" not in body:
-        body["image"] = default_ingredient_image_uri()
+        body["image"] = default_ingredient_image_uri(current_app)
     with IngredientRepository.get_repository(db) as repo:
         ingredient_create = schema.IngredientCreate(**body)
         ingredient_in_db = repo.create_ingredient(ingredient_create)
