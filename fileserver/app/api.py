@@ -44,6 +44,9 @@ def upload_image() -> Response:
     handler = UniqueFilenameHandler()
 
     # TODO(dqk): separate file between ingredient and recipe
-    file.save(current_app.config["IMAGE_FOLDER"] / handler.filename)
+    image_folder = current_app.config["IMAGE_FOLDER"]
+    if not isinstance(image_folder, Path):
+        raise TypeError(image_folder)
+    file.save(image_folder / handler.filename)
 
     return jsonify({"filename": handler.encrypted_filename})
