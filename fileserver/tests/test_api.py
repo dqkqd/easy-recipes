@@ -1,6 +1,7 @@
 import json
 from typing import TYPE_CHECKING
 
+import pytest
 from flask.testing import FlaskClient
 
 from app import constants
@@ -37,3 +38,13 @@ def test_200_upload_image(client: FlaskClient) -> None:
     assert saved_file.is_file()
     assert not saved_file.samefile(default_recipe_image)
     assert saved_file.read_bytes() == default_recipe_image.read_bytes()
+
+
+@pytest.mark.skip()
+def test_200_upload_empty_image_would_use_default(client: FlaskClient) -> None:
+    raise NotImplementedError
+
+
+@pytest.mark.skip()
+def test_200_upload_too_big_image(client: FlaskClient) -> None:
+    raise NotImplementedError
