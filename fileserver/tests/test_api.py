@@ -64,3 +64,20 @@ def test_200_upload_big_image(tmp_path: Path, client: FlaskClient) -> None:
     files = {"file": file.open("rb")}
     response = client.post("/images/", data=files)
     assert response.status_code == 200
+
+
+def test_200_get_image(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+
+    files = {"file": file.open("rb")}
+    response = client.post("/images/", data=files)
+    assert response.status_code == 200
+
+    data = json.loads(response.data)
+    encrypted_filename = data["filename"]
+    response = client.get(f"/images/{encrypted_filename}")
+    assert response.status_code == 200
+
+    assert response.data == file.read_bytes()

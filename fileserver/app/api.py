@@ -9,12 +9,21 @@ from app.filename_handler import UniqueFilenameHandler
 image_api = Blueprint("api", __name__, url_prefix="/images")
 
 
-@image_api.route("/<path:name>")
+@image_api.route("/<string:encrypted_filename>")
 @to_http_error
-def get_image(name: Path) -> Response:
+def get_image(encrypted_filename: str) -> Response:
+    image_folder = current_app.config["IMAGE_FOLDER"]
+    if not isinstance(image_folder, Path):
+        raise TypeError(image_folder)
+
+    handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
+    file = image_folder / handler.filename
+    if not file.exists():
+        raise FileNotFoundError(file)
+
     return send_from_directory(
-        current_app.config["IMAGE_FOLDER"],
-        name,
+        image_folder,
+        handler.filename,
         as_attachment=True,
     )
 
