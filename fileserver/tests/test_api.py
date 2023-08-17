@@ -3,7 +3,7 @@ from pathlib import Path
 
 from flask.testing import FlaskClient
 
-from app import utils
+from app.filename_handler import UniqueFilenameHandler
 
 
 def test_get_default_ingredient(client: FlaskClient) -> None:
@@ -38,8 +38,9 @@ def test_upload_image(client: FlaskClient) -> None:
     assert response.status_code == 200
 
     data = json.loads(response.data)
-    assert utils.encode_filename(str(default_image)) == data["filename"]
+    encrypted_filename = data["filename"]
+    handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
 
     image_folder = client.application.config["IMAGE_FOLDER"]
-    saved_file = image_folder / data["filename"]
+    saved_file = image_folder / handler.filename
     assert saved_file.is_file()

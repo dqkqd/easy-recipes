@@ -2,7 +2,7 @@ from pathlib import Path
 
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 
-from app import utils
+from app.filename_handler import UniqueFilenameHandler
 
 api = Blueprint("api", __name__)
 
@@ -40,14 +40,9 @@ def upload_image() -> Response:
         raise KeyError(msg)
 
     file = request.files["file"]
-    if file.filename.strip() == "":
-        msg = "Invalid filename."
-        raise ValueError(msg)
+    handler = UniqueFilenameHandler()
 
-    if file and utils.allowed_file(file.filename):
-        filename = utils.encode_filename(file.filename)
-        # TODO(dqk): convert filename
-        # TODO(dqk): separate file between ingredient and recipe
-        file.save(current_app.config["IMAGE_FOLDER"] / filename)
+    # TODO(dqk): separate file between ingredient and recipe
+    file.save(current_app.config["IMAGE_FOLDER"] / handler.filename)
 
-    return jsonify({"filename": filename})
+    return jsonify({"filename": handler.encrypted_filename})
