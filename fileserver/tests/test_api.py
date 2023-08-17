@@ -24,6 +24,11 @@ def test_200_upload_image(tmp_path: Path, client: FlaskClient) -> None:
 
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
+
+    # make sure there are no obvious connections between those filename
+    assert encrypted_filename not in str(file)
+    assert str(file) not in encrypted_filename
+
     handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
 
     image_folder: Path = client.application.config["IMAGE_FOLDER"]
