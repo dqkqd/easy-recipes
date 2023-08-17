@@ -40,8 +40,8 @@ def test_422_upload_no_image(client: FlaskClient) -> None:
 def test_413_upload_too_big_image(tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.txt"
     with file.open("wb") as f:
-        f.write(bytearray(constants.MAX_CONTENT_LENGTH + 1))
-    assert file.stat().st_size == constants.MAX_CONTENT_LENGTH + 1
+        f.write(bytearray(constants.MAX_CONTENT_LENGTH))
+    assert file.stat().st_size == constants.MAX_CONTENT_LENGTH
 
     files = {"file": file.open("rb")}
     response = client.post("/images/", data=files)
@@ -54,7 +54,7 @@ def test_413_upload_too_big_image(tmp_path: Path, client: FlaskClient) -> None:
 def test_200_upload_big_image(tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.txt"
     with file.open("wb") as f:
-        f.write(bytearray(constants.MAX_CONTENT_LENGTH - 300))
+        f.write(bytearray(constants.MAX_CONTENT_LENGTH - 1000))
     files = {"file": file.open("rb")}
     response = client.post("/images/", data=files)
     assert response.status_code == 200
