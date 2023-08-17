@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import secrets
 
 
 class BaseConfig:
@@ -19,6 +20,7 @@ class BaseConfig:
     def file_server_uri(self) -> str:
         return f"http://{self.file_server_host}:{self.file_server_port}/{self.file_server_images_directory}"
 
+    SECRET_KEY = secrets.token_urlsafe(256)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @property
