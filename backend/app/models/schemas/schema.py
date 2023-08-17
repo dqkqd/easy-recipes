@@ -12,7 +12,7 @@ from pydantic import (
 )
 
 from app.image.b64image import Base64Image
-from app.models.schemas.validator import validate_trailing_spaces, validate_url_exists
+from app.models.schemas.validators import validate_trailing_spaces
 
 
 class Base(BaseModel):
@@ -31,11 +31,6 @@ class IngredientBase(Base):
     @classmethod
     def remove_trailing_spaces(cls, v: str) -> str:
         return validate_trailing_spaces(v)
-
-    @field_validator("image")
-    @classmethod
-    def validate_image_url(cls, v: HttpUrl) -> HttpUrl:
-        return validate_url_exists(v)
 
 
 class IngredientCreate(IngredientBase):

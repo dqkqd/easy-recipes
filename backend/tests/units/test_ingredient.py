@@ -94,19 +94,14 @@ def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
 
 
 @pytest.mark.parametrize(
-    ("image", "err_msg"),
+    "image",
     [
-        ("this is not a url", "Invalid image."),  # TODO(dqk): Change how we create error message
-        (
-            f"http://this-url-does-not-exist-{mock_data.random_str(100)}.com",
-            "Provided url does not exist.",
-        ),
+        "this is not a url",
     ],
 )
 def test_422_create_invalid_url(
     client: FlaskClient,
     image: str | None,
-    err_msg: str,
 ) -> None:
     ingredient_data = mock_data.ingredient_create_data(client.application)
     ingredient_data["image"] = image
@@ -114,7 +109,7 @@ def test_422_create_invalid_url(
 
     data = json.loads(response.data)
 
-    assert data == {"message": err_msg}
+    assert data == {"message": "Invalid image."}
     assert response.status_code == 422
 
 
