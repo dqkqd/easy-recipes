@@ -4,6 +4,7 @@ from pathlib import Path
 
 from flask import Flask
 
+from app import constants
 from app.config import Config
 
 
@@ -20,7 +21,7 @@ def setup_images_folder(app: Flask) -> None:
 
 
 def create_app(config: type[Config] = Config) -> Flask:
-    app = Flask(__name__, static_folder=config.STATIC_FOLDER)
+    app = Flask(__name__, static_folder=constants.STATIC_FOLDER)
     app.config.from_object(config)
 
     setup_images_folder(app)

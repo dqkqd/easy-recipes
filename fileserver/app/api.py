@@ -2,6 +2,7 @@ from pathlib import Path
 
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 
+from app import constants
 from app.filename_handler import UniqueFilenameHandler
 
 api = Blueprint("api", __name__)
@@ -19,16 +20,16 @@ def get_image(name: Path) -> Response:
 @api.route("/images/default/ingredient")
 def get_default_ingredient_image() -> Response:
     return send_from_directory(
-        current_app.static_folder,
-        current_app.config["DEFAULT_INGREDIENT_IMAGE"],
+        constants.STATIC_FOLDER,
+        constants.DEFAULT_INGREDIENT_IMAGE_NAME,
     )
 
 
 @api.route("/images/default/recipe")
 def get_default_recipe_image() -> Response:
     return send_from_directory(
-        current_app.static_folder,
-        current_app.config["DEFAULT_RECIPE_IMAGE"],
+        constants.STATIC_FOLDER,
+        constants.DEFAULT_RECIPE_IMAGE_NAME,
     )
 
 
