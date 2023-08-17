@@ -8,6 +8,7 @@ from pydantic_core import Url
 
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
+from app.utils import default_ingredient_image_uri
 from tests import mock_data
 
 if TYPE_CHECKING:
@@ -49,12 +50,7 @@ def test_200_create_use_default_image_url(client: FlaskClient) -> None:
 
     with IngredientRepository.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
-
-        default_image_uri: str | None = client.application.config.get(
-            "DEFAULT_INGREDIENT_IMAGE_URI",
-        )
-        assert default_image_uri is not None
-        assert ingredient.image == Url(default_image_uri)
+        assert ingredient.image == Url(default_ingredient_image_uri())
 
 
 @pytest.mark.usefixtures("app_context")
