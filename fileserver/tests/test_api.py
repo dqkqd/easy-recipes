@@ -13,9 +13,12 @@ def test_200_get_default_image(client: FlaskClient) -> None:
     assert constants.DEFAULT_IMAGE.read_bytes() == response.data
 
 
-def test_200_upload_image(client: FlaskClient) -> None:
-    default_image = constants.DEFAULT_IMAGE
-    files = {"file": default_image.open("rb")}
+def test_200_upload_image(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+
+    files = {"file": file.open("rb")}
     response = client.post("/images/", data=files)
     assert response.status_code == 200
 
@@ -25,14 +28,16 @@ def test_200_upload_image(client: FlaskClient) -> None:
 
     image_folder: Path = client.application.config["IMAGE_FOLDER"]
     saved_file = image_folder / handler.filename
+
     assert saved_file.is_file()
-    assert not saved_file.samefile(default_image)
-    assert saved_file.read_bytes() == default_image.read_bytes()
+    assert not saved_file.samefile(file)
+    assert saved_file.read_bytes() == file.read_bytes()
 
 
 def test_422_upload_no_image(client: FlaskClient) -> None:
     response = client.post("/images/")
     assert response.status_code == 400
+
     data = json.loads(response.data)
     assert data == {"message": "No image provided."}
 
@@ -55,6 +60,7 @@ def test_200_upload_big_image(tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.txt"
     with file.open("wb") as f:
         f.write(bytearray(constants.MAX_CONTENT_LENGTH - 1000))
+
     files = {"file": file.open("rb")}
     response = client.post("/images/", data=files)
     assert response.status_code == 200
