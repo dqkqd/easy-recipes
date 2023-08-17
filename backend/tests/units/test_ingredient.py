@@ -82,7 +82,14 @@ def test_200_create_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.parametrize("name", [None, "", " "])
+@pytest.mark.parametrize(
+    "name",
+    [
+        None,
+        "",
+        " ",
+    ],
+)
 def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
     ingredient_data = mock_data.ingredient_create_data(client.application)
     ingredient_data["name"] = name
