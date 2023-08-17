@@ -32,3 +32,7 @@ def unprocessable(_e: exceptions.UnprocessableEntity) -> Response:
 
 def no_uploaded_image(_e: exceptions.BadRequestKeyError) -> Response:
     return jsonify({"message": "No image provided."}), 400
+
+
+def file_too_large(_e: exceptions.RequestEntityTooLarge) -> Response:
+    return jsonify({"message": "File too large."}), 413

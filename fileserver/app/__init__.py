@@ -35,5 +35,6 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
     app.register_error_handler(400, errors.no_uploaded_image)
     app.register_error_handler(404, errors.not_found)
     app.register_error_handler(422, errors.unprocessable)
+    app.register_error_handler(413, errors.file_too_large)
 
     return app
