@@ -4,7 +4,7 @@ version = "0.1"
 authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
 license = { text = "MIT" }
 
-dependencies = ["cryptography", "flask", "gunicorn", "pillow", "pydantic"]
+dependencies = ["cryptography", "flask", "gunicorn"]
 
 
 [project.optional-dependencies]
