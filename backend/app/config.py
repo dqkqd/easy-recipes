@@ -2,48 +2,46 @@ from __future__ import annotations
 
 import os
 
-POSTGRES_USER = os.environ.get("POSTGRES_USER")
-POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
-POSTGRES_PORT = os.environ.get("POSTGRES_PORT")
-POSTGRES_DB = os.environ.get("POSTGRES_DB")
-
-FILE_SERVER_PORT = os.environ.get("FILE_SERVER_PORT")
-FILE_SERVER_IMAGES_DIRECTORY = os.environ.get("FILE_SERVER_IMAGES_DIRECTORY")
-
-
-DEFAULT_INGREDIENT_IMAGE_NAME = "default-ingredient-image.jpg"
-DEFAULT_RECIPE_IMAGE_NAME = "default-recipe-image.jpg"
-
 
 class BaseConfig:
-    POSTGRES_HOST: str | None = None
-    FILE_SERVER_HOST: str | None = None
+    postgres_user = os.environ.get("POSTGRES_USER")
+    postgres_password = os.environ.get("POSTGRES_PASSWORD")
+    postgres_port = os.environ.get("POSTGRES_PORT")
+    postgres_db = os.environ.get("POSTGRES_DB")
+    file_server_port = os.environ.get("FILE_SERVER_PORT")
+    file_server_images_directory = os.environ.get("FILE_SERVER_IMAGES_DIRECTORY")
+    default_ingredient_image_name = "default-ingredient-image.jpg"
+    default_recipe_image_name = "default-recipe-image.jpg"
+    postgres_host: str | None = None
+    file_server_host: str | None = None
+
+    @property
+    def file_server_uri(self) -> str:
+        return f"http://{self.file_server_host}:{self.file_server_port}/{self.file_server_images_directory}"
+
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> str:  # noqa: N802
-        return f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{self.POSTGRES_HOST}:{POSTGRES_PORT}/{POSTGRES_DB}"
-
-    @property
-    def FILE_SERVER_URI(self) -> str:  # noqa: N802
-        return f"http://{self.FILE_SERVER_HOST}:{FILE_SERVER_PORT}/{FILE_SERVER_IMAGES_DIRECTORY}"
+        return f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
 
     @property
     def DEFAULT_INGREDIENT_IMAGE_URI(self) -> str:  # noqa: N802
-        return f"{self.FILE_SERVER_URI}/{DEFAULT_INGREDIENT_IMAGE_NAME}"
+        return f"{self.file_server_uri}/{self.default_ingredient_image_name}"
 
     @property
     def DEFAULT_RECIPE_IMAGE_URI(self) -> str:  # noqa: N802
-        return f"{self.FILE_SERVER_URI}/{DEFAULT_RECIPE_IMAGE_NAME}"
+        return f"{self.file_server_uri}/{self.default_recipe_image_name}"
 
 
 class Config(BaseConfig):
-    POSTGRES_HOST = os.environ.get("POSTGRES_HOST")
-    FILE_SERVER_HOST = os.environ.get("FILE_SERVER_HOST")
+    postgres_host = os.environ.get("POSTGRES_HOST")
+    file_server_host = os.environ.get("FILE_SERVER_HOST")
 
 
 class TestingConfig(BaseConfig):
+    postgres_host = os.environ.get("TEST_POSTGRES_HOST")
+    file_server_host = os.environ.get("TEST_FILE_SERVER_HOST")
+
     DEBUG = True
     TESTING = True
-    POSTGRES_HOST = os.environ.get("TEST_POSTGRES_HOST")
-    FILE_SERVER_HOST = os.environ.get("TEST_FILE_SERVER_HOST")
