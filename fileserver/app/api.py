@@ -19,21 +19,12 @@ def get_image(name: Path) -> Response:
     )
 
 
-@image_api.route("/default/ingredient")
+@image_api.route("/default")
 @to_http_error
-def get_default_ingredient_image() -> Response:
+def get_default_image() -> Response:
     return send_from_directory(
         constants.STATIC_FOLDER,
-        constants.DEFAULT_INGREDIENT_IMAGE_NAME,
-    )
-
-
-@image_api.route("/default/recipe")
-@to_http_error
-def get_default_recipe_image() -> Response:
-    return send_from_directory(
-        constants.STATIC_FOLDER,
-        constants.DEFAULT_RECIPE_IMAGE_NAME,
+        constants.DEFAULT_IMAGE_NAME,
     )
 
 
@@ -48,7 +39,6 @@ def upload_image() -> Response:
     file = request.files["file"]
     handler = UniqueFilenameHandler()
 
-    # TODO(dqk): separate file between ingredient and recipe
     image_folder = current_app.config["IMAGE_FOLDER"]
     if not isinstance(image_folder, Path):
         raise TypeError(image_folder)

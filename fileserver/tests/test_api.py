@@ -11,21 +11,15 @@ if TYPE_CHECKING:
     from pathlib import Path
 
 
-def test_200_get_default_ingredient(client: FlaskClient) -> None:
-    response = client.get("/images/default/ingredient")
+def test_200_get_default_image(client: FlaskClient) -> None:
+    response = client.get("/images/default")
     assert response.status_code == 200
-    assert constants.DEFAULT_INGREDIENT_IMAGE.read_bytes() == response.data
-
-
-def test_200_get_default_recipe(client: FlaskClient) -> None:
-    response = client.get("/images/default/recipe")
-    assert response.status_code == 200
-    assert constants.DEFAULT_RECIPE_IMAGE.read_bytes() == response.data
+    assert constants.DEFAULT_IMAGE.read_bytes() == response.data
 
 
 def test_200_upload_image(client: FlaskClient) -> None:
-    default_recipe_image = constants.DEFAULT_RECIPE_IMAGE
-    files = {"file": default_recipe_image.open("rb")}
+    default_image = constants.DEFAULT_IMAGE
+    files = {"file": default_image.open("rb")}
     response = client.post("/images/", data=files)
     assert response.status_code == 200
 
@@ -36,8 +30,8 @@ def test_200_upload_image(client: FlaskClient) -> None:
     image_folder: Path = client.application.config["IMAGE_FOLDER"]
     saved_file = image_folder / handler.filename
     assert saved_file.is_file()
-    assert not saved_file.samefile(default_recipe_image)
-    assert saved_file.read_bytes() == default_recipe_image.read_bytes()
+    assert not saved_file.samefile(default_image)
+    assert saved_file.read_bytes() == default_image.read_bytes()
 
 
 @pytest.mark.skip()
