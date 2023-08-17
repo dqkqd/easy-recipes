@@ -8,11 +8,12 @@ from app.config import Config
 
 
 def setup_images_folder(app: Flask) -> None:
-    image_folder: Path = (
-        Path(app.root_path).parent
-        / app.config["DATA_FOLDER_NAME"]
-        / app.config["IMAGE_FOLDER_NAME"]
-    )
+    data_folder: Path = Path(app.root_path).parent / app.config["DATA_FOLDER_NAME"]
+    if not data_folder.exists():
+        data_folder.mkdir()
+    app.config["DATA_FOLDER"] = data_folder
+
+    image_folder: Path = data_folder / app.config["IMAGE_FOLDER_NAME"]
     if not image_folder.exists():
         image_folder.mkdir()
     app.config["IMAGE_FOLDER"] = image_folder
