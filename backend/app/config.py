@@ -1,9 +1,6 @@
 from __future__ import annotations
 
 import os
-from pathlib import Path
-
-BASE_DIR = Path(__file__).parent
 
 POSTGRES_USER = os.environ.get("POSTGRES_USER")
 POSTGRES_PASSWORD = os.environ.get("POSTGRES_PASSWORD")
