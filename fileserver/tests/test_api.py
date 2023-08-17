@@ -37,7 +37,7 @@ def test_422_upload_no_image(client: FlaskClient) -> None:
     assert data == {"message": "No image provided."}
 
 
-def test_200_upload_too_big_image(tmp_path: Path, client: FlaskClient) -> None:
+def test_413_upload_too_big_image(tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.txt"
     with file.open("wb") as f:
         f.write(bytearray(constants.MAX_CONTENT_LENGTH + 1))
