@@ -49,3 +49,12 @@ def test_413_upload_too_big_image(tmp_path: Path, client: FlaskClient) -> None:
 
     data = json.loads(response.data)
     assert data == {"message": "File too large."}
+
+
+def test_200_upload_big_image(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(constants.MAX_CONTENT_LENGTH - 300))
+    files = {"file": file.open("rb")}
+    response = client.post("/images/", data=files)
+    assert response.status_code == 200
