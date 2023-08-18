@@ -17,8 +17,8 @@ class BaseConfig:
     file_server_host: str | None = None
 
     @property
-    def file_server_uri(self) -> str:
-        return f"http://{self.file_server_host}:{self.file_server_port}/{self.file_server_images_directory}"
+    def FILE_SERVER_URL(self) -> str:  # noqa: N802
+        return f"http://{self.file_server_host}:{self.file_server_port}/"
 
     SECRET_KEY = secrets.token_urlsafe(256)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
