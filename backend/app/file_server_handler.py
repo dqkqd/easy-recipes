@@ -20,6 +20,13 @@ class FileExtensionChecker:
         self.kind = kind
 
     @classmethod
+    def from_file(cls, file: Path) -> Self:
+        kind = filetype.guess(file.open("rb"))
+        if kind is None:
+            raise TypeError
+        return cls(kind)
+
+    @classmethod
     def from_bytes_stream(cls, stream: io.BytesIO) -> Self:
         stream.seek(0)
         kind = filetype.guess(stream.read())
@@ -88,7 +95,21 @@ class FileServer:
         raise NotImplementedError
 
     def upload_image_from_file(self, file: Path) -> str:
-        raise NotImplementedError
+        checker = FileExtensionChecker.from_file(file)
+        if not checker.is_image():
+            raise TypeError(checker)
+
+        r = requests.post(
+            self.file_server_url,
+            headers=self.header,
+            files={"file": (checker.random_filename, file.open("rb"))},
+            timeout=self.timeout,
+        )
+        if r.status_code != 200:
+            raise RuntimeError(r.reason)
+
+        data = r.json()
+        return data["filename"]
 
     def upload_image_from_bytes(self, stream: io.BytesIO) -> str:
         checker = FileExtensionChecker.from_bytes_stream(stream)

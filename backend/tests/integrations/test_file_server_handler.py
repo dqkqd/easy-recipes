@@ -1,4 +1,5 @@
 import io
+from pathlib import Path
 
 import pytest
 import requests
@@ -23,3 +24,15 @@ def test_upload_image_from_bytes() -> None:
     requested_image_bytes = file_server.get_image(identifier)
 
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
+
+
+@pytest.mark.usefixtures("app")
+def test_upload_image_from_file(tmp_path: Path) -> None:
+    file = tmp_path / "image.png"
+    img = Image.new("RGB", (256, 256))
+    img.save(file, format="PNG")
+
+    identifier = file_server.upload_image_from_file(file)
+    requested_image_bytes = file_server.get_image(identifier)
+
+    assert file.read_bytes() == requested_image_bytes.getvalue()
