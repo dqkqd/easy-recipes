@@ -1,19 +1,22 @@
 from functools import wraps
-from typing import Any
+from typing import Any, Callable
 
 from cryptography.fernet import Fernet
 from flask import current_app, request
 from werkzeug import exceptions
 
 
-def require_password(f):  # noqa: ANN201, ANN001
+def require_password(f: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(f)
-    def wrapper(*args: Any, **kwargs: Any) -> None:  # noqa: ANN401
+    def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
         key = current_app.config["FILESERVER_ENCRYPT_KEY"]
         fernet_model = Fernet(key)
 
         try:
             token = request.headers.get("fileserver-token")
+            if not isinstance(token, str):
+                raise
+
             if (
                 fernet_model.decrypt(token.encode()).decode()
                 != current_app.config["FILESERVER_PASSWORD"]

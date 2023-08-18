@@ -22,7 +22,7 @@ def get_file(encrypted_filename: str) -> Response:
     handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
     file = file_folder / handler.filename
     if not file.exists():
-        raise exceptions.NotFound(file)
+        raise exceptions.NotFound(str(file))
 
     return send_from_directory(
         file_folder,

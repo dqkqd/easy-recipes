@@ -8,7 +8,7 @@ dependencies = ["cryptography", "flask", "flask-cors", "gunicorn"]
 
 
 [project.optional-dependencies]
-dev = ["black", "mypy", "pytest", "ruff", "vulture"]
+dev = ["black", "mypy", "pytest", "ruff", "vulture", "types-Flask-Cors"]
 
 [tool.ruff]
 select = ["ALL"]

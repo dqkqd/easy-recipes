@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from pathlib import Path
 
 from cryptography.fernet import Fernet
@@ -164,8 +165,7 @@ def test_404_get_non_existed_file(
     )
     assert response.status_code == 200
 
-    for file in os.listdir(file_folder):
-        (file_folder / file).unlink()
+    shutil.rmtree(file_folder)
 
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
