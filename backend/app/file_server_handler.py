@@ -11,47 +11,18 @@ from cryptography.fernet import Fernet
 from werkzeug import exceptions
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from flask import Flask
 
 FileIdentifer = str
 
 
-class FileExtensionChecker:
-    def __init__(self, kind: filetype.Type) -> None:
-        self.kind = kind
-
-    @classmethod
-    def from_file(cls, file: Path) -> Self:
-        kind = filetype.guess(file.open("rb"))
-        if kind is None:
-            raise TypeError
-        return cls(kind)
-
-    @classmethod
-    def from_bytes_stream(cls, stream: io.BytesIO) -> Self:
-        stream.seek(0)
-        kind = filetype.guess(stream.read())
-        stream.seek(0)
-
-        if kind is None:
-            raise TypeError
-        stream.seek(0)
-
-        return cls(kind)
-
-    @property
-    def extension(self) -> str:
-        return self.kind.extension
-
-    @cached_property
-    def random_filename(self) -> str:
-        filename = secrets.token_urlsafe(5)
-        return f"{filename}.{self.extension}"
-
-    def is_image(self) -> str:
-        return self.kind.mime.startswith("image")
+def get_file_type_from_bytes(stream: io.BytesIO) -> filetype.Type:
+    stream.seek(0)
+    kind = filetype.guess(stream.read())
+    stream.seek(0)
+    if kind is None:
+        raise TypeError
+    return kind
 
 
 class FileServer:
