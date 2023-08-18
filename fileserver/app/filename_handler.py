@@ -1,16 +1,17 @@
 from __future__ import annotations
 
-import os
 import uuid
 from functools import cached_property
 from typing import Self
 
 from cryptography.fernet import Fernet
 
+from app import constants
+
 
 class UniqueFilenameHandler:
-    FERNET_MODEL = Fernet(os.environ.get("FILESERVER_FILE_ENCRYPT_KEY") or Fernet.generate_key())
     UUID_VERSION = 4
+    fernet_model = Fernet(constants.FILESERVER_ENCRYPT_KEY)
 
     def __init__(self, identifier: uuid.UUID | None = None) -> None:
         if identifier is None:
@@ -27,9 +28,9 @@ class UniqueFilenameHandler:
 
     @cached_property
     def encrypted_filename(self) -> str:
-        return self.FERNET_MODEL.encrypt(self.identifier.bytes).decode()
+        return self.fernet_model.encrypt(self.identifier.bytes).decode()
 
     @classmethod
     def from_encrypted_filename(cls, encrypted_filename: str) -> Self:
-        descrypted_filename = cls.FERNET_MODEL.decrypt(encrypted_filename.encode())
+        descrypted_filename = cls.fernet_model.decrypt(encrypted_filename.encode())
         return cls(uuid.UUID(bytes=descrypted_filename, version=cls.UUID_VERSION))
