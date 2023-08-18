@@ -36,9 +36,10 @@ def create_app(config: type[BaseConfig] = Config) -> Flask:
     from app import errors
 
     app.register_error_handler(400, errors.no_uploaded_file)
+    app.register_error_handler(401, errors.unauthorized)
     app.register_error_handler(404, errors.not_found)
-    app.register_error_handler(422, errors.unprocessable)
     app.register_error_handler(413, errors.file_too_large)
+    app.register_error_handler(422, errors.unprocessable)
     app.register_error_handler(500, errors.inernal_server_error)
 
     return app

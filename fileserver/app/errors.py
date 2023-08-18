@@ -44,3 +44,7 @@ def file_too_large(_e: exceptions.RequestEntityTooLarge) -> Response:
 
 def inernal_server_error(_e: exceptions.InternalServerError) -> Response:
     return jsonify({"message": "Internal Server Error."}), 500
+
+
+def unauthorized(_e: exceptions.InternalServerError) -> Response:
+    return jsonify({"message": "Unauthorized."}), 401
