@@ -1,9 +1,8 @@
 from __future__ import annotations
 
 import io
-import secrets
 from functools import cached_property
-from typing import TYPE_CHECKING, Self
+from typing import TYPE_CHECKING
 
 import filetype
 import requests
@@ -58,41 +57,42 @@ class FileServer:
         token = self.fernet_model.encrypt(self.password.encode()).decode()
         return {"Authorization": f"{self.authorization_scheme} {token}"}
 
-    def uri(self, identifier: str) -> str:
+    def uri(self, identifier: FileIdentifer) -> str:
         return f"{self.server_url}{identifier}"
 
-    def get(self, identifier: str) -> io.BytesIO:
+    def get(self, identifier: FileIdentifer) -> io.BytesIO:
         uri = self.uri(identifier)
+        return self._get_from_uri(uri)
+
+    def add(self, source: str | io.BytesIO) -> FileIdentifer:
+        if isinstance(source, io.BytesIO):
+            return self._add_bytes(source)
+        if isinstance(source, str):
+            return self._add_url(source)
+        raise NotImplementedError
+
+    def _get_from_uri(self, uri: str) -> io.BytesIO:
         r = requests.get(uri, timeout=self.timeout)
         return io.BytesIO(r.content)
 
-    def add(self, filename: str, file_stream: io.BinaryIO) -> FileIdentifer:
+    def _add_bytes(self, stream: io.BytesIO) -> FileIdentifer:
+        file_type = get_file_type_from_bytes(stream)
+        ext = file_type.extension
+
         r = requests.post(
             self.server_url,
             headers=self.header,
-            files={"file": (filename, file_stream)},
+            files={"file": (f"file.{ext}", stream)},
             timeout=self.timeout,
         )
         if r.status_code != 200:
             exceptions.abort(r.status_code)
-
         data = r.json()
         return data["filename"]
 
-    def upload_image_from_url(self, url: str) -> str:
-        raise NotImplementedError
-
-    def upload_image_from_file(self, file: Path) -> FileIdentifer:
-        checker = FileExtensionChecker.from_file(file)
-        if not checker.is_image():
-            raise TypeError(checker)
-        return self.add(checker.random_filename, file.open("rb"))
-
-    def upload_image_from_bytes(self, stream: io.BytesIO) -> FileIdentifer:
-        checker = FileExtensionChecker.from_bytes_stream(stream)
-        if not checker.is_image():
-            raise TypeError(checker)
-        return self.add(checker.random_filename, stream)
+    def _add_url(self, url: str) -> FileIdentifer:
+        stream = self._get_from_uri(url)
+        return self._add_bytes(stream)
 
 
 file_server = FileServer()
