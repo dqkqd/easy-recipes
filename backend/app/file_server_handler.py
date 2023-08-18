@@ -14,6 +14,8 @@ if TYPE_CHECKING:
 
     from flask import Flask
 
+FileIdentifer = str
+
 
 class FileExtensionChecker:
     def __init__(self, kind: filetype.Type) -> None:
@@ -91,42 +93,32 @@ class FileServer:
         r = requests.get(self.image_url(identifier), timeout=self.timeout)
         return io.BytesIO(r.content)
 
+    def upload_file(self, filename: str, file_stream: io.BinaryIO) -> FileIdentifer:
+        r = requests.post(
+            self.file_server_url,
+            headers=self.header,
+            files={"file": (filename, file_stream)},
+            timeout=self.timeout,
+        )
+        if r.status_code != 200:
+            raise RuntimeError(r.reason)
+        data = r.json()
+        return data["filename"]
+
     def upload_image_from_url(self, url: str) -> str:
         raise NotImplementedError
 
-    def upload_image_from_file(self, file: Path) -> str:
+    def upload_image_from_file(self, file: Path) -> FileIdentifer:
         checker = FileExtensionChecker.from_file(file)
         if not checker.is_image():
             raise TypeError(checker)
+        return self.upload_file(checker.random_filename, file.open("rb"))
 
-        r = requests.post(
-            self.file_server_url,
-            headers=self.header,
-            files={"file": (checker.random_filename, file.open("rb"))},
-            timeout=self.timeout,
-        )
-        if r.status_code != 200:
-            raise RuntimeError(r.reason)
-
-        data = r.json()
-        return data["filename"]
-
-    def upload_image_from_bytes(self, stream: io.BytesIO) -> str:
+    def upload_image_from_bytes(self, stream: io.BytesIO) -> FileIdentifer:
         checker = FileExtensionChecker.from_bytes_stream(stream)
         if not checker.is_image():
             raise TypeError(checker)
-
-        r = requests.post(
-            self.file_server_url,
-            headers=self.header,
-            files={"file": (checker.random_filename, stream)},
-            timeout=self.timeout,
-        )
-        if r.status_code != 200:
-            raise RuntimeError(r.reason)
-
-        data = r.json()
-        return data["filename"]
+        return self.upload_file(checker.random_filename, stream)
 
 
 file_server = FileServer()
