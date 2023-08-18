@@ -13,13 +13,17 @@ def require_password(f: Callable[..., Any]) -> Callable[..., Any]:
         fernet_model = Fernet(key)
 
         try:
-            if (
-                request.authorization.type.lower()
-                != current_app.config["AUTHORIZATION_SCHEME"].lower()
-            ):
+            authorization = request.authorization
+            if authorization is None:
                 raise
 
-            token = request.authorization.token
+            if authorization.type.lower() != current_app.config["AUTHORIZATION_SCHEME"].lower():
+                raise
+
+            token = authorization.token
+            if token is None:
+                raise
+
             if (
                 fernet_model.decrypt(token.encode()).decode()
                 != current_app.config["FILE_SERVER_PASSWORD"]

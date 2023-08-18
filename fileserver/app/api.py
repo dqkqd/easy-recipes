@@ -37,7 +37,12 @@ def upload_file() -> Response:
     file = request.files["file"]
 
     key = current_app.config["FILE_SERVER_ENCRYPT_KEY"]
+
+    if file.filename is None:
+        raise exceptions.UnsupportedMediaType
+
     _, ext = secure_splitext(file.filename)
+
     handler = UniqueFilenameHandler(key, ext)
 
     file_folder = current_app.config["FILE_FOLDER"]

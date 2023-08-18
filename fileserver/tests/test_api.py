@@ -63,8 +63,8 @@ def test_413_upload_too_large_file(
 ) -> None:
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
-        f.write(bytearray(client.application.config.get("MAX_CONTENT_LENGTH")))
-    assert file.stat().st_size == client.application.config.get("MAX_CONTENT_LENGTH")
+        f.write(bytearray(client.application.config["MAX_CONTENT_LENGTH"]))
+    assert file.stat().st_size == client.application.config["MAX_CONTENT_LENGTH"]
 
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
@@ -88,7 +88,7 @@ def test_200_upload_big_file(
 ) -> None:
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
-        f.write(bytearray(client.application.config.get("MAX_CONTENT_LENGTH") - 1000))
+        f.write(bytearray(client.application.config["MAX_CONTENT_LENGTH"] - 1000))
 
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
