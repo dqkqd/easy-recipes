@@ -25,16 +25,15 @@ def test_upload_image_from_bytes() -> None:
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
 
 
-@pytest.mark.skip()
 @pytest.mark.usefixtures("app")
 def test_upload_image_from_url() -> None:
     img = Image.new("RGB", (256, 256))
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
-    identifier = file_server._add_bytes(image_bytes)
+    identifier = file_server.add(image_bytes)
     image_url = file_server.uri(identifier)
 
-    new_identifier = file_server._add_url(image_url)
+    new_identifier = file_server.add(image_url)
     requested_image_bytes = file_server.get(identifier)
 
     assert identifier != new_identifier
