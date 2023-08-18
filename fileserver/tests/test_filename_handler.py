@@ -6,7 +6,7 @@ from app.filename_handler import UniqueFilenameHandler
 def test_unique_filename_handler_can_reversed() -> None:
     for _ in range(50):
         key = Fernet.generate_key().decode()
-        handler = UniqueFilenameHandler(key)
+        handler = UniqueFilenameHandler(key, ".jpg")
         filename = handler.filename
         encrypted_filename = handler.encrypted_filename
         for _ in range(5):

@@ -6,7 +6,7 @@ from werkzeug import exceptions
 from app import constants
 from app.auth import require_password
 from app.errors import to_http_error
-from app.filename_handler import UniqueFilenameHandler
+from app.filename_handler import UniqueFilenameHandler, secure_splitext
 
 api = Blueprint("api", __name__, url_prefix="/files")
 
@@ -27,7 +27,6 @@ def get_file(encrypted_filename: str) -> Response:
     return send_from_directory(
         file_folder,
         handler.filename,
-        as_attachment=True,
     )
 
 
@@ -48,7 +47,8 @@ def upload_file() -> Response:
     file = request.files["file"]
 
     key = current_app.config["FILESERVER_ENCRYPT_KEY"]
-    handler = UniqueFilenameHandler(key)
+    _, ext = secure_splitext(file.filename)
+    handler = UniqueFilenameHandler(key, ext)
 
     file_folder = current_app.config["FILE_FOLDER"]
     if not isinstance(file_folder, Path):

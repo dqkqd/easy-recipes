@@ -17,14 +17,14 @@ def test_200_get_default_image(client: FlaskClient) -> None:
 
 
 def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: FlaskClient) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
 
     response = client.post(
         "/files/",
         headers={"fileserver-token": valid_password_token},
-        data={"file": (file.open("rb"), "abc.txt")},
+        data={"file": (file.open("rb"), "file.jpg")},
     )
     assert response.status_code == 200
 
@@ -59,7 +59,7 @@ def test_413_upload_too_large_file(
     tmp_path: Path,
     client: FlaskClient,
 ) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(constants.MAX_CONTENT_LENGTH))
     assert file.stat().st_size == constants.MAX_CONTENT_LENGTH
@@ -81,7 +81,7 @@ def test_200_upload_big_file(
     tmp_path: Path,
     client: FlaskClient,
 ) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(constants.MAX_CONTENT_LENGTH - 1000))
 
@@ -95,7 +95,7 @@ def test_200_upload_big_file(
 
 
 def test_200_get_file(valid_password_token: str, tmp_path: Path, client: FlaskClient) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
 
@@ -123,7 +123,7 @@ def test_200_get_file_does_not_take_old_file(
     file_folder: Path = client.application.config["FILE_FOLDER"]
     assert not os.listdir(file_folder)
 
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
 
@@ -135,7 +135,7 @@ def test_200_get_file_does_not_take_old_file(
     )
     assert response.status_code == 200
     file_bytes = file.read_bytes()
-    file.rename("new-file.txt")
+    file.rename("new-file.jpg")
 
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
@@ -153,7 +153,7 @@ def test_404_get_non_existed_file(
     file_folder: Path = client.application.config["FILE_FOLDER"]
     assert not os.listdir(file_folder)
 
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
 
@@ -175,7 +175,7 @@ def test_404_get_non_existed_file(
 
 def test_404_get_file_no_filename_encrypted(client: FlaskClient) -> None:
     key = client.application.config["FILESERVER_ENCRYPT_KEY"]
-    handler = UniqueFilenameHandler(key)
+    handler = UniqueFilenameHandler(key, "jpg")
     response = client.get(f"/files/{handler.encrypted_filename}")
     assert response.status_code == 404
 
@@ -190,7 +190,7 @@ def test_500_get_file_with_wrong_key(
     tmp_path: Path,
     client: FlaskClient,
 ) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
     response = client.post(
@@ -215,7 +215,7 @@ def test_500_get_file_invalid_key(
 ) -> None:
     always_valid_password_token = valid_password_token
 
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
     response = client.post(
@@ -234,7 +234,7 @@ def test_500_get_file_invalid_key(
 
 
 def test_401_upload_file_no_password_token_provided(tmp_path: Path, client: FlaskClient) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
     response = client.post("/files/", data={"file": file.open("rb")})
@@ -245,7 +245,7 @@ def test_401_upload_file_no_password_token_provided(tmp_path: Path, client: Flas
 
 
 def test_401_upload_file_invalid_password(tmp_path: Path, client: FlaskClient) -> None:
-    file = tmp_path / "file.txt"
+    file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
     response = client.post(
