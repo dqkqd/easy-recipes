@@ -8,7 +8,7 @@ from app.auth import require_password
 from app.errors import to_http_error
 from app.filename_handler import UniqueFilenameHandler, secure_splitext
 
-api = Blueprint("api", __name__, url_prefix="/files")
+api = Blueprint("api", __name__)
 
 
 @api.route("/<string:encrypted_filename>")

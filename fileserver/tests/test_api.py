@@ -11,7 +11,7 @@ from app.filename_handler import UniqueFilenameHandler
 
 
 def test_200_get_default_image(client: FlaskClient) -> None:
-    response = client.get("files/no-icon-image")
+    response = client.get("/no-icon-image")
     assert response.status_code == 200
     assert constants.DEFAULT_IMAGE.read_bytes() == response.data
 
@@ -23,7 +23,7 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
 
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -52,7 +52,7 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
 def test_422_upload_no_file(valid_password_token: str, client: FlaskClient) -> None:
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -76,7 +76,7 @@ def test_413_upload_too_large_file(
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -100,7 +100,7 @@ def test_200_upload_big_file(
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -117,7 +117,7 @@ def test_200_get_file(valid_password_token: str, tmp_path: Path, client: FlaskCl
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -127,7 +127,7 @@ def test_200_get_file(valid_password_token: str, tmp_path: Path, client: FlaskCl
 
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
-    response = client.get(f"/files/{encrypted_filename}")
+    response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 200
     assert response.data == file.read_bytes()
 
@@ -148,7 +148,7 @@ def test_200_get_file_does_not_take_old_file(
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -160,7 +160,7 @@ def test_200_get_file_does_not_take_old_file(
 
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
-    response = client.get(f"/files/{encrypted_filename}")
+    response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 200
     assert response.data == file_bytes
 
@@ -181,7 +181,7 @@ def test_404_get_non_existed_file(
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -193,19 +193,19 @@ def test_404_get_non_existed_file(
 
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
-    response = client.get(f"/files/{encrypted_filename}")
+    response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 404
 
 
 def test_404_get_file_no_filename_encrypted(client: FlaskClient) -> None:
     key = client.application.config["FILE_SERVER_ENCRYPT_KEY"]
     handler = UniqueFilenameHandler(key, "jpg")
-    response = client.get(f"/files/{handler.encrypted_filename}")
+    response = client.get(f"/{handler.encrypted_filename}")
     assert response.status_code == 404
 
 
 def test_404_get_file_invalid_filename(client: FlaskClient) -> None:
-    response = client.get("/files/123")
+    response = client.get("/123")
     assert response.status_code == 404
 
 
@@ -219,7 +219,7 @@ def test_500_get_file_with_wrong_key(
         f.write(bytearray(1000))
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {valid_password_token}",
         },
@@ -231,7 +231,7 @@ def test_500_get_file_with_wrong_key(
 
     # change to random key
     client.application.config["FILE_SERVER_ENCRYPT_KEY"] = Fernet.generate_key()
-    response = client.get(f"/files/{encrypted_filename}")
+    response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 404
 
 
@@ -247,7 +247,7 @@ def test_500_get_file_invalid_key(
         f.write(bytearray(1000))
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
-        "/files/",
+        "/",
         headers={
             "Authorization": f"{authorization_scheme} {always_valid_password_token}",
         },
@@ -259,7 +259,7 @@ def test_500_get_file_invalid_key(
 
     # change to random key
     client.application.config["FILE_SERVER_ENCRYPT_KEY"] = "invalid-key"
-    response = client.get(f"/files/{encrypted_filename}")
+    response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 500
 
 
@@ -267,7 +267,7 @@ def test_401_upload_file_no_password_token_provided(tmp_path: Path, client: Flas
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
-    response = client.post("/files/", data={"file": file.open("rb")})
+    response = client.post("/", data={"file": file.open("rb")})
     assert response.status_code == 401
 
     data = json.loads(response.data)
@@ -279,7 +279,7 @@ def test_401_upload_file_invalid_password(tmp_path: Path, client: FlaskClient) -
     with file.open("wb") as f:
         f.write(bytearray(1000))
     response = client.post(
-        "/files/",
+        "/",
         headers={"Authorization": "FERNET_TOKEN invalid_password"},
         data={"file": file.open("rb")},
     )
