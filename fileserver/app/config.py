@@ -3,12 +3,10 @@ import secrets
 
 from cryptography.fernet import Fernet
 
-from app import constants
-
 
 class BaseConfig:
     SECRET_KEY = secrets.token_urlsafe(256)
-    MAX_CONTENT_LENGTH = constants.MAX_CONTENT_LENGTH
+    MAX_CONTENT_LENGTH = 1 * 1000 * 1000  # 1MB
 
 
 class Config(BaseConfig):

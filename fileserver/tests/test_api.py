@@ -6,14 +6,7 @@ from pathlib import Path
 from cryptography.fernet import Fernet
 from flask.testing import FlaskClient
 
-from app import constants
 from app.filename_handler import UniqueFilenameHandler
-
-
-def test_200_get_default_image(client: FlaskClient) -> None:
-    response = client.get("/default-image")
-    assert response.status_code == 200
-    assert constants.DEFAULT_IMAGE.read_bytes() == response.data
 
 
 def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: FlaskClient) -> None:
@@ -70,8 +63,8 @@ def test_413_upload_too_large_file(
 ) -> None:
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
-        f.write(bytearray(constants.MAX_CONTENT_LENGTH))
-    assert file.stat().st_size == constants.MAX_CONTENT_LENGTH
+        f.write(bytearray(client.application.config.get("MAX_CONTENT_LENGTH")))
+    assert file.stat().st_size == client.application.config.get("MAX_CONTENT_LENGTH")
 
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
@@ -95,7 +88,7 @@ def test_200_upload_big_file(
 ) -> None:
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
-        f.write(bytearray(constants.MAX_CONTENT_LENGTH - 1000))
+        f.write(bytearray(client.application.config.get("MAX_CONTENT_LENGTH") - 1000))
 
     files = {"file": file.open("rb")}
     authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]

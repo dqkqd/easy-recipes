@@ -3,7 +3,6 @@ from pathlib import Path
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 from werkzeug import exceptions
 
-from app import constants
 from app.auth import require_password
 from app.errors import to_http_error
 from app.filename_handler import UniqueFilenameHandler, secure_splitext
@@ -27,15 +26,6 @@ def get_file(encrypted_filename: str) -> Response:
     return send_from_directory(
         file_folder,
         handler.filename,
-    )
-
-
-@api.route("/default-image")
-@to_http_error
-def get_default_image() -> Response:
-    return send_from_directory(
-        constants.STATIC_FOLDER,
-        constants.DEFAULT_IMAGE_NAME,
     )
 
 
