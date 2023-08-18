@@ -16,7 +16,7 @@ def to_http_error(f):  # noqa: ANN201, ANN001
             return f(*args, **kwargs)
         except exceptions.HTTPException:
             raise
-        except fernet.InvalidToken as e:
+        except (fernet.InvalidToken, ValueError) as e:
             logger.exception("")
             raise exceptions.InternalServerError from e
         except Exception as e:

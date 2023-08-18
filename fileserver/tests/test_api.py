@@ -154,3 +154,24 @@ def test_500_get_file_with_wrong_key(tmp_path: Path, client: FlaskClient) -> Non
     client.application.config["FILESERVER_ENCRYPT_KEY"] = Fernet.generate_key()
     response = client.get(f"/files/{encrypted_filename}")
     assert response.status_code == 500
+
+
+def test_500_invalid_key(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+    response = client.post("/files/", data={"file": file.open("rb")})
+
+    data = json.loads(response.data)
+    encrypted_filename = data["filename"]
+
+    # change to random key
+    client.application.config["FILESERVER_ENCRYPT_KEY"] = "invalid-key"
+
+    # get
+    response = client.get(f"/files/{encrypted_filename}")
+    assert response.status_code == 500
+
+    # post
+    response = client.post("/files/", data={"file": file.open("rb")})
+    assert response.status_code == 500
