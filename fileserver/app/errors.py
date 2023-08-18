@@ -23,15 +23,15 @@ def to_http_error(f):  # noqa: ANN201, ANN001
 
 
 def not_found(_e: exceptions.NotFound) -> Response:
-    return jsonify({"message": "Resources not found."}), 404
+    return jsonify({"message": "File not found."}), 404
 
 
 def unprocessable(_e: exceptions.UnprocessableEntity) -> Response:
     return jsonify({"message": "Unprocessable."}), 422
 
 
-def no_uploaded_image(_e: exceptions.BadRequestKeyError) -> Response:
-    return jsonify({"message": "No image provided."}), 400
+def no_uploaded_file(_e: exceptions.BadRequestKeyError) -> Response:
+    return jsonify({"message": "No file provided."}), 400
 
 
 def file_too_large(_e: exceptions.RequestEntityTooLarge) -> Response:

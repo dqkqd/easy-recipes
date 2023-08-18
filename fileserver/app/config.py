@@ -10,11 +10,11 @@ class BaseConfig:
 
 class Config(BaseConfig):
     DATA_FOLDER_NAME = "data"
-    IMAGE_FOLDER_NAME = "images"
+    FILE_FOLDER_NAME = "files"
 
 
 class TestingConfig(BaseConfig):
     DEBUG = True
     TESTING = True
     DATA_FOLDER_NAME = "test_data"
-    IMAGE_FOLDER_NAME = "test_images"
+    FILE_FOLDER_NAME = "test_files"

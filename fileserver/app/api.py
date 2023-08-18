@@ -7,29 +7,29 @@ from app import constants
 from app.errors import to_http_error
 from app.filename_handler import UniqueFilenameHandler
 
-image_api = Blueprint("api", __name__, url_prefix="/images")
+api = Blueprint("api", __name__, url_prefix="/files")
 
 
-@image_api.route("/<string:encrypted_filename>")
+@api.route("/<string:encrypted_filename>")
 @to_http_error
-def get_image(encrypted_filename: str) -> Response:
-    image_folder = current_app.config["IMAGE_FOLDER"]
-    if not isinstance(image_folder, Path):
-        raise TypeError(image_folder)
+def get_file(encrypted_filename: str) -> Response:
+    file_folder = current_app.config["FILE_FOLDER"]
+    if not isinstance(file_folder, Path):
+        raise TypeError(file_folder)
 
     handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
-    file = image_folder / handler.filename
+    file = file_folder / handler.filename
     if not file.exists():
         raise exceptions.NotFound(file)
 
     return send_from_directory(
-        image_folder,
+        file_folder,
         handler.filename,
         as_attachment=True,
     )
 
 
-@image_api.route("/default")
+@api.route("/no-icon-image")
 @to_http_error
 def get_default_image() -> Response:
     return send_from_directory(
@@ -38,16 +38,16 @@ def get_default_image() -> Response:
     )
 
 
-@image_api.route("/", methods=["POST"])
+@api.route("/", methods=["POST"])
 @to_http_error
-def upload_image() -> Response:
+def upload_file() -> Response:
     """https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/"""
     file = request.files["file"]
     handler = UniqueFilenameHandler()
 
-    image_folder = current_app.config["IMAGE_FOLDER"]
-    if not isinstance(image_folder, Path):
-        raise TypeError(image_folder)
-    file.save(image_folder / handler.filename)
+    file_folder = current_app.config["FILE_FOLDER"]
+    if not isinstance(file_folder, Path):
+        raise TypeError(file_folder)
+    file.save(file_folder / handler.filename)
 
     return jsonify({"filename": handler.encrypted_filename})
