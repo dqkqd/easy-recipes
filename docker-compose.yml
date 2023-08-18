@@ -36,7 +36,7 @@ services:
       context: ./fileserver
       dockerfile: Dockerfile
     volumes:
-      - fileserver_data:/fileserver/data/images
+      - fileserver_data:/fileserver/data/
     env_file:
       - env-file.example
     ports:
@@ -47,7 +47,7 @@ services:
       context: ./fileserver
       dockerfile: Dockerfile
     volumes:
-      - fileserver_test_data:/fileserver/data/images
+      - fileserver_test_data:/fileserver/data/
     env_file:
       - env-file.example
     ports:
