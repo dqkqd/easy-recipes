@@ -21,7 +21,7 @@ def test_upload_image_from_bytes() -> None:
     img.save(image_bytes, format="PNG")
 
     identifier = file_server.upload_image_from_bytes(image_bytes)
-    requested_image_bytes = file_server.get_image(identifier)
+    requested_image_bytes = file_server.get(identifier)
 
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
 
@@ -33,7 +33,7 @@ def test_upload_image_from_file(tmp_path: Path) -> None:
     img.save(file, format="PNG")
 
     identifier = file_server.upload_image_from_file(file)
-    requested_image_bytes = file_server.get_image(identifier)
+    requested_image_bytes = file_server.get(identifier)
 
     assert file.read_bytes() == requested_image_bytes.getvalue()
 
@@ -45,10 +45,10 @@ def test_upload_image_from_url() -> None:
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
     identifier = file_server.upload_image_from_bytes(image_bytes)
-    image_url = file_server.image_url(identifier)
+    image_url = file_server.uri(identifier)
 
     new_identifier = file_server.upload_image_from_url(image_url)
-    requested_image_bytes = file_server.get_image(identifier)
+    requested_image_bytes = file_server.get(identifier)
 
     assert identifier != new_identifier
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
