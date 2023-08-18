@@ -23,7 +23,7 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
 
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data={"file": (file.open("rb"), "file.jpg")},
     )
     assert response.status_code == 200
@@ -35,7 +35,7 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
     assert encrypted_filename not in str(file)
     assert str(file) not in encrypted_filename
 
-    key = client.application.config["FILESERVER_ENCRYPT_KEY"]
+    key = client.application.config["FILE_SERVER_ENCRYPT_KEY"]
     handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
 
     file_folder: Path = client.application.config["FILE_FOLDER"]
@@ -47,7 +47,7 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
 
 
 def test_422_upload_no_file(valid_password_token: str, client: FlaskClient) -> None:
-    response = client.post("/files/", headers={"fileserver-token": valid_password_token})
+    response = client.post("/files/", headers={"fs-token": valid_password_token})
     assert response.status_code == 400
 
     data = json.loads(response.data)
@@ -67,7 +67,7 @@ def test_413_upload_too_large_file(
     files = {"file": file.open("rb")}
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data=files,
     )
     assert response.status_code == 413
@@ -88,7 +88,7 @@ def test_200_upload_big_file(
     files = {"file": file.open("rb")}
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data=files,
     )
     assert response.status_code == 200
@@ -102,7 +102,7 @@ def test_200_get_file(valid_password_token: str, tmp_path: Path, client: FlaskCl
     files = {"file": file.open("rb")}
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data=files,
     )
     assert response.status_code == 200
@@ -130,7 +130,7 @@ def test_200_get_file_does_not_take_old_file(
     files = {"file": file.open("rb")}
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data=files,
     )
     assert response.status_code == 200
@@ -160,7 +160,7 @@ def test_404_get_non_existed_file(
     files = {"file": file.open("rb")}
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data=files,
     )
     assert response.status_code == 200
@@ -174,7 +174,7 @@ def test_404_get_non_existed_file(
 
 
 def test_404_get_file_no_filename_encrypted(client: FlaskClient) -> None:
-    key = client.application.config["FILESERVER_ENCRYPT_KEY"]
+    key = client.application.config["FILE_SERVER_ENCRYPT_KEY"]
     handler = UniqueFilenameHandler(key, "jpg")
     response = client.get(f"/files/{handler.encrypted_filename}")
     assert response.status_code == 404
@@ -195,7 +195,7 @@ def test_500_get_file_with_wrong_key(
         f.write(bytearray(1000))
     response = client.post(
         "/files/",
-        headers={"fileserver-token": valid_password_token},
+        headers={"fs-token": valid_password_token},
         data={"file": file.open("rb")},
     )
 
@@ -203,7 +203,7 @@ def test_500_get_file_with_wrong_key(
     encrypted_filename = data["filename"]
 
     # change to random key
-    client.application.config["FILESERVER_ENCRYPT_KEY"] = Fernet.generate_key()
+    client.application.config["FILE_SERVER_ENCRYPT_KEY"] = Fernet.generate_key()
     response = client.get(f"/files/{encrypted_filename}")
     assert response.status_code == 404
 
@@ -220,7 +220,7 @@ def test_500_get_file_invalid_key(
         f.write(bytearray(1000))
     response = client.post(
         "/files/",
-        headers={"fileserver-token": always_valid_password_token},
+        headers={"fs-token": always_valid_password_token},
         data={"file": file.open("rb")},
     )
 
@@ -228,7 +228,7 @@ def test_500_get_file_invalid_key(
     encrypted_filename = data["filename"]
 
     # change to random key
-    client.application.config["FILESERVER_ENCRYPT_KEY"] = "invalid-key"
+    client.application.config["FILE_SERVER_ENCRYPT_KEY"] = "invalid-key"
     response = client.get(f"/files/{encrypted_filename}")
     assert response.status_code == 500
 
@@ -250,7 +250,7 @@ def test_401_upload_file_invalid_password(tmp_path: Path, client: FlaskClient) -
         f.write(bytearray(1000))
     response = client.post(
         "/files/",
-        headers={"fileserver-token": "invalid_password"},
+        headers={"fs-token": "invalid_password"},
         data={"file": file.open("rb")},
     )
     assert response.status_code == 401

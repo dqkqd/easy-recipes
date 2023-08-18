@@ -14,8 +14,8 @@ class BaseConfig:
 class Config(BaseConfig):
     DATA_FOLDER_NAME = "data"
     FILE_FOLDER_NAME = "files"
-    FILESERVER_ENCRYPT_KEY = os.environ.get("FILESERVER_ENCRYPT_KEY")
-    FILESERVER_PASSWORD = os.environ.get("FILESERVER_PASSWORD")
+    FILE_SERVER_ENCRYPT_KEY = os.environ.get("FILE_SERVER_ENCRYPT_KEY")
+    FILE_SERVER_PASSWORD = os.environ.get("FILE_SERVER_PASSWORD")
 
 
 class TestingConfig(BaseConfig):
@@ -23,5 +23,5 @@ class TestingConfig(BaseConfig):
     TESTING = True
     DATA_FOLDER_NAME = "test_data"
     FILE_FOLDER_NAME = "test_files"
-    FILESERVER_ENCRYPT_KEY = Fernet.generate_key()
-    FILESERVER_PASSWORD = "password"  # noqa: S105
+    FILE_SERVER_ENCRYPT_KEY = Fernet.generate_key()
+    FILE_SERVER_PASSWORD = "password"  # noqa: S105

@@ -31,6 +31,6 @@ def client(app: Flask) -> FlaskClient:
 
 @pytest.fixture()
 def valid_password_token(app: Flask) -> str:
-    password = app.config["FILESERVER_PASSWORD"]
-    fernet_model = Fernet(app.config["FILESERVER_ENCRYPT_KEY"])
+    password = app.config["FILE_SERVER_PASSWORD"]
+    fernet_model = Fernet(app.config["FILE_SERVER_ENCRYPT_KEY"])
     return fernet_model.encrypt(password.encode()).decode()
