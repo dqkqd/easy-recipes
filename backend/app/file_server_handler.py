@@ -1,15 +1,47 @@
 from __future__ import annotations
 
 import io
+import secrets
 from functools import cached_property
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Self
 
+import filetype
 import requests
+from cryptography.fernet import Fernet
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from flask import Flask
+
+
+class FileExtensionChecker:
+    def __init__(self, kind: filetype.Type) -> None:
+        self.kind = kind
+
+    @classmethod
+    def from_bytes_stream(cls, stream: io.BytesIO) -> Self:
+        stream.seek(0)
+        kind = filetype.guess(stream.read())
+        stream.seek(0)
+
+        if kind is None:
+            raise TypeError
+        stream.seek(0)
+
+        return cls(kind)
+
+    @property
+    def extension(self) -> str:
+        return self.kind.extension
+
+    @cached_property
+    def random_filename(self) -> str:
+        filename = secrets.token_urlsafe(5)
+        return f"{filename}.{self.extension}"
+
+    def is_image(self) -> str:
+        return self.kind.mime.startswith("image")
 
 
 class FileServer:
@@ -29,15 +61,23 @@ class FileServer:
 
         self._file_server_url = app.config["FILE_SERVER_URL"]
 
+        self.authorization_scheme = app.config["FILE_SERVER_AUTHORIZATION_SCHEME"]
+        self.encrypt_key = app.config["FILE_SERVER_ENCRYPT_KEY"]
+        self.password = app.config["FILE_SERVER_PASSWORD"]
+        self.fernet_model = Fernet(self.encrypt_key)
+
     @cached_property
     def file_server_url(self) -> str:
         if self._file_server_url is None:
             raise RuntimeError("FileServer object must `init_app` before used.")
         return self._file_server_url
 
+    @cached_property
+    def header(self) -> dict[str, str]:
+        token = self.fernet_model.encrypt(self.password.encode()).decode()
+        return {"Authorization": f"{self.authorization_scheme} {token}"}
+
     def image_url(self, identifier: str) -> str:
-        if not isinstance(identifier, str):
-            raise TypeError(identifier)
         return f"{self.file_server_url}{identifier}"
 
     def get_image(self, identifier: str) -> io.BytesIO:
@@ -50,8 +90,22 @@ class FileServer:
     def upload_image_from_file(self, file: Path) -> str:
         raise NotImplementedError
 
-    def upload_image_from_bytes(self, b: io.BytesIO) -> str:
-        raise NotImplementedError
+    def upload_image_from_bytes(self, stream: io.BytesIO) -> str:
+        checker = FileExtensionChecker.from_bytes_stream(stream)
+        if not checker.is_image():
+            raise TypeError(checker)
+
+        r = requests.post(
+            self.file_server_url,
+            headers=self.header,
+            files={"file": (checker.random_filename, stream)},
+            timeout=self.timeout,
+        )
+        if r.status_code != 200:
+            raise RuntimeError(r.reason)
+
+        data = r.json()
+        return data["filename"]
 
 
 file_server = FileServer()

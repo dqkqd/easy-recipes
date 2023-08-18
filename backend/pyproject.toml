@@ -5,6 +5,8 @@ authors = [{ name = "Khanh Duong Quoc", email = "dqkqdlot@gmail.com" }]
 license = { text = "MIT" }
 
 dependencies = [
+    "cryptography",
+    "filetype",
     "flask",
     "flask_migrate",
     "flask_sqlalchemy",
@@ -26,6 +28,7 @@ dev = [
     "sqlalchemy[mypy]",
     "types-Flask-Migrate",
     "types-Pillow",
+    "types-requests",
 ]
 
 [tool.ruff]
