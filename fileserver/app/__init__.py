@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from flask import Flask
+from flask_cors import CORS
 
 from app import constants
 from app.config import BaseConfig, Config
@@ -23,6 +24,8 @@ def setup_files_folder(app: Flask) -> None:
 def create_app(config: type[BaseConfig] = Config) -> Flask:
     app = Flask(__name__, static_folder=constants.STATIC_FOLDER)
     app.config.from_object(config)
+
+    CORS(app)
 
     setup_files_folder(app)
 
