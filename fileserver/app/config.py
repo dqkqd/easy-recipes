@@ -15,7 +15,7 @@ class Config(BaseConfig):
     DATA_FOLDER_NAME = "data"
     FILE_FOLDER_NAME = "files"
     FILESERVER_ENCRYPT_KEY = os.environ.get("FILESERVER_ENCRYPT_KEY")
-    FILESERVER_PASSWORD = os.environ.get("FILESEVER_PASSWORD")
+    FILESERVER_PASSWORD = os.environ.get("FILESERVER_PASSWORD")
 
 
 class TestingConfig(BaseConfig):
