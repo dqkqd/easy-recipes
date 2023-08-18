@@ -34,6 +34,18 @@ def upload_file(
     return client.post("/", headers=headers)
 
 
+def delete_file(
+    client: FlaskClient,
+    encrypted_filename: str,
+    password_token: str | None = None,
+) -> TestResponse:
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
+    return client.delete(
+        f"/{encrypted_filename}",
+        headers={"Authorization": f"{authorization_scheme} {password_token}"},
+    )
+
+
 def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
@@ -246,11 +258,7 @@ def test_200_delete_file(valid_password_token: str, tmp_path: Path, client: Flas
     response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 200
 
-    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
-    response = client.delete(
-        f"/{encrypted_filename}",
-        headers={"Authorization": f"{authorization_scheme} {valid_password_token}"},
-    )
+    response = delete_file(client, encrypted_filename, valid_password_token)
     assert response.status_code == 200
 
     response = client.get(f"/{encrypted_filename}")
@@ -270,16 +278,8 @@ def test_404_delete_file_twice(
     data = json.loads(response.data)
     encrypted_filename = data["filename"]
 
-    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
-    response = client.delete(
-        f"/{encrypted_filename}",
-        headers={"Authorization": f"{authorization_scheme} {valid_password_token}"},
-    )
+    response = delete_file(client, encrypted_filename, valid_password_token)
     assert response.status_code == 200
 
-    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
-    response = client.delete(
-        f"/{encrypted_filename}",
-        headers={"Authorization": f"{authorization_scheme} {valid_password_token}"},
-    )
+    response = delete_file(client, encrypted_filename, valid_password_token)
     assert response.status_code == 404
