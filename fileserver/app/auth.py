@@ -12,12 +12,15 @@ def require_password(f):  # noqa: ANN201, ANN001
         key = current_app.config["FILESERVER_ENCRYPT_KEY"]
         fernet_model = Fernet(key)
 
-        token = request.headers.get("fileserver-token", None)
-        if (
-            fernet_model.decrypt(token.encode()).decode()
-            != current_app.config["FILESERVER_PASSWORD"]
-        ):
-            raise exceptions.Unauthorized
+        try:
+            token = request.headers.get("fileserver-token")
+            if (
+                fernet_model.decrypt(token.encode()).decode()
+                != current_app.config["FILESERVER_PASSWORD"]
+            ):
+                raise
+        except Exception as e:  # noqa: BLE001
+            raise exceptions.Unauthorized from e
 
         return f(*args, **kwargs)
 
