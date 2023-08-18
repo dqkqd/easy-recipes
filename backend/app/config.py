@@ -27,14 +27,6 @@ class BaseConfig:
     def SQLALCHEMY_DATABASE_URI(self) -> str:  # noqa: N802
         return f"postgresql://{self.postgres_user}:{self.postgres_password}@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
 
-    @property
-    def DEFAULT_INGREDIENT_IMAGE_URI(self) -> str:  # noqa: N802
-        return f"{self.file_server_uri}/{self.default_ingredient_image_name}"
-
-    @property
-    def DEFAULT_RECIPE_IMAGE_URI(self) -> str:  # noqa: N802
-        return f"{self.file_server_uri}/{self.default_recipe_image_name}"
-
 
 class Config(BaseConfig):
     postgres_host = os.environ.get("POSTGRES_HOST")
