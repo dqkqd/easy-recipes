@@ -17,4 +17,4 @@ TEST_FILE_SERVER_HOST=test_fileserver
 
 # this is just a sample Fernet key
 # https://github.com/pyca/cryptography
-FILESERVER_FILE_ENCRYPT_KEY=DZd3mOJJSgohhvx0SKZ84jllhNswcxt6Ry4Noz9aabQ=
+FILESERVER_ENCRYPT_KEY=DZd3mOJJSgohhvx0SKZ84jllhNswcxt6Ry4Noz9aabQ=
