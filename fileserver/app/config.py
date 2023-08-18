@@ -1,6 +1,8 @@
 import os
 import secrets
 
+from cryptography.fernet import Fernet
+
 from app import constants
 
 
@@ -21,5 +23,5 @@ class TestingConfig(BaseConfig):
     TESTING = True
     DATA_FOLDER_NAME = "test_data"
     FILE_FOLDER_NAME = "test_files"
-    FILESERVER_ENCRYPT_KEY = os.environ.get("FILESERVER_ENCRYPT_KEY")
-    FILESERVER_PASSWORD = os.environ.get("FILESEVER_PASSWORD")
+    FILESERVER_ENCRYPT_KEY = Fernet.generate_key()
+    FILESERVER_PASSWORD = "password"  # noqa: S105
