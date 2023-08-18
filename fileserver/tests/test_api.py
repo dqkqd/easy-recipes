@@ -3,7 +3,6 @@ import os
 import shutil
 from pathlib import Path
 
-from cryptography.fernet import Fernet
 from flask.testing import FlaskClient
 
 from app import constants
@@ -180,56 +179,9 @@ def test_404_get_file_no_filename_encrypted(client: FlaskClient) -> None:
     assert response.status_code == 404
 
 
-def test_500_get_file_with_wrong_key(
-    valid_password_token: str,
-    tmp_path: Path,
-    client: FlaskClient,
-) -> None:
-    file = tmp_path / "file.txt"
-    with file.open("wb") as f:
-        f.write(bytearray(1000))
-    response = client.post(
-        "/files/",
-        headers={"fileserver-token": valid_password_token},
-        data={"file": file.open("rb")},
-    )
-
-    data = json.loads(response.data)
-    encrypted_filename = data["filename"]
-
-    # change to random key
-    client.application.config["FILESERVER_ENCRYPT_KEY"] = Fernet.generate_key()
-    response = client.get(f"/files/{encrypted_filename}")
-    assert response.status_code == 500
-
-
-def test_500_invalid_key(valid_password_token: str, tmp_path: Path, client: FlaskClient) -> None:
-    file = tmp_path / "file.txt"
-    with file.open("wb") as f:
-        f.write(bytearray(1000))
-    response = client.post(
-        "/files/",
-        headers={"fileserver-token": valid_password_token},
-        data={"file": file.open("rb")},
-    )
-
-    data = json.loads(response.data)
-    encrypted_filename = data["filename"]
-
-    # change to random key
-    client.application.config["FILESERVER_ENCRYPT_KEY"] = "invalid-key"
-
-    # get
-    response = client.get(f"/files/{encrypted_filename}")
-    assert response.status_code == 500
-
-    # post
-    response = client.post(
-        "/files/",
-        headers={"fileserver-token": valid_password_token},
-        data={"file": file.open("rb")},
-    )
-    assert response.status_code == 500
+def test_404_get_file_invalid_filename(client: FlaskClient) -> None:
+    response = client.get("/files/123")
+    assert response.status_code == 404
 
 
 def test_401_upload_file_no_password_token_provided(tmp_path: Path, client: FlaskClient) -> None:

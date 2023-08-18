@@ -1,5 +1,7 @@
 from pathlib import Path
 
+from cryptography import fernet
+from cryptography.exceptions import InvalidSignature
 from flask import Blueprint, Response, current_app, jsonify, request, send_from_directory
 from werkzeug import exceptions
 
@@ -18,11 +20,14 @@ def get_file(encrypted_filename: str) -> Response:
     if not isinstance(file_folder, Path):
         raise TypeError(file_folder)
 
-    key = current_app.config["FILESERVER_ENCRYPT_KEY"]
-    handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
-    file = file_folder / handler.filename
-    if not file.exists():
-        raise exceptions.NotFound(str(file))
+    try:
+        key = current_app.config["FILESERVER_ENCRYPT_KEY"]
+        handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
+        file = file_folder / handler.filename
+        if not file.exists():
+            raise exceptions.NotFound
+    except (fernet.InvalidToken, InvalidSignature) as e:
+        raise exceptions.NotFound from e
 
     return send_from_directory(
         file_folder,

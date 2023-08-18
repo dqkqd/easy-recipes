@@ -4,7 +4,6 @@ import logging
 from functools import wraps
 from typing import Any, Callable
 
-from cryptography import fernet
 from flask import Response, jsonify
 from werkzeug import exceptions
 
@@ -17,10 +16,8 @@ def to_http_error(f: Callable[..., Any]) -> Callable[..., Any]:
         try:
             return f(*args, **kwargs)
         except exceptions.HTTPException:
-            raise
-        except (fernet.InvalidToken, ValueError) as e:
             logger.exception("")
-            raise exceptions.InternalServerError from e
+            raise
         except Exception as e:
             logger.exception("")
             raise exceptions.UnprocessableEntity from e
