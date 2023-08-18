@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Self
 import filetype
 import requests
 from cryptography.fernet import Fernet
+from werkzeug import exceptions
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -101,7 +102,8 @@ class FileServer:
             timeout=self.timeout,
         )
         if r.status_code != 200:
-            raise RuntimeError(r.reason)
+            exceptions.abort(r.status_code)
+
         data = r.json()
         return data["filename"]
 
