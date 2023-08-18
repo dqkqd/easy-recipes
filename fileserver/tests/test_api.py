@@ -232,11 +232,26 @@ def test_500_invalid_key(valid_password_token: str, tmp_path: Path, client: Flas
     assert response.status_code == 500
 
 
-def test_401_upload_file_unauthorized(tmp_path: Path, client: FlaskClient) -> None:
+def test_401_upload_file_no_password_token_provided(tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.txt"
     with file.open("wb") as f:
         f.write(bytearray(1000))
     response = client.post("/files/", data={"file": file.open("rb")})
+    assert response.status_code == 401
+
+    data = json.loads(response.data)
+    assert data == {"message": "Unauthorized."}
+
+
+def test_401_upload_file_invalid_password(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+    response = client.post(
+        "/files/",
+        headers={"fileserver-token": "invalid_password"},
+        data={"file": file.open("rb")},
+    )
     assert response.status_code == 401
 
     data = json.loads(response.data)
