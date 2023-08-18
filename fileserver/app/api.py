@@ -4,6 +4,7 @@ from flask import Blueprint, Response, current_app, jsonify, request, send_from_
 from werkzeug import exceptions
 
 from app import constants
+from app.auth import require_password
 from app.errors import to_http_error
 from app.filename_handler import UniqueFilenameHandler
 
@@ -41,6 +42,7 @@ def get_default_image() -> Response:
 
 @api.route("/", methods=["POST"])
 @to_http_error
+@require_password
 def upload_file() -> Response:
     """https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/"""
     file = request.files["file"]

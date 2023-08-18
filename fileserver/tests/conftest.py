@@ -2,6 +2,7 @@ import shutil
 from typing import TYPE_CHECKING, Iterator
 
 import pytest
+from cryptography.fernet import Fernet
 from flask import Flask
 from flask.testing import FlaskClient
 
@@ -26,3 +27,10 @@ def app() -> Iterator[Flask]:
 @pytest.fixture()
 def client(app: Flask) -> FlaskClient:
     return app.test_client()
+
+
+@pytest.fixture()
+def valid_password_token(app: Flask) -> str:
+    password = app.config["FILESERVER_PASSWORD"]
+    fernet_model = Fernet(app.config["FILESERVER_ENCRYPT_KEY"])
+    return fernet_model.encrypt(password.encode()).decode()
