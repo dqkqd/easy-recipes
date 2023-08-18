@@ -2,6 +2,7 @@ import logging
 from functools import wraps
 from typing import Any
 
+from cryptography import fernet
 from flask import Response, jsonify
 from werkzeug import exceptions
 
@@ -15,6 +16,9 @@ def to_http_error(f):  # noqa: ANN201, ANN001
             return f(*args, **kwargs)
         except exceptions.HTTPException:
             raise
+        except fernet.InvalidToken as e:
+            logger.exception("")
+            raise exceptions.InternalServerError from e
         except Exception as e:
             logger.exception("")
             raise exceptions.UnprocessableEntity from e
@@ -36,3 +40,7 @@ def no_uploaded_file(_e: exceptions.BadRequestKeyError) -> Response:
 
 def file_too_large(_e: exceptions.RequestEntityTooLarge) -> Response:
     return jsonify({"message": "File too large."}), 413
+
+
+def inernal_server_error(_e: exceptions.InternalServerError) -> Response:
+    return jsonify({"message": "Internal Server Error."}), 500

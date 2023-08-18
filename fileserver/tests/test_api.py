@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 
+from cryptography.fernet import Fernet
 from flask.testing import FlaskClient
 
 from app import constants
@@ -138,3 +139,18 @@ def test_404_get_file_no_filename_encrypted(client: FlaskClient) -> None:
     handler = UniqueFilenameHandler(key)
     response = client.get(f"/files/{handler.encrypted_filename}")
     assert response.status_code == 404
+
+
+def test_500_get_file_with_wrong_key(tmp_path: Path, client: FlaskClient) -> None:
+    file = tmp_path / "file.txt"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+    response = client.post("/files/", data={"file": file.open("rb")})
+
+    data = json.loads(response.data)
+    encrypted_filename = data["filename"]
+
+    # change to random key
+    client.application.config["FILESERVER_ENCRYPT_KEY"] = Fernet.generate_key()
+    response = client.get(f"/files/{encrypted_filename}")
+    assert response.status_code == 500
