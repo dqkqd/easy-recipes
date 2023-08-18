@@ -22,16 +22,10 @@ class InvalidKeyOrFileNameError(FilenameHandlerError):
     pass
 
 
-#  currently only support image
-ALLOW_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif"}
-
-
 def secure_splitext(filename: str) -> tuple[str, str]:
     try:
         file = Path(secure_filename(filename))
         ext = file.suffix.lower()
-        if ext not in ALLOW_EXTENSIONS:
-            raise
     except Exception as e:  # noqa: BLE001
         raise exceptions.UnsupportedMediaType from e
 
