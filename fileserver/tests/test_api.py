@@ -11,7 +11,7 @@ from app.filename_handler import UniqueFilenameHandler
 
 
 def test_200_get_default_image(client: FlaskClient) -> None:
-    response = client.get("/no-icon-image")
+    response = client.get("/default-image")
     assert response.status_code == 200
     assert constants.DEFAULT_IMAGE.read_bytes() == response.data
 

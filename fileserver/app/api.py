@@ -30,7 +30,7 @@ def get_file(encrypted_filename: str) -> Response:
     )
 
 
-@api.route("/no-icon-image")
+@api.route("/default-image")
 @to_http_error
 def get_default_image() -> Response:
     return send_from_directory(
