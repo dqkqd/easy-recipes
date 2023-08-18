@@ -14,7 +14,7 @@ services:
       - test_database
 
   database:
-    image: postgres:15.4
+    image: postgres:15.4-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     env_file:
@@ -23,7 +23,7 @@ services:
       - 5433:5432
 
   test_database:
-    image: postgres:15.4
+    image: postgres:15.4-alpine
     volumes:
       - postgres_test_data:/var/lib/postgresql/data/
     env_file:
@@ -36,7 +36,7 @@ services:
       context: ./fileserver
       dockerfile: Dockerfile
     volumes:
-      - fileserver_data:/usr/share/nginx/html
+      - fileserver_data:/fileserver/data/images
     env_file:
       - env-file.example
     ports:
@@ -47,7 +47,7 @@ services:
       context: ./fileserver
       dockerfile: Dockerfile
     volumes:
-      - fileserver_test_data:/usr/share/nginx/html
+      - fileserver_test_data:/fileserver/data/images
     env_file:
       - env-file.example
     ports:
