@@ -21,9 +21,12 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
     with file.open("wb") as f:
         f.write(bytearray(1000))
 
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data={"file": (file.open("rb"), "file.jpg")},
     )
     assert response.status_code == 200
@@ -47,7 +50,13 @@ def test_200_upload_file(valid_password_token: str, tmp_path: Path, client: Flas
 
 
 def test_422_upload_no_file(valid_password_token: str, client: FlaskClient) -> None:
-    response = client.post("/files/", headers={"fs-token": valid_password_token})
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
+    response = client.post(
+        "/files/",
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
+    )
     assert response.status_code == 400
 
     data = json.loads(response.data)
@@ -65,9 +74,12 @@ def test_413_upload_too_large_file(
     assert file.stat().st_size == constants.MAX_CONTENT_LENGTH
 
     files = {"file": file.open("rb")}
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data=files,
     )
     assert response.status_code == 413
@@ -86,9 +98,12 @@ def test_200_upload_big_file(
         f.write(bytearray(constants.MAX_CONTENT_LENGTH - 1000))
 
     files = {"file": file.open("rb")}
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data=files,
     )
     assert response.status_code == 200
@@ -100,9 +115,12 @@ def test_200_get_file(valid_password_token: str, tmp_path: Path, client: FlaskCl
         f.write(bytearray(1000))
 
     files = {"file": file.open("rb")}
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data=files,
     )
     assert response.status_code == 200
@@ -128,9 +146,12 @@ def test_200_get_file_does_not_take_old_file(
         f.write(bytearray(1000))
 
     files = {"file": file.open("rb")}
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data=files,
     )
     assert response.status_code == 200
@@ -158,9 +179,12 @@ def test_404_get_non_existed_file(
         f.write(bytearray(1000))
 
     files = {"file": file.open("rb")}
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data=files,
     )
     assert response.status_code == 200
@@ -193,9 +217,12 @@ def test_500_get_file_with_wrong_key(
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {valid_password_token}",
+        },
         data={"file": file.open("rb")},
     )
 
@@ -218,9 +245,12 @@ def test_500_get_file_invalid_key(
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
         f.write(bytearray(1000))
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
     response = client.post(
         "/files/",
-        headers={"fs-token": always_valid_password_token},
+        headers={
+            "Authorization": f"{authorization_scheme} {always_valid_password_token}",
+        },
         data={"file": file.open("rb")},
     )
 
@@ -250,7 +280,7 @@ def test_401_upload_file_invalid_password(tmp_path: Path, client: FlaskClient) -
         f.write(bytearray(1000))
     response = client.post(
         "/files/",
-        headers={"fs-token": "invalid_password"},
+        headers={"Authorization": "FERNET_TOKEN invalid_password"},
         data={"file": file.open("rb")},
     )
     assert response.status_code == 401

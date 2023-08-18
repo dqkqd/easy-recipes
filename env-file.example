@@ -19,3 +19,4 @@ TEST_FILE_SERVER_HOST=test_fileserver
 # https://github.com/pyca/cryptography
 FILE_SERVER_ENCRYPT_KEY=DZd3mOJJSgohhvx0SKZ84jllhNswcxt6Ry4Noz9aabQ=
 FILE_SERVER_PASSWORD=password
+FILE_SERVER_AUTHORIZATION_SCHEME="FERNET_TOKEN"

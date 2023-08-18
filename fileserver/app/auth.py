@@ -13,15 +13,19 @@ def require_password(f: Callable[..., Any]) -> Callable[..., Any]:
         fernet_model = Fernet(key)
 
         try:
-            token = request.headers.get("fs-token")
-            if not isinstance(token, str):
+            if (
+                request.authorization.type.lower()
+                != current_app.config["AUTHORIZATION_SCHEME"].lower()
+            ):
                 raise
 
+            token = request.authorization.token
             if (
                 fernet_model.decrypt(token.encode()).decode()
                 != current_app.config["FILE_SERVER_PASSWORD"]
             ):
                 raise
+
         except Exception as e:  # noqa: BLE001
             raise exceptions.Unauthorized from e
 
