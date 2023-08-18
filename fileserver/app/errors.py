@@ -4,12 +4,17 @@ import logging
 from functools import wraps
 from typing import Any, Callable
 
-from flask import Response, jsonify
+from flask import Response, current_app, jsonify
 from werkzeug import exceptions
 
 from app.filename_handler import InvalidKeyError, InvalidKeyOrFileNameError
 
 logger = logging.getLogger(__name__)
+
+
+def write_exception_log() -> None:
+    if current_app.debug:
+        logger.exception("")
 
 
 def to_http_error(f: Callable[..., Any]) -> Callable[..., Any]:
@@ -18,16 +23,16 @@ def to_http_error(f: Callable[..., Any]) -> Callable[..., Any]:
         try:
             return f(*args, **kwargs)
         except exceptions.HTTPException:
-            logger.exception("")
+            write_exception_log()
             raise
         except InvalidKeyError as e:
-            logger.exception("")
+            write_exception_log()
             raise exceptions.InternalServerError from e
         except InvalidKeyOrFileNameError as e:
-            logger.exception("")
+            write_exception_log()
             raise exceptions.NotFound from e
-        except Exception as e:
-            logger.exception("")
+        except Exception as e:  # noqa: BLE001
+            write_exception_log()
             raise exceptions.UnprocessableEntity from e
 
     return wrapper
