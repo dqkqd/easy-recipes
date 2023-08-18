@@ -1,3 +1,4 @@
+import os
 import secrets
 
 from app import constants
@@ -11,6 +12,8 @@ class BaseConfig:
 class Config(BaseConfig):
     DATA_FOLDER_NAME = "data"
     FILE_FOLDER_NAME = "files"
+    FILESERVER_ENCRYPT_KEY = os.environ.get("FILESERVER_ENCRYPT_KEY")
+    FILESERVER_PASSWORD = os.environ.get("FILESEVER_PASSWORD")
 
 
 class TestingConfig(BaseConfig):
@@ -18,3 +21,5 @@ class TestingConfig(BaseConfig):
     TESTING = True
     DATA_FOLDER_NAME = "test_data"
     FILE_FOLDER_NAME = "test_files"
+    FILESERVER_ENCRYPT_KEY = os.environ.get("FILESERVER_ENCRYPT_KEY")
+    FILESERVER_PASSWORD = os.environ.get("FILESEVER_PASSWORD")

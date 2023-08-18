@@ -17,7 +17,8 @@ def get_file(encrypted_filename: str) -> Response:
     if not isinstance(file_folder, Path):
         raise TypeError(file_folder)
 
-    handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
+    key = current_app.config["FILESERVER_ENCRYPT_KEY"]
+    handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
     file = file_folder / handler.filename
     if not file.exists():
         raise exceptions.NotFound(file)
@@ -43,7 +44,9 @@ def get_default_image() -> Response:
 def upload_file() -> Response:
     """https://flask.palletsprojects.com/en/2.3.x/patterns/fileuploads/"""
     file = request.files["file"]
-    handler = UniqueFilenameHandler()
+
+    key = current_app.config["FILESERVER_ENCRYPT_KEY"]
+    handler = UniqueFilenameHandler(key)
 
     file_folder = current_app.config["FILE_FOLDER"]
     if not isinstance(file_folder, Path):

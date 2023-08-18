@@ -30,7 +30,8 @@ def test_200_upload_file(tmp_path: Path, client: FlaskClient) -> None:
     assert encrypted_filename not in str(file)
     assert str(file) not in encrypted_filename
 
-    handler = UniqueFilenameHandler.from_encrypted_filename(encrypted_filename)
+    key = client.application.config["FILESERVER_ENCRYPT_KEY"]
+    handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
 
     file_folder: Path = client.application.config["FILE_FOLDER"]
     saved_file = file_folder / handler.filename
@@ -133,6 +134,7 @@ def test_404_get_non_existed_file(tmp_path: Path, client: FlaskClient) -> None:
 
 
 def test_404_get_file_no_filename_encrypted(client: FlaskClient) -> None:
-    handler = UniqueFilenameHandler()
+    key = client.application.config["FILESERVER_ENCRYPT_KEY"]
+    handler = UniqueFilenameHandler(key)
     response = client.get(f"/files/{handler.encrypted_filename}")
     assert response.status_code == 404

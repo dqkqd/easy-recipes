@@ -6,13 +6,11 @@ from typing import Self
 
 from cryptography.fernet import Fernet
 
-from app import constants
-
 
 class UniqueFilenameHandler:
     UUID_VERSION = 4
 
-    def __init__(self, identifier: uuid.UUID | None = None) -> None:
+    def __init__(self, key: str, identifier: uuid.UUID | None = None) -> None:
         if identifier is None:
             self.identifier = uuid.uuid4()
         elif isinstance(identifier, uuid.UUID) and identifier.version == self.UUID_VERSION:
@@ -20,6 +18,7 @@ class UniqueFilenameHandler:
         else:
             err_msg = f"Only UUID version {self.UUID_VERSION} is accepted."
             raise TypeError(err_msg)
+        self.key = key
 
     @cached_property
     def filename(self) -> str:
@@ -27,11 +26,11 @@ class UniqueFilenameHandler:
 
     @cached_property
     def encrypted_filename(self) -> str:
-        fernet_model = Fernet(constants.FILESERVER_ENCRYPT_KEY)
+        fernet_model = Fernet(self.key)
         return fernet_model.encrypt(self.identifier.bytes).decode()
 
     @classmethod
-    def from_encrypted_filename(cls, encrypted_filename: str) -> Self:
-        fernet_model = Fernet(constants.FILESERVER_ENCRYPT_KEY)
+    def from_encrypted_filename(cls, key: str, encrypted_filename: str) -> Self:
+        fernet_model = Fernet(key)
         descrypted_filename = fernet_model.decrypt(encrypted_filename.encode())
-        return cls(uuid.UUID(bytes=descrypted_filename, version=cls.UUID_VERSION))
+        return cls(key, uuid.UUID(bytes=descrypted_filename, version=cls.UUID_VERSION))
