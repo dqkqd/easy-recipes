@@ -246,8 +246,40 @@ def test_200_delete_file(valid_password_token: str, tmp_path: Path, client: Flas
     response = client.get(f"/{encrypted_filename}")
     assert response.status_code == 200
 
-    response = client.delete(f"/{encrypted_filename}")
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
+    response = client.delete(
+        f"/{encrypted_filename}",
+        headers={"Authorization": f"{authorization_scheme} {valid_password_token}"},
+    )
     assert response.status_code == 200
 
     response = client.get(f"/{encrypted_filename}")
+    assert response.status_code == 404
+
+
+def test_404_delete_file_twice(
+    valid_password_token: str,
+    tmp_path: Path,
+    client: FlaskClient,
+) -> None:
+    file = tmp_path / "file.jpg"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+    response = upload_file(client, file=file, password_token=valid_password_token)
+
+    data = json.loads(response.data)
+    encrypted_filename = data["filename"]
+
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
+    response = client.delete(
+        f"/{encrypted_filename}",
+        headers={"Authorization": f"{authorization_scheme} {valid_password_token}"},
+    )
+    assert response.status_code == 200
+
+    authorization_scheme = client.application.config["AUTHORIZATION_SCHEME"]
+    response = client.delete(
+        f"/{encrypted_filename}",
+        headers={"Authorization": f"{authorization_scheme} {valid_password_token}"},
+    )
     assert response.status_code == 404

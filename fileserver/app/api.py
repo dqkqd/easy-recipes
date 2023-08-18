@@ -51,3 +51,20 @@ def upload_file() -> Response:
     file.save(file_folder / handler.filename)
 
     return jsonify({"filename": handler.encrypted_filename})
+
+
+@api.route("/<string:encrypted_filename>", methods=["DELETE"])
+@to_http_error
+@require_password
+def delete_file(encrypted_filename: str) -> Response:
+    file_folder = current_app.config["FILE_FOLDER"]
+    if not isinstance(file_folder, Path):
+        raise TypeError(file_folder)
+
+    key = current_app.config["FILE_SERVER_ENCRYPT_KEY"]
+    handler = UniqueFilenameHandler.from_encrypted_filename(key, encrypted_filename)
+    file = file_folder / handler.filename
+    if not file.exists():
+        raise exceptions.NotFound
+    file.unlink()
+    return jsonify({"filename": encrypted_filename})
