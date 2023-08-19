@@ -283,3 +283,25 @@ def test_404_delete_file_twice(
 
     response = delete_file(client, encrypted_filename, valid_password_token)
     assert response.status_code == 404
+
+
+def test_401_delete_file_invalid_password(
+    valid_password_token: str,
+    tmp_path: Path,
+    client: FlaskClient,
+) -> None:
+    file = tmp_path / "file.jpg"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+    response = upload_file(client, file=file, password_token=valid_password_token)
+    assert response.status_code == 200
+
+    data = json.loads(response.data)
+    encrypted_filename = data["filename"]
+
+    response = delete_file(
+        client,
+        encrypted_filename,
+        password_token="invalid-password-token",  # noqa: S106
+    )
+    assert response.status_code == 401
