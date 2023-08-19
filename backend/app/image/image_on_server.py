@@ -18,8 +18,6 @@ if TYPE_CHECKING:
 
 
 class ImageOnServer:
-    timeout: float = 1.0
-
     def __init__(self, _identifier: FileIdentifer) -> None:
         self._identifier = _identifier
 
@@ -68,7 +66,7 @@ class ImageOnServer:
     @_from_source.register
     @classmethod
     def _(cls, url: str) -> Self:
-        r = requests.get(url, timeout=cls.timeout)
+        r = requests.get(url, timeout=fs.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
         return cls._from_source(io.BytesIO(r.content))

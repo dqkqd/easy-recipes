@@ -25,8 +25,6 @@ def get_file_type_from_bytes(stream: io.BytesIO) -> filetype.Type:
 
 
 class FileServer:
-    timeout: float = 1
-
     def __init__(self) -> None:
         self._url: str | None = None
 
@@ -37,9 +35,12 @@ class FileServer:
 
         self._url = app.config["FILE_SERVER_URL"]
 
+        self.timeout = app.config["FILE_SERVER_REQUEST_TIMEOUT"]
+
         self.authorization_scheme = app.config["FILE_SERVER_AUTHORIZATION_SCHEME"]
         self.encrypt_key = app.config["FILE_SERVER_ENCRYPT_KEY"]
         self.password = app.config["FILE_SERVER_PASSWORD"]
+
         self.fernet_model = Fernet(self.encrypt_key)
 
     @cached_property
