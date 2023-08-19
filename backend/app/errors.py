@@ -31,7 +31,9 @@ def to_handleable_error(f: Callable[..., Any]) -> Callable[..., Any]:
 
 
 class BaseError(exceptions.HTTPException):
-    def info(self) -> dict[str, str]:
+    def info(self) -> dict[str, str | int]:
+        if not isinstance(self.code, int) or not isinstance(self.description, str):
+            raise NotImplementedError(self)
         return {"code": self.code, "message": self.description}
 
 
