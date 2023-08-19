@@ -1,5 +1,6 @@
 import base64
 import io
+from contextlib import contextmanager
 from functools import cached_property
 from io import BytesIO
 from pathlib import Path
@@ -11,7 +12,8 @@ from PIL.Image import Image as PillowImage
 from werkzeug import exceptions
 
 from app import config
-from app.file_server.core import FileIdentifer, FileServer
+from app.file_server import fs
+from app.file_server.core import FileIdentifer
 
 
 class Base64Image:
@@ -41,19 +43,57 @@ class Base64Image:
         raise NotImplementedError
 
 
-class ImageHandler:
+def crop_center(image: Image.Image) -> Image.Image:
+    w, h = image.size
+    crop_size = min(max(w, h), config.MAX_IMAGE_SIZE)
+    return image.crop(
+        (
+            (w - crop_size) // 2,
+            (h - crop_size) // 2,
+            (w + crop_size) // 2,
+            (h + crop_size) // 2,
+        ),
+    )
+
+
+class ImageOnServer:
     timeout: float = 1.0
 
-    def __init__(self, image: Image, raw: bool) -> None:  # noqa: FBT001
-        self.image = image
-        self.raw = raw
+    def __init__(self, _identifier: FileIdentifer) -> None:
+        self._identifier = _identifier
+
+    @property
+    def identifier(self) -> str:
+        return self._identifier
+
+    def as_uri(self) -> str:
+        return fs.uri(self.identifier)
+
+    @cached_property
+    def byte_data(self) -> io.BytesIO:
+        return fs.get(self.identifier)
+
+    @cached_property
+    def image(self) -> Image.Image:
+        return Image.open(self.byte_data)
 
     @classmethod
+    @contextmanager
     def from_bytes(cls, stream: io.BytesIO) -> Self:
         try:
-            return cls(Image.open(stream), raw=True)
+            image = Image.open(stream)
+            image = crop_center(image)
+            image_bytes = io.BytesIO()
+            image.save(image_bytes, format="PNG")
         except Exception as e:  # noqa: BLE001 #TODO(dqk): remove hard code
             raise exceptions.UnsupportedMediaType("Invalid image") from e
+
+        try:
+            identifier = fs.add(image_bytes)
+            yield cls(identifier)
+        except Exception:
+            fs.delete(identifier)
+            raise
 
     @classmethod
     def from_file(cls, file: Path) -> Self:
@@ -65,25 +105,3 @@ class ImageHandler:
         if r.status_code != 200:
             exceptions.abort(r.status_code)
         return cls.from_bytes(io.BytesIO(r.content))
-
-    def crop_center(self) -> None:
-        w, h = self.image.size
-        crop_size = min(max(w, h), config.MAX_IMAGE_SIZE)
-        self.image = self.image.crop(
-            (w - crop_size) // 2,
-            (h - crop_size) // 2,
-            (w + crop_size) // 2,
-            (h - crop_size) // 2,
-        )
-        self.raw = False
-
-    @property
-    def stream(self) -> io.BytesIO:
-        if not self.raw:
-            self.crop_center()
-        image_bytes = io.BytesIO()
-        self.image.save(image_bytes, format="PNG")
-        return image_bytes
-
-    def upload(self, file_server: FileServer) -> FileIdentifer:
-        return file_server.add(self.stream)
