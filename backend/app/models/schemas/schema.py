@@ -29,8 +29,9 @@ class IngredientBase(Base):
         return validate_trailing_spaces(v)
 
 
-class IngredientFromUser(IngredientBase):
-    pass
+class IngredientFromUser(Base):
+    name: str
+    image_url: HttpUrl | None = None
 
 
 class IngredientCreate(IngredientBase):

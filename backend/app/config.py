@@ -2,8 +2,13 @@ from __future__ import annotations
 
 import os
 import secrets
+from pathlib import Path
 
 MAX_IMAGE_SIZE = 512
+
+DEFAULT_IMAGE_LOCATION = Path(__file__).parent / "static" / "images" / "no-image-icon.png"
+if not DEFAULT_IMAGE_LOCATION.exists():
+    raise FileNotFoundError
 
 
 class BaseConfig:

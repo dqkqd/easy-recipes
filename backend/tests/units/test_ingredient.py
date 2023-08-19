@@ -5,6 +5,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from app import config
+from app.file_server.image import ImageOnServer
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
 from app.models.schemas import schema
@@ -38,14 +40,10 @@ def test_200_create_basic(client: FlaskClient) -> None:
         assert compare_image_data_from_uri(ingredient.image_url, ingredient_from_user.image_url)
 
 
-"""
 @pytest.mark.usefixtures("app_context")
-def test_200_create_basic(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
-    response = client.post(
-        "/ingredients/",
-        json=ingredient_data,
-    )
+def test_200_use_default_image_if_no_provided(client: FlaskClient) -> None:
+    ingredient_from_user = schema.IngredientFromUser(name="eggs")
+    response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
 
     data = json.loads(response.data)
     assert data == {"id": 1}
@@ -53,12 +51,16 @@ def test_200_create_basic(client: FlaskClient) -> None:
 
     with IngredientRepository.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
-        assert ingredient.model_dump(mode="json") == {
-            "id": 1,
-            "recipes": [],
-            **ingredient_data,
-        }
+        image_url = ingredient.image_url
 
+    with ImageOnServer.from_source(config.DEFAULT_IMAGE_LOCATION) as image_on_server:
+        default_image_url = image_on_server.uri
+
+    assert image_url != default_image_url
+    assert compare_image_data_from_uri(image_url, default_image_url)
+
+
+"""
 
 @pytest.mark.skip()
 @pytest.mark.usefixtures("app_context")
