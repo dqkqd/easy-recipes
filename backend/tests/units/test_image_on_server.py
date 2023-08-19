@@ -6,7 +6,7 @@ from werkzeug import exceptions
 
 from app import config
 from app.file_server import fs
-from app.image.b64image import ImageOnServer
+from app.image.image_on_server import ImageOnServer
 from tests.mock_data import random_image
 
 
