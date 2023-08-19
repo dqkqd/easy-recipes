@@ -16,7 +16,7 @@ def create_app(config_cls: type[BaseConfig] = Config) -> Flask:
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from app.file_server_handler import file_server
+    from app.file_server import file_server
 
     file_server.init_app(app)
 

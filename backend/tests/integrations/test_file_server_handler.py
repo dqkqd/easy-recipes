@@ -4,7 +4,7 @@ import pytest
 from PIL import Image
 from werkzeug import exceptions
 
-from app.file_server_handler import file_server
+from app.file_server import file_server
 
 
 @pytest.mark.usefixtures("app_context")
