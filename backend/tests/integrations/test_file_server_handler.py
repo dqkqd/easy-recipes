@@ -24,11 +24,12 @@ def test_add_file_from_url() -> None:
     img = Image.new("RGB", (256, 256))
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
+
     identifier = fs.add(image_bytes)
     image_url = fs.uri(identifier)
 
     new_identifier = fs.add(image_url)
-    requested_image_bytes = fs.get(identifier)
+    requested_image_bytes = fs.get(new_identifier)
 
     assert identifier != new_identifier
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
