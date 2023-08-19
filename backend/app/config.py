@@ -21,7 +21,8 @@ class BaseConfig:
     FILE_SERVER_AUTHORIZATION_SCHEME = os.environ.get("FILE_SERVER_AUTHORIZATION_SCHEME")
     FILE_SERVER_ENCRYPT_KEY = os.environ.get("FILE_SERVER_ENCRYPT_KEY")
     FILE_SERVER_PASSWORD = os.environ.get("FILE_SERVER_PASSWORD")
-    FILE_SERVER_REQUEST_TIMEOUT = int(os.environ.get("FILE_SERVER_REQUEST_TIMEOUT"))
+
+    FILE_SERVER_REQUEST_TIMEOUT = float(os.environ.get("FILE_SERVER_REQUEST_TIMEOUT", 1.0))
 
     @property
     def FILE_SERVER_URL(self) -> str:  # noqa: N802
