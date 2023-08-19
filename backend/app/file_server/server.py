@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import io
-from functools import cached_property
+from functools import cached_property, singledispatchmethod
 from typing import TYPE_CHECKING
 
 import filetype  # type: ignore  # noqa: PGH003
@@ -64,13 +64,6 @@ class FileServer:
         uri = self.uri(identifier)
         return self._get_from_uri(uri)
 
-    def add(self, source: str | io.BytesIO) -> FileIdentifer:
-        if isinstance(source, io.BytesIO):
-            return self._add_bytes(source)
-        if isinstance(source, str):
-            return self._add_url(source)
-        raise NotImplementedError
-
     def delete(self, identifier: FileIdentifer) -> bool:
         uri = self.uri(identifier)
         response_identifier = self._delete_from_uri(uri)
@@ -78,13 +71,33 @@ class FileServer:
             raise exceptions.InternalServerError
         return True
 
+    @singledispatchmethod
+    def add(self, _source: str | io.BytesIO) -> FileIdentifer:
+        raise NotImplementedError
+
     def _get_from_uri(self, uri: str) -> io.BytesIO:
         r = requests.get(uri, timeout=self.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
         return io.BytesIO(r.content)
 
-    def _add_bytes(self, stream: io.BytesIO) -> FileIdentifer:
+    def _delete_from_uri(self, uri: str) -> FileIdentifer:
+        r = requests.delete(
+            uri,
+            headers=self.header,
+            timeout=self.timeout,
+        )
+        if r.status_code != 200:
+            exceptions.abort(r.status_code)
+
+        data = r.json()
+        identifier = data["filename"]
+        if not isinstance(identifier, FileIdentifer):
+            raise TypeError(identifier)
+        return identifier
+
+    @add.register
+    def _(self, stream: io.BytesIO) -> FileIdentifer:
         file_type = get_file_type_from_bytes(stream)
         ext = file_type.extension
 
@@ -103,21 +116,7 @@ class FileServer:
             raise TypeError(identifier)
         return identifier
 
-    def _add_url(self, url: str) -> FileIdentifer:
+    @add.register
+    def _(self, url: str) -> FileIdentifer:
         stream = self._get_from_uri(url)
-        return self._add_bytes(stream)
-
-    def _delete_from_uri(self, uri: str) -> FileIdentifer:
-        r = requests.delete(
-            uri,
-            headers=self.header,
-            timeout=self.timeout,
-        )
-        if r.status_code != 200:
-            exceptions.abort(r.status_code)
-
-        data = r.json()
-        identifier = data["filename"]
-        if not isinstance(identifier, FileIdentifer):
-            raise TypeError(identifier)
-        return identifier
+        return self.add(stream)

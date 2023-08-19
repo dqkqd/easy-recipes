@@ -2,8 +2,9 @@ from __future__ import annotations
 
 import io
 from contextlib import contextmanager
-from functools import cached_property
-from typing import TYPE_CHECKING, Iterator, Self
+from functools import cached_property, singledispatchmethod
+from pathlib import Path
+from typing import TYPE_CHECKING, Any, Iterator, Self
 
 import requests
 from PIL import Image
@@ -13,8 +14,6 @@ from app.file_server import fs
 from app.image.utils import transform_image_stream
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from app.file_server.server import FileIdentifer
 
 
@@ -41,27 +40,35 @@ class ImageOnServer:
 
     @classmethod
     @contextmanager
-    def from_bytes(cls, stream: io.BytesIO | io.BufferedReader) -> Iterator[Self]:
-        image_bytes = transform_image_stream(stream)
-
+    def from_source(cls, source: Any) -> Iterator[Self]:
         try:
-            identifier = fs.add(image_bytes)
-            yield cls(identifier)
+            image_on_server = cls._from_source(source)
+            yield image_on_server
         except Exception:
-            fs.delete(identifier)
+            fs.delete(image_on_server.identifier)
             raise
 
+    @singledispatchmethod
     @classmethod
-    @contextmanager
-    def from_file(cls, file: Path) -> Iterator[Self]:
-        with cls.from_bytes(file.open("rb")) as img:
-            yield img
+    def _from_source(cls, _source: Any) -> Self:
+        raise NotImplementedError
 
+    @_from_source.register
     @classmethod
-    @contextmanager
-    def from_url(cls, url: str) -> Iterator[Self]:
+    def _(cls, stream: io.BytesIO | io.BufferedReader) -> Self:
+        image_bytes = transform_image_stream(stream)
+        identifier = fs.add(image_bytes)
+        return cls(identifier)
+
+    @_from_source.register(Path)
+    @classmethod
+    def _(cls, file: Path) -> Self:
+        return cls._from_source(file.open("rb"))
+
+    @_from_source.register
+    @classmethod
+    def _(cls, url: str) -> Self:
         r = requests.get(url, timeout=cls.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
-        with cls.from_bytes(io.BytesIO(r.content)) as img:
-            yield img
+        return cls._from_source(io.BytesIO(r.content))
