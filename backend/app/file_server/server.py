@@ -4,9 +4,10 @@ import io
 from functools import cached_property, singledispatchmethod
 from typing import TYPE_CHECKING, Any
 
-import filetype  # type: ignore  # noqa: PGH003
+import filetype
 import requests
 from cryptography.fernet import Fernet
+from flask import current_app
 from pydantic_core import Url
 from werkzeug import exceptions
 
@@ -14,6 +15,18 @@ if TYPE_CHECKING:
     from flask import Flask
 
 FileIdentifer = str
+
+
+class FileServerError(Exception):
+    ...
+
+
+class FileServerAlreadyInitializedError(FileServerError):
+    ...
+
+
+class FileServerConfigDoesNotExistError(FileServerError):
+    ...
 
 
 def get_file_type_from_bytes(stream: io.BytesIO | io.BufferedReader) -> filetype.Type:
@@ -26,28 +39,36 @@ def get_file_type_from_bytes(stream: io.BytesIO | io.BufferedReader) -> filetype
 
 
 class FileServer:
-    def __init__(self) -> None:
+    def __init__(self, app: Flask | None = None) -> None:
         self._url: Url | None = None
+        if app is not None:
+            self.init_app(app)
 
     def init_app(self, app: Flask) -> None:
         if "file_server" in app.extensions:
-            raise RuntimeError("'FileServer' instance has already been registered")
+            raise FileServerAlreadyInitializedError
         app.extensions["file_server"] = self
 
-        self._url = app.config["FILE_SERVER_URL"]
+        try:
+            server_url = app.config["FILE_SERVER_URL"]
+            self._url = Url(server_url)
 
-        self.timeout = app.config["FILE_SERVER_REQUEST_TIMEOUT"]
-
-        self.authorization_scheme = app.config["FILE_SERVER_AUTHORIZATION_SCHEME"]
-        self.encrypt_key = app.config["FILE_SERVER_ENCRYPT_KEY"]
-        self.password = app.config["FILE_SERVER_PASSWORD"]
-
-        self.fernet_model = Fernet(self.encrypt_key)
+            self.timeout = app.config["FILE_SERVER_REQUEST_TIMEOUT"]
+            self.authorization_scheme = app.config["FILE_SERVER_AUTHORIZATION_SCHEME"]
+            self.encrypt_key = app.config["FILE_SERVER_ENCRYPT_KEY"]
+            self.password = app.config["FILE_SERVER_PASSWORD"]
+            self.fernet_model = Fernet(self.encrypt_key)
+        except KeyError as e:
+            raise FileServerConfigDoesNotExistError from e
 
     @cached_property
     def url(self) -> Url:
         if self._url is None:
-            raise RuntimeError("FileServer object must `init_app` before used.")
+            self.init_app(current_app)
+
+        if self._url is None:
+            raise FileServerConfigDoesNotExistError
+
         return self._url
 
     @cached_property
