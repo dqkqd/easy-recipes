@@ -1,3 +1,3 @@
-from app.file_server.core import FileServer
+from app.file_server.server import FileServer
 
 fs = FileServer()

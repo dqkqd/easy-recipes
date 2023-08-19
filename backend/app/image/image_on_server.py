@@ -15,7 +15,7 @@ from app.image.utils import transform_image_stream
 if TYPE_CHECKING:
     from pathlib import Path
 
-    from app.file_server.core import FileIdentifer
+    from app.file_server.server import FileIdentifer
 
 
 class ImageOnServer:
