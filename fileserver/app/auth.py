@@ -25,7 +25,10 @@ def require_password(f: Callable[..., Any]) -> Callable[..., Any]:
                 raise
 
             if (
-                fernet_model.decrypt(token.encode()).decode()
+                fernet_model.decrypt(
+                    token.encode(),
+                    ttl=current_app.config["FILE_SERVER_REQUEST_TIMEOUT"],
+                ).decode()
                 != current_app.config["FILE_SERVER_PASSWORD"]
             ):
                 raise

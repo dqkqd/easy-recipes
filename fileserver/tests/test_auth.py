@@ -1,4 +1,5 @@
 import json
+import time
 from pathlib import Path
 
 from cryptography.fernet import Fernet
@@ -87,3 +88,40 @@ def test_401_upload_file_wrong_key(
     client.application.config.pop("FILE_SERVER_ENCRYPT_KEY")
     response = upload_file(client, file=file, password_token=valid_password_token)
     assert response.status_code == 401
+
+
+def test_401_upload_file_after_timeout(
+    valid_password_token: str,
+    tmp_path: Path,
+    client: FlaskClient,
+) -> None:
+    file = tmp_path / "file.jpg"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+
+    response = upload_file(client, file=file, password_token=valid_password_token)
+    assert response.status_code == 200
+
+    time.sleep(client.application.config["FILE_SERVER_REQUEST_TIMEOUT"] * 1.5)
+
+    response = upload_file(client, file=file, password_token=valid_password_token)
+    assert response.status_code == 401
+
+
+def test_200_get_file_after_timeout(
+    valid_password_token: str,
+    tmp_path: Path,
+    client: FlaskClient,
+) -> None:
+    file = tmp_path / "file.jpg"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+
+    response = upload_file(client, file=file, password_token=valid_password_token)
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    encrypted_filename = data["filename"]
+
+    time.sleep(client.application.config["FILE_SERVER_REQUEST_TIMEOUT"] * 1.5)
+    response = client.get(f"/{encrypted_filename}")
+    assert response.status_code == 200
