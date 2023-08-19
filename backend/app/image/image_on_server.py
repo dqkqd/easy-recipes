@@ -44,14 +44,16 @@ class ImageOnServer:
         try:
             image_on_server = cls._from_source(source)
             yield image_on_server
+        except NotImplementedError:
+            raise
         except Exception:
             fs.delete(image_on_server.identifier)
             raise
 
     @singledispatchmethod
     @classmethod
-    def _from_source(cls, _source: Any) -> Self:
-        raise NotImplementedError
+    def _from_source(cls, source: Any) -> Self:
+        raise NotImplementedError(type(source))
 
     @_from_source.register
     @classmethod
