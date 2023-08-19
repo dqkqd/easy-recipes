@@ -1,17 +1,13 @@
 from __future__ import annotations
 
-from pathlib import Path
-
 from pydantic import (
     BaseModel,
     ConfigDict,
     Field,
-    FileUrl,
     HttpUrl,
     field_validator,
 )
 
-from app.image.b64image import Base64Image
 from app.models.schemas.validators import validate_trailing_spaces
 
 
@@ -46,16 +42,8 @@ class IngredientInDB(IDModelMixin, IngredientBase):
     recipes: list[RecipeInDB] = Field(default_factory=list)
 
     def to_public(self) -> IngredientPublic:
-        match self.image:
-            case HttpUrl():
-                base64_image = Base64Image.from_url(str(self.image))
-            case FileUrl():
-                base64_image = Base64Image.from_path(Path(self.image))
-            case _:
-                raise ValueError(self.image)
         return IngredientPublic(
-            **self.model_dump(exclude={"image", "recipes"}),
-            image=base64_image.data,
+            **self.model_dump(exclude={"recipes"}),
             recipes=[recipe.id for recipe in self.recipes],
         )
 
