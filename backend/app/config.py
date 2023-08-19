@@ -3,6 +3,8 @@ from __future__ import annotations
 import os
 import secrets
 
+MAX_IMAGE_SIZE = 512
+
 
 class BaseConfig:
     postgres_user = os.environ.get("POSTGRES_USER")
