@@ -71,11 +71,11 @@ class FileServer:
 
     def get(self, identifier: FileIdentifer) -> io.BytesIO:
         uri = self.file_uri(identifier)
-        return self._get_from_uri(uri)
+        return self.get_from_uri(uri)
 
     def delete(self, identifier: FileIdentifer) -> bool:
         uri = self.file_uri(identifier)
-        response_identifier = self._delete_from_uri(uri)
+        response_identifier = self.delete_from_uri(uri)
         if response_identifier != identifier:
             raise ServerDeleteWrongFileError
         return True
@@ -84,13 +84,13 @@ class FileServer:
     def add(self, source: Any) -> FileIdentifer:
         raise NotImplementedError(type(source))
 
-    def _get_from_uri(self, uri: Url) -> io.BytesIO:
+    def get_from_uri(self, uri: Url) -> io.BytesIO:
         r = requests.get(str(uri), timeout=self.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
         return io.BytesIO(r.content)
 
-    def _delete_from_uri(self, uri: Url) -> FileIdentifer:
+    def delete_from_uri(self, uri: Url) -> FileIdentifer:
         r = requests.delete(
             str(uri),
             headers=self.header,
@@ -132,5 +132,5 @@ class FileServer:
 
     @add.register
     def _(self, url: Url) -> FileIdentifer:
-        stream = self._get_from_uri(url)
+        stream = self.get_from_uri(url)
         return self.add(stream)
