@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import io
 from functools import cached_property, singledispatchmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import filetype  # type: ignore  # noqa: PGH003
 import requests
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 FileIdentifer = str
 
 
-def get_file_type_from_bytes(stream: io.BytesIO) -> filetype.Type:
+def get_file_type_from_bytes(stream: io.BytesIO | io.BufferedReader) -> filetype.Type:
     stream.seek(0)
     kind = filetype.guess(stream.read())
     stream.seek(0)
@@ -70,8 +70,8 @@ class FileServer:
         return True
 
     @singledispatchmethod
-    def add(self, _source: str | io.BytesIO) -> FileIdentifer:
-        raise NotImplementedError
+    def add(self, source: Any) -> FileIdentifer:
+        raise NotImplementedError(type(source))
 
     def _get_from_uri(self, uri: Url) -> io.BytesIO:
         r = requests.get(str(uri), timeout=self.timeout)
@@ -95,7 +95,7 @@ class FileServer:
         return identifier
 
     @add.register
-    def _(self, stream: io.BytesIO) -> FileIdentifer:
+    def _(self, stream: io.BytesIO | io.BufferedReader) -> FileIdentifer:
         file_type = get_file_type_from_bytes(stream)
         ext = file_type.extension
 
