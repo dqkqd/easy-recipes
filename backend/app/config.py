@@ -18,6 +18,8 @@ class BaseConfig:
     postgres_host: str | None = None
     file_server_host: str | None = None
 
+    DEBUG = int(os.environ.get("DEBUG", 0))
+
     FILE_SERVER_AUTHORIZATION_SCHEME = os.environ.get("FILE_SERVER_AUTHORIZATION_SCHEME")
     FILE_SERVER_ENCRYPT_KEY = os.environ.get("FILE_SERVER_ENCRYPT_KEY")
     FILE_SERVER_PASSWORD = os.environ.get("FILE_SERVER_PASSWORD")
