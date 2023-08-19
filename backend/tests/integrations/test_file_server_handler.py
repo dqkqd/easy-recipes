@@ -6,7 +6,7 @@ from PIL import Image
 from app.file_server_handler import file_server
 
 
-@pytest.mark.usefixtures("app")
+@pytest.mark.usefixtures("app_context")
 def test_add_file_from_bytes() -> None:
     img = Image.new("RGB", (256, 256))
     image_bytes = io.BytesIO()
@@ -18,7 +18,7 @@ def test_add_file_from_bytes() -> None:
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
 
 
-@pytest.mark.usefixtures("app")
+@pytest.mark.usefixtures("app_context")
 def test_add_file_from_url() -> None:
     img = Image.new("RGB", (256, 256))
     image_bytes = io.BytesIO()
