@@ -9,10 +9,10 @@ from werkzeug import exceptions
 def require_password(f: Callable[..., Any]) -> Callable[..., Any]:
     @wraps(f)
     def wrapper(*args: Any, **kwargs: Any) -> Any:  # noqa: ANN401
-        key = current_app.config["FILE_SERVER_ENCRYPT_KEY"]
-        fernet_model = Fernet(key)
-
         try:
+            key = current_app.config["FILE_SERVER_ENCRYPT_KEY"]
+            fernet_model = Fernet(key)
+
             authorization = request.authorization
             if authorization is None:
                 raise

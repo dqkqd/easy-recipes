@@ -246,6 +246,24 @@ def test_401_upload_file_invalid_password(tmp_path: Path, client: FlaskClient) -
     assert data == {"message": "Unauthorized."}
 
 
+def test_401_upload_file_wrong_key(
+    valid_password_token: str,
+    tmp_path: Path,
+    client: FlaskClient,
+) -> None:
+    file = tmp_path / "file.jpg"
+    with file.open("wb") as f:
+        f.write(bytearray(1000))
+
+    client.application.config["FILE_SERVER_ENCRYPT_KEY"] = Fernet.generate_key()
+    response = upload_file(client, file=file, password_token=valid_password_token)
+    assert response.status_code == 401
+
+    client.application.config["FILE_SERVER_ENCRYPT_KEY"] = "invalid-key"
+    response = upload_file(client, file=file, password_token=valid_password_token)
+    assert response.status_code == 401
+
+
 def test_200_delete_file(valid_password_token: str, tmp_path: Path, client: FlaskClient) -> None:
     file = tmp_path / "file.jpg"
     with file.open("wb") as f:
