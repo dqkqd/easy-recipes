@@ -61,6 +61,7 @@ py-modules = []
 
 [tool.mypy]
 strict = true
+ignore_missing_imports = true
 exclude = ["migrations"]
 plugins = ["sqlalchemy.ext.mypy.plugin"]
 
