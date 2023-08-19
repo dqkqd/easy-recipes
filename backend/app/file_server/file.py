@@ -40,11 +40,9 @@ class FileOnServer:
     @classmethod
     @contextmanager
     def from_source(cls, source: Any) -> Iterator[Self]:
+        file_on_server = cls._from_source(source)
         try:
-            file_on_server = cls._from_source(source)
             yield file_on_server
-        except NotImplementedError:
-            raise
         except Exception:
             fs.delete(file_on_server.identifier)
             raise
