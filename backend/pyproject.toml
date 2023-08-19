@@ -23,6 +23,7 @@ dependencies = [
 dev = [
     "black",
     "mypy",
+    "numpy",
     "pytest",
     "ruff",
     "sqlalchemy[mypy]",

@@ -3,6 +3,8 @@ from __future__ import annotations
 import secrets
 from typing import Any
 
+import numpy as np
+from PIL import Image
 from pydantic_core import Url
 
 from app.models.schemas import schema
@@ -22,3 +24,9 @@ def ingredient_create_data(name: str | None = None) -> dict[str, Any]:
         image=random_valid_url(),
     )
     return ingredient.model_dump(mode="json")
+
+
+def random_image(w: int, h: int) -> Image.Image:
+    rng = np.random.default_rng(seed=42)
+    image_data = rng.random((w, h, 3)) * 255
+    return Image.fromarray(image_data.astype("uint8")).convert("RGB")
