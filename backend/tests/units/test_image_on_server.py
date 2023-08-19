@@ -35,10 +35,10 @@ def test_add_from_url() -> None:
 
     with ImageOnServer.from_source(image_bytes) as image_on_server:
         identifier = image_on_server.identifier
-        image_url = image_on_server.as_uri()
+        image_uri = image_on_server.uri
         assert image_bytes.getvalue() == image_on_server.byte_data.getvalue()
 
-    with ImageOnServer.from_source(image_url) as image_on_server:
+    with ImageOnServer.from_source(image_uri) as image_on_server:
         new_identifier = image_on_server.identifier
         new_image_bytes = image_on_server.byte_data
 

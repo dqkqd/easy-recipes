@@ -26,7 +26,8 @@ class ImageOnServer:
     def identifier(self) -> str:
         return self._identifier
 
-    def as_uri(self) -> Url:
+    @property
+    def uri(self) -> Url:
         return fs.file_uri(self.identifier)
 
     @cached_property
