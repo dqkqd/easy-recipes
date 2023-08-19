@@ -29,6 +29,10 @@ class IngredientBase(Base):
         return validate_trailing_spaces(v)
 
 
+class IngredientFromUser(IngredientBase):
+    pass
+
+
 class IngredientCreate(IngredientBase):
     pass
 

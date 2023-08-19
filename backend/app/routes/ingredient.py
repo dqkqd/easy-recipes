@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 from werkzeug import Response
 
 from app.errors import to_handleable_error
+from app.file_server.image import ImageOnServer
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
 from app.models.schemas import schema
@@ -28,7 +29,15 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 @to_handleable_error
 def create_ingredient() -> Response:
     body = request.get_json()
+
+    ingredient_from_user = schema.IngredientFromUser(**body)
+    with ImageOnServer.from_source(ingredient_from_user.image) as image_on_server:
+        ingredient_create = schema.IngredientCreate(
+            **ingredient_from_user.model_dump(exclude={"image"}),
+            image=image_on_server.uri,
+        )
+
     with IngredientRepository.get_repository(db) as repo:
-        ingredient_create = schema.IngredientCreate(**body)
         ingredient_in_db = repo.create_ingredient(ingredient_create)
+
     return jsonify({"id": ingredient_in_db.id})

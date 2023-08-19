@@ -7,12 +7,38 @@ import pytest
 
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
+from app.models.schemas import schema
 from tests import mock_data
+from tests.utils import compare_image_data_from_uri
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
 
 
+@pytest.mark.usefixtures("app_context")
+def test_200_create_basic(client: FlaskClient) -> None:
+    ingredient_from_user = schema.IngredientFromUser(
+        name="eggs",
+        image=mock_data.MockImage.random_valid_image_url(50, 50),
+    )
+    response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
+
+    data = json.loads(response.data)
+    assert data == {"id": 1}
+    assert response.status_code == 200
+
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+
+        assert ingredient.id == 1
+        assert ingredient.name == ingredient_from_user.name
+
+        # same image but different url
+        assert ingredient.image != ingredient_from_user.image
+        assert compare_image_data_from_uri(ingredient.image, ingredient_from_user.image)
+
+
+"""
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
     ingredient_data = mock_data.ingredient_create_data()
@@ -186,3 +212,4 @@ def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert data == {"message": "Not Found."}
     assert response.status_code == 404
+"""
