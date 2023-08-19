@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+from functools import cached_property
 
 from PIL import Image
 from werkzeug import exceptions
@@ -42,3 +43,7 @@ class ImageOnServer(FileOnServer):
         source: io.BytesIO | io.BufferedReader,
     ) -> io.BytesIO | io.BufferedReader:
         return transform_image_stream(source)
+
+    @cached_property
+    def image(self) -> Image.Image:
+        return Image.open(self.data)
