@@ -4,7 +4,7 @@ import pytest
 from PIL import Image
 from werkzeug import exceptions
 
-from app.file_server import file_server
+from app.file_server import fs
 
 
 @pytest.mark.usefixtures("app_context")
@@ -13,8 +13,8 @@ def test_add_file_from_bytes() -> None:
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
-    identifier = file_server.add(image_bytes)
-    requested_image_bytes = file_server.get(identifier)
+    identifier = fs.add(image_bytes)
+    requested_image_bytes = fs.get(identifier)
 
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
 
@@ -24,11 +24,11 @@ def test_add_file_from_url() -> None:
     img = Image.new("RGB", (256, 256))
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
-    identifier = file_server.add(image_bytes)
-    image_url = file_server.uri(identifier)
+    identifier = fs.add(image_bytes)
+    image_url = fs.uri(identifier)
 
-    new_identifier = file_server.add(image_url)
-    requested_image_bytes = file_server.get(identifier)
+    new_identifier = fs.add(image_url)
+    requested_image_bytes = fs.get(identifier)
 
     assert identifier != new_identifier
     assert image_bytes.getvalue() == requested_image_bytes.getvalue()
@@ -39,8 +39,8 @@ def test_delete_file() -> None:
     img = Image.new("RGB", (256, 256))
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
-    identifier = file_server.add(image_bytes)
+    identifier = fs.add(image_bytes)
 
-    file_server.delete(identifier)
+    fs.delete(identifier)
     with pytest.raises(exceptions.NotFound):
-        file_server.get(identifier)
+        fs.get(identifier)

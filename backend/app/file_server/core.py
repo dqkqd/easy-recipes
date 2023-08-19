@@ -121,6 +121,3 @@ class FileServer:
         if not isinstance(identifier, FileIdentifer):
             raise TypeError(identifier)
         return identifier
-
-
-file_server = FileServer()
