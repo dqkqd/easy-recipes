@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import filetype  # type: ignore  # noqa: PGH003
 import requests
 from cryptography.fernet import Fernet
+from pydantic_core import Url
 from werkzeug import exceptions
 
 if TYPE_CHECKING:
@@ -26,7 +27,7 @@ def get_file_type_from_bytes(stream: io.BytesIO) -> filetype.Type:
 
 class FileServer:
     def __init__(self) -> None:
-        self._url: str | None = None
+        self._url: Url | None = None
 
     def init_app(self, app: Flask) -> None:
         if "file_server" in app.extensions:
@@ -44,7 +45,7 @@ class FileServer:
         self.fernet_model = Fernet(self.encrypt_key)
 
     @cached_property
-    def url(self) -> str:
+    def url(self) -> Url:
         if self._url is None:
             raise RuntimeError("FileServer object must `init_app` before used.")
         return self._url
@@ -54,8 +55,8 @@ class FileServer:
         token = self.fernet_model.encrypt(self.password.encode()).decode()
         return {"Authorization": f"{self.authorization_scheme} {token}"}
 
-    def file_uri(self, identifier: FileIdentifer) -> str:
-        return f"{self.url}{identifier}"
+    def file_uri(self, identifier: FileIdentifer) -> Url:
+        return Url(f"{self.url}/{identifier}")
 
     def get(self, identifier: FileIdentifer) -> io.BytesIO:
         uri = self.file_uri(identifier)
@@ -72,15 +73,15 @@ class FileServer:
     def add(self, _source: str | io.BytesIO) -> FileIdentifer:
         raise NotImplementedError
 
-    def _get_from_uri(self, uri: str) -> io.BytesIO:
-        r = requests.get(uri, timeout=self.timeout)
+    def _get_from_uri(self, uri: Url) -> io.BytesIO:
+        r = requests.get(str(uri), timeout=self.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
         return io.BytesIO(r.content)
 
-    def _delete_from_uri(self, uri: str) -> FileIdentifer:
+    def _delete_from_uri(self, uri: Url) -> FileIdentifer:
         r = requests.delete(
-            uri,
+            str(uri),
             headers=self.header,
             timeout=self.timeout,
         )
@@ -99,7 +100,7 @@ class FileServer:
         ext = file_type.extension
 
         r = requests.post(
-            self.url,
+            str(self.url),
             headers=self.header,
             files={"file": (f"file.{ext}", stream)},
             timeout=self.timeout,
@@ -114,6 +115,6 @@ class FileServer:
         return identifier
 
     @add.register
-    def _(self, url: str) -> FileIdentifer:
+    def _(self, url: Url) -> FileIdentifer:
         stream = self._get_from_uri(url)
         return self.add(stream)

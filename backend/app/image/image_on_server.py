@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any, Iterator, Self
 
 import requests
 from PIL import Image
+from pydantic_core import Url
 from werkzeug import exceptions
 
 from app.file_server import fs
@@ -25,7 +26,7 @@ class ImageOnServer:
     def identifier(self) -> str:
         return self._identifier
 
-    def as_uri(self) -> str:
+    def as_uri(self) -> Url:
         return fs.file_uri(self.identifier)
 
     @cached_property
@@ -63,10 +64,10 @@ class ImageOnServer:
     def _(cls, file: Path) -> Self:
         return cls._from_source(file.open("rb"))
 
-    @_from_source.register
+    @_from_source.register(Url)
     @classmethod
-    def _(cls, url: str) -> Self:
-        r = requests.get(url, timeout=fs.timeout)
+    def _(cls, url: Url) -> Self:
+        r = requests.get(str(url), timeout=fs.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
         return cls._from_source(io.BytesIO(r.content))
