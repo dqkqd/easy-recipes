@@ -50,11 +50,15 @@ class Base64Image:
 
 
 def transform_image_stream(stream: io.BytesIO | io.BufferedReader) -> io.BytesIO:
-    image = Image.open(stream)
-    image = crop_center(image)
-    image_bytes = io.BytesIO()
-    image.save(image_bytes, format="PNG")
-    return image_bytes
+    try:
+        image = Image.open(stream)
+        image = crop_center(image)
+        image_bytes = io.BytesIO()
+        image.save(image_bytes, format="PNG")
+    except Exception as e:  # noqa: BLE001 #TODO(dqk): remove hard code
+        raise exceptions.UnsupportedMediaType("Invalid image") from e
+    else:
+        return image_bytes
 
 
 def crop_center(image: Image.Image) -> Image.Image:
@@ -94,10 +98,7 @@ class ImageOnServer:
     @classmethod
     @contextmanager
     def from_bytes(cls, stream: io.BytesIO | io.BufferedReader) -> Iterator[Self]:
-        try:
-            image_bytes = transform_image_stream(stream)
-        except Exception as e:  # noqa: BLE001 #TODO(dqk): remove hard code
-            raise exceptions.UnsupportedMediaType("Invalid image") from e
+        image_bytes = transform_image_stream(stream)
 
         try:
             identifier = fs.add(image_bytes)
