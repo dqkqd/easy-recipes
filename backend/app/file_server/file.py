@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Iterator, Self
 
 import requests
-from PIL import Image
 from pydantic_core import Url
 from werkzeug import exceptions
 
@@ -30,12 +29,8 @@ class FileOnServer:
         return fs.file_uri(self.identifier)
 
     @cached_property
-    def byte_data(self) -> io.BytesIO:
+    def data(self) -> io.BytesIO:
         return fs.get(self.identifier)
-
-    @cached_property
-    def image(self) -> Image.Image:
-        return Image.open(self.byte_data)
 
     @singledispatchmethod
     @classmethod
