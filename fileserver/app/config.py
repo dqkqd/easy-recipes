@@ -26,5 +26,5 @@ class TestingConfig(BaseConfig):
     FILE_SERVER_ENCRYPT_KEY = Fernet.generate_key()
     FILE_SERVER_PASSWORD = "password"  # noqa: S105
     AUTHORIZATION_SCHEME = "FERNET_TOKEN"
-    FILE_SERVER_REQUEST_TIMEOUT = 0.5
+    FILE_SERVER_REQUEST_TIMEOUT = 1.5
     MAX_CONTENT_LENGTH = 1 * 1000 * 1000  # 1MB
