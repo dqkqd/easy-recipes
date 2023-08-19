@@ -1,19 +1,25 @@
+from __future__ import annotations
+
 import base64
 import io
 from contextlib import contextmanager
 from functools import cached_property
 from io import BytesIO
-from pathlib import Path
-from typing import Self
+from typing import TYPE_CHECKING, Iterator, Self
 
 import requests
 from PIL import Image
-from PIL.Image import Image as PillowImage
 from werkzeug import exceptions
 
 from app import config
 from app.file_server import fs
-from app.file_server.core import FileIdentifer
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from PIL.Image import Image as PillowImage
+
+    from app.file_server.core import FileIdentifer
 
 
 class Base64Image:
@@ -43,7 +49,7 @@ class Base64Image:
         raise NotImplementedError
 
 
-def transform_image_stream(stream: io.BytesIO) -> io.BytesIO:
+def transform_image_stream(stream: io.BytesIO | io.BufferedReader) -> io.BytesIO:
     image = Image.open(stream)
     image = crop_center(image)
     image_bytes = io.BytesIO()
@@ -87,7 +93,7 @@ class ImageOnServer:
 
     @classmethod
     @contextmanager
-    def from_bytes(cls, stream: io.BytesIO) -> Self:
+    def from_bytes(cls, stream: io.BytesIO | io.BufferedReader) -> Iterator[Self]:
         try:
             image_bytes = transform_image_stream(stream)
         except Exception as e:  # noqa: BLE001 #TODO(dqk): remove hard code
@@ -101,12 +107,16 @@ class ImageOnServer:
             raise
 
     @classmethod
-    def from_file(cls, file: Path) -> Self:
-        return cls.from_bytes(file.open("rb"))
+    @contextmanager
+    def from_file(cls, file: Path) -> Iterator[Self]:
+        with cls.from_bytes(file.open("rb")) as img:
+            yield img
 
     @classmethod
-    def from_url(cls, url: str) -> Self:
+    @contextmanager
+    def from_url(cls, url: str) -> Iterator[Self]:
         r = requests.get(url, timeout=cls.timeout)
         if r.status_code != 200:
             exceptions.abort(r.status_code)
-        return cls.from_bytes(io.BytesIO(r.content))
+        with cls.from_bytes(io.BytesIO(r.content)) as img:
+            yield img
