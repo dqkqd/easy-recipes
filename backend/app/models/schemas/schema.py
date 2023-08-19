@@ -21,7 +21,7 @@ class IDModelMixin(Base):
 
 class IngredientBase(Base):
     name: str
-    image: HttpUrl
+    image_url: HttpUrl
 
     @field_validator("name")
     @classmethod
@@ -54,13 +54,13 @@ class IngredientInDB(IDModelMixin, IngredientBase):
 
 class IngredientPublic(IDModelMixin):
     name: str
-    image: str
+    image_url: str
     recipes: list[int]
 
 
 class RecipeBase(Base):
     name: str
-    image: HttpUrl
+    image_url: HttpUrl
 
     @field_validator("name")
     @classmethod

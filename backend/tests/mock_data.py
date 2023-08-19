@@ -23,7 +23,7 @@ def random_valid_url() -> Url:
 def ingredient_create_data(name: str | None = None) -> dict[str, Any]:
     ingredient = schema.IngredientCreate(
         name=name if name is not None else random_str(),
-        image=random_valid_url(),
+        image_url=random_valid_url(),
     )
     return ingredient.model_dump(mode="json")
 

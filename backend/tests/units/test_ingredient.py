@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 def test_200_create_basic(client: FlaskClient) -> None:
     ingredient_from_user = schema.IngredientFromUser(
         name="eggs",
-        image=mock_data.MockImage.random_valid_image_url(50, 50),
+        image_url=mock_data.MockImage.random_valid_image_url(50, 50),
     )
     response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
 
@@ -34,8 +34,8 @@ def test_200_create_basic(client: FlaskClient) -> None:
         assert ingredient.name == ingredient_from_user.name
 
         # same image but different url
-        assert ingredient.image != ingredient_from_user.image
-        assert compare_image_data_from_uri(ingredient.image, ingredient_from_user.image)
+        assert ingredient.image_url != ingredient_from_user.image_url
+        assert compare_image_data_from_uri(ingredient.image_url, ingredient_from_user.image_url)
 
 
 """

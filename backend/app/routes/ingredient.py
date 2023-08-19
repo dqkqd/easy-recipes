@@ -31,10 +31,10 @@ def create_ingredient() -> Response:
     body = request.get_json()
 
     ingredient_from_user = schema.IngredientFromUser(**body)
-    with ImageOnServer.from_source(ingredient_from_user.image) as image_on_server:
+    with ImageOnServer.from_source(ingredient_from_user.image_url) as image_on_server:
         ingredient_create = schema.IngredientCreate(
-            **ingredient_from_user.model_dump(exclude={"image"}),
-            image=image_on_server.uri,
+            **ingredient_from_user.model_dump(exclude={"image_url"}),
+            image_url=image_on_server.uri,
         )
 
     with IngredientRepository.get_repository(db) as repo:
