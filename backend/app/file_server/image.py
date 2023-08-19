@@ -17,7 +17,7 @@ def transform_image_stream(stream: io.BytesIO | io.BufferedReader) -> io.BytesIO
         image_bytes = io.BytesIO()
         image.save(image_bytes, format="PNG")
     except Exception as e:  # noqa: BLE001 #TODO(dqk): remove hard code
-        raise exceptions.UnsupportedMediaType("Invalid image") from e
+        raise exceptions.UnsupportedMediaType("Invalid image.") from e
     else:
         return image_bytes
 

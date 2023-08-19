@@ -11,22 +11,12 @@ from flask import current_app
 from pydantic_core import Url
 from werkzeug import exceptions
 
+from app.errors import ServerAlreadyInitializedError, ServerConfigError, ServerDeleteWrongFileError
+
 if TYPE_CHECKING:
     from flask import Flask
 
 FileIdentifer = str
-
-
-class FileServerError(Exception):
-    ...
-
-
-class FileServerAlreadyInitializedError(FileServerError):
-    ...
-
-
-class FileServerConfigDoesNotExistError(FileServerError):
-    ...
 
 
 def get_file_type_from_bytes(stream: io.BytesIO | io.BufferedReader) -> filetype.Type:
@@ -34,7 +24,7 @@ def get_file_type_from_bytes(stream: io.BytesIO | io.BufferedReader) -> filetype
     kind = filetype.guess(stream.read())
     stream.seek(0)
     if kind is None:
-        raise TypeError
+        raise TypeError(stream.read(32))
     return kind
 
 
@@ -46,7 +36,7 @@ class FileServer:
 
     def init_app(self, app: Flask) -> None:
         if "file_server" in app.extensions:
-            raise FileServerAlreadyInitializedError
+            raise ServerAlreadyInitializedError
         app.extensions["file_server"] = self
 
         try:
@@ -59,7 +49,7 @@ class FileServer:
             self.password = app.config["FILE_SERVER_PASSWORD"]
             self.fernet_model = Fernet(self.encrypt_key)
         except KeyError as e:
-            raise FileServerConfigDoesNotExistError from e
+            raise ServerConfigError from e
 
     @cached_property
     def url(self) -> Url:
@@ -67,7 +57,7 @@ class FileServer:
             self.init_app(current_app)
 
         if self._url is None:
-            raise FileServerConfigDoesNotExistError
+            raise ServerConfigError
 
         return self._url
 
@@ -87,7 +77,7 @@ class FileServer:
         uri = self.file_uri(identifier)
         response_identifier = self._delete_from_uri(uri)
         if response_identifier != identifier:
-            raise exceptions.InternalServerError
+            raise ServerDeleteWrongFileError
         return True
 
     @singledispatchmethod
@@ -112,12 +102,16 @@ class FileServer:
         data = r.json()
         identifier = data["filename"]
         if not isinstance(identifier, FileIdentifer):
+            # this error will never occur.
             raise TypeError(identifier)
         return identifier
 
     @add.register
     def _(self, stream: io.BytesIO | io.BufferedReader) -> FileIdentifer:
-        file_type = get_file_type_from_bytes(stream)
+        try:
+            file_type = get_file_type_from_bytes(stream)
+        except TypeError as e:
+            raise exceptions.UnsupportedMediaType("Invalid file.") from e
         ext = file_type.extension
 
         r = requests.post(
@@ -132,6 +126,7 @@ class FileServer:
         data = r.json()
         identifier = data["filename"]
         if not isinstance(identifier, FileIdentifer):
+            # this error will never occur.
             raise TypeError(identifier)
         return identifier
 

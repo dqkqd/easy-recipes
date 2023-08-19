@@ -25,8 +25,8 @@ def create_app(config_cls: type[BaseConfig] = Config) -> Flask:
     app.register_blueprint(recipe.api)
     app.register_blueprint(ingredient.api)
 
-    from app.errors import ERecipesError, handle_error
+    from app.errors import ApplicationHTTPError, handle_error
 
-    app.register_error_handler(ERecipesError, handle_error)
+    app.register_error_handler(ApplicationHTTPError, handle_error)
 
     return app
