@@ -71,8 +71,17 @@ class FileServer:
             return self._add_url(source)
         raise NotImplementedError
 
+    def delete(self, identifier: FileIdentifer) -> bool:
+        uri = self.uri(identifier)
+        response_identifier = self._delete_from_uri(uri)
+        if response_identifier != identifier:
+            raise exceptions.InternalServerError
+        return True
+
     def _get_from_uri(self, uri: str) -> io.BytesIO:
         r = requests.get(uri, timeout=self.timeout)
+        if r.status_code != 200:
+            exceptions.abort(r.status_code)
         return io.BytesIO(r.content)
 
     def _add_bytes(self, stream: io.BytesIO) -> FileIdentifer:
@@ -93,6 +102,17 @@ class FileServer:
     def _add_url(self, url: str) -> FileIdentifer:
         stream = self._get_from_uri(url)
         return self._add_bytes(stream)
+
+    def _delete_from_uri(self, uri: str) -> FileIdentifer:
+        r = requests.delete(
+            uri,
+            headers=self.header,
+            timeout=self.timeout,
+        )
+        if r.status_code != 200:
+            exceptions.abort(r.status_code)
+        data = r.json()
+        return data["filename"]
 
 
 file_server = FileServer()
