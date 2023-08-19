@@ -22,15 +22,6 @@ services:
     ports:
       - 5433:5432
 
-  test_database:
-    image: postgres:15.4-alpine
-    volumes:
-      - postgres_test_data:/var/lib/postgresql/data/
-    env_file:
-      - env-file.example
-    ports:
-      - 5434:5432
-
   fileserver:
     build:
       context: ./fileserver
@@ -42,12 +33,17 @@ services:
     ports:
       - 6432:80
 
+  test_database:
+    image: postgres:15.4-alpine
+    env_file:
+      - env-file.example
+    ports:
+      - 5434:5432
+
   test_fileserver:
     build:
       context: ./fileserver
       dockerfile: Dockerfile
-    volumes:
-      - fileserver_test_data:/fileserver/data/
     env_file:
       - env-file.example
     ports:
@@ -55,6 +51,4 @@ services:
 
 volumes:
   postgres_data:
-  postgres_test_data:
   fileserver_data:
-  fileserver_test_data:
