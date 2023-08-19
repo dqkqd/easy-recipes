@@ -9,6 +9,7 @@ from app.file_server.file import FileOnServer
 from tests.mock_data import random_image
 
 
+@pytest.mark.usefixtures("app_context")
 def test_add_from_bytes() -> None:
     img = random_image(256, 256)
     image_bytes = io.BytesIO()
@@ -18,6 +19,7 @@ def test_add_from_bytes() -> None:
         assert image_bytes.getvalue() == image_on_server.data.getvalue()
 
 
+@pytest.mark.usefixtures("app_context")
 def test_add_from_file(tmp_path: Path) -> None:
     file = tmp_path / "file.png"
     img = random_image(256, 256)
@@ -27,6 +29,7 @@ def test_add_from_file(tmp_path: Path) -> None:
         assert file.read_bytes() == image_on_server.data.getvalue()
 
 
+@pytest.mark.usefixtures("app_context")
 def test_add_from_url() -> None:
     img = random_image(256, 256)
     image_bytes = io.BytesIO()
@@ -45,16 +48,17 @@ def test_add_from_url() -> None:
     assert image_bytes.getvalue() == new_image_bytes.getvalue()
 
 
+@pytest.mark.usefixtures("app_context")
 def test_add_from_bytes_clean_up_after_exception() -> None:
     img = random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
-    with pytest.raises(AssertionError), FileOnServer.from_source(  # noqa: PT012
+    with pytest.raises(exceptions.InternalServerError), FileOnServer.from_source(  # noqa: PT012
         image_bytes,
     ) as image_on_server:
         identifier = image_on_server.identifier
-        raise AssertionError
+        raise exceptions.InternalServerError
 
     with pytest.raises(exceptions.NotFound):
         fs.get(identifier)
