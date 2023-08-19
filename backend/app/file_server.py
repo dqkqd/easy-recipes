@@ -4,7 +4,7 @@ import io
 from functools import cached_property
 from typing import TYPE_CHECKING
 
-import filetype
+import filetype  # type: ignore  # noqa: PGH003
 import requests
 from cryptography.fernet import Fernet
 from werkzeug import exceptions
@@ -96,8 +96,12 @@ class FileServer:
         )
         if r.status_code != 200:
             exceptions.abort(r.status_code)
+
         data = r.json()
-        return data["filename"]
+        identifier = data["filename"]
+        if not isinstance(identifier, FileIdentifer):
+            raise TypeError(identifier)
+        return identifier
 
     def _add_url(self, url: str) -> FileIdentifer:
         stream = self._get_from_uri(url)
@@ -111,8 +115,12 @@ class FileServer:
         )
         if r.status_code != 200:
             exceptions.abort(r.status_code)
+
         data = r.json()
-        return data["filename"]
+        identifier = data["filename"]
+        if not isinstance(identifier, FileIdentifer):
+            raise TypeError(identifier)
+        return identifier
 
 
 file_server = FileServer()
