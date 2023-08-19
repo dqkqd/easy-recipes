@@ -36,7 +36,7 @@ def crop_center(image: Image.Image) -> Image.Image:
 
 
 class ImageOnServer(FileOnServer):
-    @FileOnServer.validator.register
+    @FileOnServer.validator.register  # type: ignore  # noqa: PGH003
     @classmethod
     def validate_image_bytes(
         cls,
