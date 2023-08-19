@@ -6,6 +6,7 @@ from cryptography.fernet import Fernet
 
 class BaseConfig:
     SECRET_KEY = secrets.token_urlsafe(256)
+    DEBUG = int(os.environ.get("DEBUG", 0))
 
 
 class Config(BaseConfig):

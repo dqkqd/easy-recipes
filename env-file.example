@@ -20,3 +20,6 @@ FILE_SERVER_HOST=fileserver
 TEST_POSTGRES_HOST=test_database
 TEST_FILE_SERVER_HOST=test_fileserver
 TEST_FILE_SERVER_HOST=fileserver
+
+# debug mode
+DEBUG=1
