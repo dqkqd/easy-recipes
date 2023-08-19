@@ -6,6 +6,7 @@ from PIL import Image
 from werkzeug import exceptions
 
 from app import config
+from app.file_server.file import FileOnServer
 
 
 def transform_image_stream(stream: io.BytesIO | io.BufferedReader) -> io.BytesIO:
@@ -22,7 +23,7 @@ def transform_image_stream(stream: io.BytesIO | io.BufferedReader) -> io.BytesIO
 
 def crop_center(image: Image.Image) -> Image.Image:
     w, h = image.size
-    crop_size = min(max(w, h), config.MAX_IMAGE_SIZE)
+    crop_size = min(w, h, config.MAX_IMAGE_SIZE)
     return image.crop(
         (
             (w - crop_size) // 2,
@@ -31,3 +32,13 @@ def crop_center(image: Image.Image) -> Image.Image:
             (h + crop_size) // 2,
         ),
     )
+
+
+class ImageOnServer(FileOnServer):
+    @FileOnServer.validator.register
+    @classmethod
+    def validate_image_bytes(
+        cls,
+        source: io.BytesIO | io.BufferedReader,
+    ) -> io.BytesIO | io.BufferedReader:
+        return transform_image_stream(source)
