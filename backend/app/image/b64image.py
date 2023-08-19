@@ -43,6 +43,14 @@ class Base64Image:
         raise NotImplementedError
 
 
+def transform_image_stream(stream: io.BytesIO) -> io.BytesIO:
+    image = Image.open(stream)
+    image = crop_center(image)
+    image_bytes = io.BytesIO()
+    image.save(image_bytes, format="PNG")
+    return image_bytes
+
+
 def crop_center(image: Image.Image) -> Image.Image:
     w, h = image.size
     crop_size = min(max(w, h), config.MAX_IMAGE_SIZE)
@@ -81,10 +89,7 @@ class ImageOnServer:
     @contextmanager
     def from_bytes(cls, stream: io.BytesIO) -> Self:
         try:
-            image = Image.open(stream)
-            image = crop_center(image)
-            image_bytes = io.BytesIO()
-            image.save(image_bytes, format="PNG")
+            image_bytes = transform_image_stream(stream)
         except Exception as e:  # noqa: BLE001 #TODO(dqk): remove hard code
             raise exceptions.UnsupportedMediaType("Invalid image") from e
 
