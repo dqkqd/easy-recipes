@@ -26,7 +26,7 @@ def test_add_file_from_url() -> None:
     img.save(image_bytes, format="PNG")
 
     identifier = fs.add(image_bytes)
-    image_url = fs.uri(identifier)
+    image_url = fs.file_uri(identifier)
 
     new_identifier = fs.add(image_url)
     requested_image_bytes = fs.get(new_identifier)

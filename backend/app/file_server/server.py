@@ -28,18 +28,14 @@ class FileServer:
     timeout: float = 1
 
     def __init__(self) -> None:
-        self._server_url: str | None = None
+        self._url: str | None = None
 
     def init_app(self, app: Flask) -> None:
         if "file_server" in app.extensions:
             raise RuntimeError("'FileServer' instance has already been registered")
         app.extensions["file_server"] = self
 
-        file_server_url = app.config.get("FILE_SERVER_URL", None)
-        if file_server_url is None:
-            raise RuntimeError("FILE_SERVER_URL must be set")
-
-        self._server_url = app.config["FILE_SERVER_URL"]
+        self._url = app.config["FILE_SERVER_URL"]
 
         self.authorization_scheme = app.config["FILE_SERVER_AUTHORIZATION_SCHEME"]
         self.encrypt_key = app.config["FILE_SERVER_ENCRYPT_KEY"]
@@ -47,25 +43,25 @@ class FileServer:
         self.fernet_model = Fernet(self.encrypt_key)
 
     @cached_property
-    def server_url(self) -> str:
-        if self._server_url is None:
+    def url(self) -> str:
+        if self._url is None:
             raise RuntimeError("FileServer object must `init_app` before used.")
-        return self._server_url
+        return self._url
 
     @cached_property
     def header(self) -> dict[str, str]:
         token = self.fernet_model.encrypt(self.password.encode()).decode()
         return {"Authorization": f"{self.authorization_scheme} {token}"}
 
-    def uri(self, identifier: FileIdentifer) -> str:
-        return f"{self.server_url}{identifier}"
+    def file_uri(self, identifier: FileIdentifer) -> str:
+        return f"{self.url}{identifier}"
 
     def get(self, identifier: FileIdentifer) -> io.BytesIO:
-        uri = self.uri(identifier)
+        uri = self.file_uri(identifier)
         return self._get_from_uri(uri)
 
     def delete(self, identifier: FileIdentifer) -> bool:
-        uri = self.uri(identifier)
+        uri = self.file_uri(identifier)
         response_identifier = self._delete_from_uri(uri)
         if response_identifier != identifier:
             raise exceptions.InternalServerError
@@ -102,7 +98,7 @@ class FileServer:
         ext = file_type.extension
 
         r = requests.post(
-            self.server_url,
+            self.url,
             headers=self.header,
             files={"file": (f"file.{ext}", stream)},
             timeout=self.timeout,
