@@ -11,7 +11,7 @@ def create_app(config_cls: type[BaseConfig] = Config) -> Flask:
     config = config_cls()
     app.config.from_object(config)
 
-    from app.models.database import db, migrate
+    from app.database import db, migrate
 
     db.init_app(app)
     migrate.init_app(app, db)

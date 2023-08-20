@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 import pytest
 
-from app.models.database import db
+from app.database import db
 from app.repositories.ingredient import IngredientRepository
 from app.schemas import schema
 from tests import mock_data

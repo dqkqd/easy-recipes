@@ -4,9 +4,9 @@ from typing import TYPE_CHECKING
 
 from flask import Blueprint, jsonify, request
 
+from app.database import db
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.models.database import db
 from app.repositories.ingredient import IngredientRepository
 from app.schemas import schema
 
