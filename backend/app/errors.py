@@ -23,11 +23,8 @@ def to_handleable_error(f: Callable[..., Any]) -> Callable[..., Any]:
         try:
             return f(*args, **kwargs)
         except exceptions.NotFound as e:
-            raise ApplicationHTTPError(
-                code=e.code,
-                description="Resources not found.",
-                response=e.get_response(),
-            ) from e
+            e.description = "Resources not found."
+            raise ApplicationHTTPError.from_http_error(e) from e
         except exceptions.HTTPException as e:
             raise ApplicationHTTPError.from_http_error(e) from e
         except ValidationError as e:
