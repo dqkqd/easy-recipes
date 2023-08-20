@@ -194,7 +194,6 @@ def test_200_get_ingredient_after_many_create(client: FlaskClient) -> None:
         assert data["id"] == ingredient_id
 
 
-"""
 @pytest.mark.skip()
 def test_200_get_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
@@ -213,6 +212,5 @@ def test_200_get_ingredient_unwated_items_are_not_exposed() -> None:
 def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
     response = client.get("/ingredients/1")
     data = json.loads(response.data)
-    assert data == {"message": "Not Found."}
+    assert data == {"code": 404, "message": "Resources not found."}
     assert response.status_code == 404
-"""
