@@ -40,47 +40,6 @@ def test_200_create_basic(client: FlaskClient) -> None:
         )
 
 
-@pytest.mark.usefixtures("app_context")
-def test_200_create_empty_image_uri(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
-    ingredient_data["image_uri"] = None
-    response = client.post("/ingredients/", json=ingredient_data)
-
-    data = json.loads(response.data)
-    assert data == {"id": 1}
-    assert response.status_code == 200
-
-    with IngredientRepository.get_repository(db) as repo:
-        ingredient = repo.get_ingredient(id=1)
-        assert ingredient.image_uri is None
-
-
-@pytest.mark.usefixtures("app_context")
-def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
-    ingredient_data.pop("image_uri")
-    response = client.post("/ingredients/", json=ingredient_data)
-
-    data = json.loads(response.data)
-    assert data == {"id": 1}
-    assert response.status_code == 200
-
-    with IngredientRepository.get_repository(db) as repo:
-        ingredient = repo.get_ingredient(id=1)
-        assert ingredient.image_uri is None
-
-
-@pytest.mark.usefixtures("app_context")
-def test_422_create_invalid_uri(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
-    ingredient_data["image_uri"] = "invalid"
-    response = client.post("/ingredients/", json=ingredient_data)
-
-    data = json.loads(response.data)
-    assert response.status_code == 422
-    assert data == {"code": 422, "message": "Invalid image_uri."}
-
-
 @pytest.mark.parametrize(
     "name",
     [
@@ -124,6 +83,47 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
     with IngredientRepository.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
         assert ingredient.name == "eggs"
+
+
+@pytest.mark.usefixtures("app_context")
+def test_200_create_empty_image_uri(client: FlaskClient) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["image_uri"] = None
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert data == {"id": 1}
+    assert response.status_code == 200
+
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+        assert ingredient.image_uri is None
+
+
+@pytest.mark.usefixtures("app_context")
+def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data.pop("image_uri")
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert data == {"id": 1}
+    assert response.status_code == 200
+
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+        assert ingredient.image_uri is None
+
+
+@pytest.mark.usefixtures("app_context")
+def test_422_create_invalid_uri(client: FlaskClient) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["image_uri"] = "invalid"
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert response.status_code == 422
+    assert data == {"code": 422, "message": "Invalid image_uri."}
 
 
 """
