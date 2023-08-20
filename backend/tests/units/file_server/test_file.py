@@ -6,12 +6,12 @@ from werkzeug import exceptions
 
 from app.file_server import fs
 from app.file_server.file import FileOnServer
-from tests.mock_data import random_image
+from tests.mock_data import MockImage
 
 
 @pytest.mark.usefixtures("app_context")
 def test_add_from_bytes() -> None:
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
@@ -22,7 +22,7 @@ def test_add_from_bytes() -> None:
 @pytest.mark.usefixtures("app_context")
 def test_add_from_file(tmp_path: Path) -> None:
     file = tmp_path / "file.png"
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     img.save(file, format="PNG")
 
     with FileOnServer.from_source(file) as image_on_server:
@@ -31,7 +31,7 @@ def test_add_from_file(tmp_path: Path) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_add_from_url() -> None:
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
@@ -50,7 +50,7 @@ def test_add_from_url() -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_add_from_bytes_clean_up_after_exception() -> None:
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 

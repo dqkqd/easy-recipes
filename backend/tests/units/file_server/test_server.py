@@ -4,12 +4,12 @@ import pytest
 from werkzeug import exceptions
 
 from app.file_server import fs
-from tests.mock_data import random_image
+from tests.mock_data import MockImage
 
 
 @pytest.mark.usefixtures("app_context")
 def test_add_file_from_bytes() -> None:
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
@@ -21,7 +21,7 @@ def test_add_file_from_bytes() -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_add_file_from_url() -> None:
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
@@ -37,7 +37,7 @@ def test_add_file_from_url() -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_delete_file() -> None:
-    img = random_image(256, 256)
+    img = MockImage.random_image(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
     identifier = fs.add(image_bytes)
