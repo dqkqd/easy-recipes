@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from flask import Blueprint, abort, jsonify, request
 
+from app import auth
 from app.crud import crud_ingredient
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
@@ -66,6 +67,7 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 
 @api.route("/", methods=["POST"])
 @to_handleable_error
+@auth.require(auth.CREATE_INGREDIENT_PERMISSION)
 def create_ingredient() -> Response:
     body = request.get_json()
 
@@ -81,6 +83,7 @@ def create_ingredient() -> Response:
 
 @api.route("/<int:id>", methods=["DELETE"])
 @to_handleable_error
+@auth.require(auth.DELETE_INGREDIENT_PERMISSION)
 def delete_ingredient(id: int) -> Response:  # noqa: A002
     crud_ingredient.delete(id)
     return jsonify({"id": id})

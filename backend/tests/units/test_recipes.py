@@ -6,10 +6,10 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic_core import Url
 
-from app import config
+from app import auth, config
 from app.crud import crud_recipe
 from app.schemas.recipe import RecipePublic
-from tests.mocks import MockRecipe
+from tests.mocks import MockAuth, MockRecipe
 from tests.utils import compare_image_data_from_uri
 
 if TYPE_CHECKING:
@@ -21,6 +21,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
     recipe_create = MockRecipe.random_valid_recipe()
     response = client.post(
         "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
         json=recipe_create.model_dump(mode="json"),
     )
 
@@ -52,7 +53,11 @@ def test_200_create_basic(client: FlaskClient) -> None:
 def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
     recipe_data = MockRecipe.random_valid_recipe_data()
     recipe_data["name"] = name
-    response = client.post("/recipes/", json=recipe_data)
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_data,
+    )
 
     data = json.loads(response.data)
     assert response.status_code == 422
@@ -62,7 +67,11 @@ def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
 def test_422_create_no_name_provided(client: FlaskClient) -> None:
     recipe_data = MockRecipe.random_valid_recipe_data()
     recipe_data.pop("name")
-    response = client.post("/recipes/", json=recipe_data)
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_data,
+    )
 
     data = json.loads(response.data)
     assert response.status_code == 422
@@ -76,6 +85,7 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
     response = client.post(
         "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
         json=recipe_data,
     )
 
@@ -89,7 +99,11 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 def test_200_create_empty_image_uri(client: FlaskClient) -> None:
     recipe_data = MockRecipe.random_valid_recipe_data()
     recipe_data["image_uri"] = None
-    response = client.post("/recipes/", json=recipe_data)
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_data,
+    )
 
     data = json.loads(response.data)
     assert data == {"id": 1}
@@ -103,7 +117,11 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
 def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
     recipe_data = MockRecipe.random_valid_recipe_data()
     recipe_data.pop("image_uri")
-    response = client.post("/recipes/", json=recipe_data)
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_data,
+    )
 
     data = json.loads(response.data)
     assert data == {"id": 1}
@@ -117,7 +135,11 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
 def test_422_create_invalid_uri(client: FlaskClient) -> None:
     recipe_data = MockRecipe.random_valid_recipe_data()
     recipe_data["image_uri"] = "invalid"
-    response = client.post("/recipes/", json=recipe_data)
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_data,
+    )
 
     data = json.loads(response.data)
     assert response.status_code == 422
@@ -128,7 +150,11 @@ def test_422_create_invalid_uri(client: FlaskClient) -> None:
 def test_415_create_valid_uri_but_invalid_image(client: FlaskClient) -> None:
     recipe_data = MockRecipe.random_valid_recipe_data()
     recipe_data["image_uri"] = "https://example.com"
-    response = client.post("/recipes/", json=recipe_data)
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_data,
+    )
 
     data = json.loads(response.data)
     assert response.status_code == 415
@@ -159,6 +185,7 @@ def test_200_get_recipe_basic(client: FlaskClient) -> None:
     recipe_create = MockRecipe.random_valid_recipe()
     response = client.post(
         "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
         json=recipe_create.model_dump(mode="json"),
     )
 
@@ -184,6 +211,7 @@ def test_200_get_recipe_after_many_create(client: FlaskClient) -> None:
     for _ in range(num_datas):
         client.post(
             "/recipes/",
+            headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
             json=MockRecipe.random_valid_recipe_data(),
         )
 
@@ -220,17 +248,24 @@ def test_404_get_invalid_recipe(client: FlaskClient) -> None:
 def test_200_delete_basic(client: FlaskClient) -> None:
     client.post(
         "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
         json=MockRecipe.random_valid_recipe_data(),
     )
     response = client.get("/recipes/1")
     assert response.status_code == 200
 
-    response = client.delete("/recipes/1")
+    response = client.delete(
+        "/recipes/1",
+        headers=MockAuth.authorization_header(auth.DELETE_RECIPE_PERMISSION),
+    )
     assert response.status_code == 200
 
 
 def test_404_delete_non_existed(client: FlaskClient) -> None:
-    response = client.delete("/recipes/1")
+    response = client.delete(
+        "/recipes/1",
+        headers=MockAuth.authorization_header(auth.DELETE_RECIPE_PERMISSION),
+    )
     assert response.status_code == 404
 
     data = json.loads(response.data)
@@ -240,12 +275,19 @@ def test_404_delete_non_existed(client: FlaskClient) -> None:
 def test_404_delete_twice(client: FlaskClient) -> None:
     client.post(
         "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
         json=MockRecipe.random_valid_recipe_data(),
     )
-    response = client.delete("/recipes/1")
+    response = client.delete(
+        "/recipes/1",
+        headers=MockAuth.authorization_header(auth.DELETE_RECIPE_PERMISSION),
+    )
     assert response.status_code == 200
 
-    response = client.delete("/recipes/1")
+    response = client.delete(
+        "/recipes/1",
+        headers=MockAuth.authorization_header(auth.DELETE_RECIPE_PERMISSION),
+    )
     assert response.status_code == 404
 
     data = json.loads(response.data)
@@ -258,7 +300,11 @@ def test_200_get_all(client: FlaskClient) -> None:
     inserted_recipes_data = []
     for _ in range(num_datas):
         data = MockRecipe.random_valid_recipe_data()
-        client.post("/recipes/", json=data)
+        client.post(
+            "/recipes/",
+            headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+            json=data,
+        )
         inserted_recipes_data.append(data)
 
     response = client.get("/recipes/all")
@@ -294,14 +340,21 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
     inserted_recipes_data = []
     for _ in range(num_datas):
         data = MockRecipe.random_valid_recipe_data()
-        client.post("/recipes/", json=data)
+        client.post(
+            "/recipes/",
+            headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+            json=data,
+        )
         inserted_recipes_data.append(data)
 
     response = client.get("/recipes/all")
     assert response.status_code == 200
 
     for recipe_id in range(1, num_delete_datas + 1):
-        response = client.delete(f"/recipes/{recipe_id}")
+        response = client.delete(
+            f"/recipes/{recipe_id}",
+            headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        )
         assert response.status_code == 200
 
     response = client.get("/recipes/all")
@@ -317,7 +370,11 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
 
     for _ in range(num_datas):
         data = MockRecipe.random_valid_recipe_data()
-        client.post("/recipes/", json=data)
+        client.post(
+            "/recipes/",
+            headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+            json=data,
+        )
 
     for page in range(1, total_pages + 2):
         response = client.get(f"/recipes/?page={page}")
@@ -334,7 +391,11 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
 
 def test_200_get_pagination_no_param(client: FlaskClient) -> None:
     data = MockRecipe.random_valid_recipe_data()
-    client.post("/recipes/", json=data)
+    client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=data,
+    )
 
     response = client.get("/recipes/")
     assert response.status_code == 200
@@ -346,7 +407,11 @@ def test_200_get_pagination_no_param(client: FlaskClient) -> None:
 
 def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
     data = MockRecipe.random_valid_recipe_data()
-    client.post("/recipes/", json=data)
+    client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=data,
+    )
 
     response = client.get("/recipes/100")
     data = json.loads(response.data)
@@ -369,7 +434,11 @@ def test_404_get_page_no_items(client: FlaskClient) -> None:
 def test_200_404_pagination_render_enough(client: FlaskClient) -> None:
     for _ in range(config.PAGINATION_SIZE * 2):
         data = MockRecipe.random_valid_recipe_data()
-        client.post("/recipes/", json=data)
+        client.post(
+            "/recipes/",
+            headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+            json=data,
+        )
 
     response = client.get("/recipes/?page=1")
     assert response.status_code == 200
