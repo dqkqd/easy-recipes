@@ -279,3 +279,38 @@ def test_200_get_all(client: FlaskClient) -> None:
         inserted_data.pop("image_uri")
 
         assert response_data == inserted_data
+
+
+def test_200_get_all_no_data(client: FlaskClient) -> None:
+    response = client.get("/ingredients/all")
+    assert response.status_code == 200
+
+    data = json.loads(response.data)
+    assert data == {"total": 0, "ingredients": []}
+
+
+def test_200_get_all_after_deletion(client: FlaskClient) -> None:
+    num_datas = 15
+    num_delete_datas = num_datas // 2
+
+    inserted_ingredients_data = []
+
+    for _ in range(num_datas):
+        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        client.post(
+            "/ingredients/",
+            json=data,
+        )
+        inserted_ingredients_data.append(data)
+
+    response = client.get("/ingredients/all")
+    assert response.status_code == 200
+
+    for ingredient_id in range(1, num_delete_datas + 1):
+        response = client.delete(f"/ingredients/{ingredient_id}")
+        assert response.status_code == 200
+
+    response = client.get("/ingredients/all")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data["total"] == num_datas - num_delete_datas
