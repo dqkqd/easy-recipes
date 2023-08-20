@@ -7,7 +7,7 @@ import pytest
 
 from app.database import db
 from app.repositories.ingredient import IngredientRepository
-from app.schemas import schema
+from app.schemas.ingredient import IngredientPublic
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri
 
@@ -167,7 +167,7 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
 
     response = client.get("/ingredients/1")
     data = json.loads(response.data)
-    ingredient_public = schema.IngredientPublic(**data)
+    ingredient_public = IngredientPublic(**data)
 
     assert response.status_code == 200
     assert ingredient_from_user.model_dump(

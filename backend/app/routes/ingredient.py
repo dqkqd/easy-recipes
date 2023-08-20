@@ -8,7 +8,7 @@ from app.database import db
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
 from app.repositories.ingredient import IngredientRepository
-from app.schemas import schema
+from app.schemas.ingredient import IngredientBase, IngredientCreate
 
 if TYPE_CHECKING:
     from pydantic import HttpUrl
@@ -37,14 +37,14 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 def create_ingredient() -> Response:
     body = request.get_json()
 
-    ingredient_from_user = schema.IngredientBase(**body)
+    ingredient_from_user = IngredientBase(**body)
 
     image_uri: HttpUrl | None = None
     if ingredient_from_user.image_uri is not None:
         with ImageOnServer.from_source(ingredient_from_user.image_uri) as image_on_server:
             image_uri = image_on_server.uri
 
-    ingredient_create = schema.IngredientCreate(
+    ingredient_create = IngredientCreate(
         **ingredient_from_user.model_dump(exclude={"image_uri"}),
         image_uri=image_uri,
     )

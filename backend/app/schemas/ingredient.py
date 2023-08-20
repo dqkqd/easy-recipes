@@ -1,26 +1,22 @@
 from __future__ import annotations
 
-from typing import Annotated
+from typing import TYPE_CHECKING, Annotated
 
 from pydantic import (
     AfterValidator,
-    BaseModel,
     ConfigDict,
     Field,
     HttpUrl,
     field_serializer,
 )
 
+from app.schemas.base import BaseSchema, IDModelMixin
 
-class Base(BaseModel):
-    pass
-
-
-class IDModelMixin(Base):
-    id: int  # noqa: A003
+if TYPE_CHECKING:
+    from app.schemas.recipe import RecipeInDB
 
 
-class IngredientBase(Base):
+class IngredientBase(BaseSchema):
     name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
     image_uri: HttpUrl | None = None
     recipes: set[int] = Field(default_factory=set)
@@ -45,7 +41,7 @@ class IngredientInDB(IDModelMixin, IngredientBase):
     def to_public(self) -> IngredientPublic:
         return IngredientPublic(
             **self.model_dump(exclude={"recipes"}),
-            recipes=[recipe.id for recipe in self.recipes],
+            recipes={recipe.id for recipe in self.recipes},
         )
 
 
@@ -53,19 +49,7 @@ class IngredientPublic(IDModelMixin, IngredientBase):
     pass
 
 
-class RecipeBase(Base):
-    name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
-    image_uri: HttpUrl | None = None
+# https://stackoverflow.com/questions/63420889/fastapi-pydantic-circular-references-in-separate-files
+from app.schemas.recipe import RecipeInDB  # noqa: E402, F811, TCH001
 
-
-class RecipeCreate(RecipeBase):
-    pass
-
-
-class RecipeUpdate(RecipeBase):
-    pass
-
-
-class RecipeInDB(IDModelMixin, RecipeBase):
-    model_config = ConfigDict(from_attributes=True)
-    ingredients: set[IngredientInDB] = Field(default_factory=set)
+IngredientInDB.model_rebuild()
