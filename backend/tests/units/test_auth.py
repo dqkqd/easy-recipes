@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from app import auth
-from tests.mocks import MockAuth, MockIngredient
+from tests.mocks import MockAuth, MockIngredient, MockRecipe
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
@@ -27,11 +27,32 @@ def test_200_create_ingredient_basic(mocker: MockerFixture, client: FlaskClient)
     assert response.status_code == 200
 
 
+def test_200_create_recipes_basic(mocker: MockerFixture, client: FlaskClient) -> None:
+    token = auth.CREATE_RECIPE_PERMISSION
+
+    mocker.patch(
+        "app.auth.verify_decode_jwt",
+        return_value={"permissions": [token]},
+    )
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(token),
+        json=MockRecipe.random_valid_recipe_data(),
+    )
+    assert response.status_code == 200
+
+
 def test_401_create_ingredient_missing_authorization(
     client: FlaskClient,
 ) -> None:
     response = client.post(
         "/ingredients/",
+        json=MockIngredient.random_valid_ingredient_data(),
+    )
+    assert response.status_code == 401
+
+    response = client.post(
+        "/recipes/",
         json=MockIngredient.random_valid_ingredient_data(),
     )
     assert response.status_code == 401
@@ -54,5 +75,12 @@ def test_401_create_ingredient_authorization_invalid(
         "/ingredients/",
         headers=headers,
         json=MockIngredient.random_valid_ingredient_data(),
+    )
+    assert response.status_code == 401
+
+    response = client.post(
+        "/recipes/",
+        headers=headers,
+        json=MockRecipe.random_valid_recipe_data(),
     )
     assert response.status_code == 401
