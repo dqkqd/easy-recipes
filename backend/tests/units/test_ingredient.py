@@ -19,7 +19,7 @@ if TYPE_CHECKING:
 def test_200_create_basic(client: FlaskClient) -> None:
     ingredient_from_user = schema.IngredientFromUser(
         name="eggs",
-        image_url=mock_data.MockImage.random_valid_image_url(50, 50),
+        image_uri=mock_data.MockImage.random_valid_image_uri(50, 50),
     )
     response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
 
@@ -34,13 +34,13 @@ def test_200_create_basic(client: FlaskClient) -> None:
         assert ingredient.name == ingredient_from_user.name
 
         # same image but different url
-        assert ingredient.image_url != ingredient_from_user.image_url
-        assert compare_image_data_from_uri(ingredient.image_url, ingredient_from_user.image_url)
+        assert ingredient.image_uri != ingredient_from_user.image_uri
+        assert compare_image_data_from_uri(ingredient.image_uri, ingredient_from_user.image_uri)
 
 
 @pytest.mark.usefixtures("app_context")
-def test_200_empty_image_url(client: FlaskClient) -> None:
-    ingredient_from_user = schema.IngredientFromUser(name="eggs", image_url=None)
+def test_200_empty_image_uri(client: FlaskClient) -> None:
+    ingredient_from_user = schema.IngredientFromUser(name="eggs", image_uri=None)
     response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
 
     data = json.loads(response.data)
@@ -49,14 +49,14 @@ def test_200_empty_image_url(client: FlaskClient) -> None:
 
     with IngredientRepository.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
-        assert ingredient.image_url is None
+        assert ingredient.image_uri is None
 
 
 """
 
 @pytest.mark.skip()
 @pytest.mark.usefixtures("app_context")
-def test_200_create_use_default_image_url(client: FlaskClient) -> None:
+def test_200_create_use_default_image_uri(client: FlaskClient) -> None:
     ingredient_data = mock_data.ingredient_create_data()
     ingredient_data.pop("image")
     response = client.post(
@@ -82,7 +82,7 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
 
 @pytest.mark.skip("Update after implementing front-end")
-def test_200_create_uploaded_image_url(client: FlaskClient) -> None:  # noqa: ARG001
+def test_200_create_uploaded_image_uri(client: FlaskClient) -> None:  # noqa: ARG001
     msg = "save user uploaded image"
     raise NotImplementedError(msg)
 

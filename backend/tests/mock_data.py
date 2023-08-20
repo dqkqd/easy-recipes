@@ -23,7 +23,7 @@ def random_valid_url() -> Url:
 def ingredient_create_data(name: str | None = None) -> dict[str, Any]:
     ingredient = schema.IngredientCreate(
         name=name if name is not None else random_str(),
-        image_url=random_valid_url(),
+        image_uri=random_valid_url(),
     )
     return ingredient.model_dump(mode="json")
 
@@ -49,7 +49,7 @@ class MockImage:
         return stream
 
     @staticmethod
-    def random_valid_image_url(w: int, h: int) -> Url:
+    def random_valid_image_uri(w: int, h: int) -> Url:
         with ImageOnServer.from_source(
             MockImage.random_image_bytes(w, h),
         ) as image_on_server:

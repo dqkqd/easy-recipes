@@ -21,7 +21,7 @@ class IDModelMixin(Base):
 
 class IngredientBase(Base):
     name: str
-    image_url: HttpUrl | None = None
+    image_uri: HttpUrl | None = None
 
     @field_validator("name")
     @classmethod
@@ -31,7 +31,7 @@ class IngredientBase(Base):
 
 class IngredientFromUser(Base):
     name: str
-    image_url: HttpUrl | None = None
+    image_uri: HttpUrl | None = None
 
 
 class IngredientCreate(IngredientBase):
@@ -55,13 +55,13 @@ class IngredientInDB(IDModelMixin, IngredientBase):
 
 class IngredientPublic(IDModelMixin):
     name: str
-    image_url: str | None
+    image_uri: str | None
     recipes: list[int]
 
 
 class RecipeBase(Base):
     name: str
-    image_url: HttpUrl | None
+    image_uri: HttpUrl | None
 
     @field_validator("name")
     @classmethod

@@ -40,13 +40,13 @@ def create_ingredient() -> Response:
     ingredient_from_user = schema.IngredientFromUser(**body)
 
     image_uri: HttpUrl | None = None
-    if ingredient_from_user.image_url is not None:
-        with ImageOnServer.from_source(ingredient_from_user.image_url) as image_on_server:
+    if ingredient_from_user.image_uri is not None:
+        with ImageOnServer.from_source(ingredient_from_user.image_uri) as image_on_server:
             image_uri = image_on_server.uri
 
     ingredient_create = schema.IngredientCreate(
-        **ingredient_from_user.model_dump(exclude={"image_url"}),
-        image_url=image_uri,
+        **ingredient_from_user.model_dump(exclude={"image_uri"}),
+        image_uri=image_uri,
     )
 
     with IngredientRepository.get_repository(db) as repo:
