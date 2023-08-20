@@ -39,7 +39,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
 
 
 @pytest.mark.usefixtures("app_context")
-def test_200_empty_image_uri(client: FlaskClient) -> None:
+def test_200_create_empty_image_uri(client: FlaskClient) -> None:
     ingredient_from_user = schema.IngredientFromUser(name="eggs", image_uri=None)
     response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
 
