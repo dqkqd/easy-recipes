@@ -54,3 +54,13 @@ class MockImage:
             MockImage.random_image_bytes(w, h),
         ) as image_on_server:
             return image_on_server.uri
+
+
+class MockIngredient:
+    @staticmethod
+    def random_valid_ingredient_data() -> dict[str, Any]:
+        ingredient = schema.IngredientFromUser(
+            name="name",
+            image_uri=MockImage.random_valid_image_uri(50, 50),
+        )
+        return ingredient.model_dump(mode="json")
