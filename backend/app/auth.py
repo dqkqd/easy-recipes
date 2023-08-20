@@ -7,12 +7,10 @@ from flask import request
 from pydantic import BaseModel, ValidationError
 from werkzeug import exceptions
 
-ALL_PERMISSIONS = {
-    "create:ingredient",
-    "delete:ingredient",
-    "create:recipe",
-    "delete:recipe",
-}
+CREATE_INGREDIENT_PERMISSION = "create:ingredient"
+DELETE_INGREDIENT_PERMISSION = "delete:ingredient"
+CREATE_RECIPE_PERMISSION = "create:recipe"
+DELETE_RECIPE_PERMISSION = "delete:recipe"
 
 
 class Permissions(BaseModel):
@@ -47,10 +45,17 @@ def check_permissions(permission: str | None, payload: dict[Any, Any]) -> None:
 
 def verify_decode_jwt(_token: str) -> dict[str, set[str]]:
     # TODO(dqk): implement this later
-    return {"permissions": ALL_PERMISSIONS}
+    return {
+        "permissions": {
+            CREATE_INGREDIENT_PERMISSION,
+            DELETE_INGREDIENT_PERMISSION,
+            CREATE_RECIPE_PERMISSION,
+            DELETE_RECIPE_PERMISSION,
+        },
+    }
 
 
-def requires_auth(permission: str | None = None) -> Callable[..., Any]:
+def require(permission: str | None = None) -> Callable[..., Any]:
     def requires_auth_decorator(f: Callable[..., Any]) -> Callable[..., Any]:
         @wraps(f)
         def wrapper(*args: Any, **kwargs: Any) -> Any:
