@@ -10,7 +10,7 @@ class BaseModelMixin(db.Model):  # type: ignore  # noqa: PGH003
 
     id: Mapped[int] = mapped_column(primary_key=True)  # noqa: A003
     name: Mapped[str]
-    image_url: Mapped[str]
+    image_url: Mapped[str] = mapped_column(nullable=True)
 
 
 recipes_ingredients_association_table = db.Table(
