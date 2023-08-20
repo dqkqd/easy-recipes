@@ -62,7 +62,7 @@ def require(permission: str | None = None) -> Callable[..., Any]:
             token = get_token()
             payload = verify_decode_jwt(token)
             check_permissions(permission, payload)
-            return f(payload, *args, **kwargs)
+            return f(*args, **kwargs)
 
         return wrapper
 
