@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+from typing import Annotated
+
 from pydantic import (
+    AfterValidator,
     BaseModel,
     ConfigDict,
     Field,
@@ -30,7 +33,7 @@ class IngredientBase(Base):
 
 
 class IngredientFromUser(Base):
-    name: str
+    name: Annotated[str, AfterValidator(lambda x: x.strip())]
     image_uri: HttpUrl | None = None
 
 
