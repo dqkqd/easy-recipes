@@ -177,14 +177,14 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
     )
 
 
-"""
-
-def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
+def test_200_get_ingredient_after_many_create(client: FlaskClient) -> None:
     num_datas = 5
 
-    ingredient_datas = [mock_data.ingredient_create_data() for _ in range(num_datas)]
-    for data in ingredient_datas:
-        client.post("/ingredients/", json=data)
+    for _ in range(num_datas):
+        client.post(
+            "/ingredients/",
+            json=mock_data.MockIngredient.random_valid_ingredient_data(),
+        )
 
     for ingredient_id in range(1, num_datas + 1):
         response = client.get(f"/ingredients/{ingredient_id}")
@@ -194,6 +194,7 @@ def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
         assert data["id"] == ingredient_id
 
 
+"""
 @pytest.mark.skip()
 def test_200_get_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
