@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from flask import Blueprint, jsonify, request
+from flask import Blueprint, abort, jsonify, request
 
 from app.crud import crud_ingredient
 from app.errors import to_handleable_error
@@ -34,6 +34,13 @@ def get_ingredients() -> Response:
 @to_handleable_error
 def get_paginations() -> Response:
     paginaged_ingredients = crud_ingredient.get_pagination()
+
+    if (
+        paginaged_ingredients.page != 1
+        and paginaged_ingredients.page > paginaged_ingredients.pages
+    ):
+        abort(404)
+
     return jsonify(
         {
             "page": paginaged_ingredients.page,
