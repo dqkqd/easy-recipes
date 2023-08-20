@@ -10,6 +10,7 @@ from PIL import Image
 
 from app.file_server.image import ImageOnServer
 from app.schemas.ingredient import IngredientCreate
+from app.schemas.recipe import RecipeCreate
 
 if TYPE_CHECKING:
     from pydantic_core import Url
@@ -57,3 +58,17 @@ class MockIngredient:
     @staticmethod
     def random_valid_ingredient_data() -> dict[str, Any]:
         return MockIngredient.random_valid_ingredient().model_dump(mode="json")
+
+
+class MockRecipe:
+    @staticmethod
+    def random_valid_recipe() -> RecipeCreate:
+        return RecipeCreate(
+            name=random_id(),
+            description=random_str(256),
+            image_uri=MockImage.random_valid_image_uri(50, 50),
+        )
+
+    @staticmethod
+    def random_valid_recipe_data() -> dict[str, Any]:
+        return MockRecipe.random_valid_recipe().model_dump(mode="json")
