@@ -5,8 +5,8 @@ from typing import TYPE_CHECKING
 
 import pytest
 
+from app.crud.ingredient import CRUDIngredient
 from app.database import db
-from app.repositories.ingredient import IngredientRepository
 from app.schemas.ingredient import IngredientPublic
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri
@@ -27,7 +27,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with IngredientRepository.get_repository(db) as repo:
+    with CRUDIngredient.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
 
         assert ingredient.id == 1
@@ -81,7 +81,7 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
     assert response.status_code == 200
 
-    with IngredientRepository.get_repository(db) as repo:
+    with CRUDIngredient.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
         assert ingredient.name == "eggs"
 
@@ -96,7 +96,7 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with IngredientRepository.get_repository(db) as repo:
+    with CRUDIngredient.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
         assert ingredient.image_uri is None
 
@@ -111,7 +111,7 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with IngredientRepository.get_repository(db) as repo:
+    with CRUDIngredient.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
         assert ingredient.image_uri is None
 

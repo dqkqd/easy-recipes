@@ -4,10 +4,10 @@ from typing import TYPE_CHECKING
 
 from flask import Blueprint, jsonify, request
 
+from app.crud.ingredient import CRUDIngredient
 from app.database import db
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.repositories.ingredient import IngredientRepository
 from app.schemas.ingredient import IngredientBase, IngredientCreate
 
 if TYPE_CHECKING:
@@ -27,7 +27,7 @@ def get_ingredients() -> Response:
 @api.route("/<int:id>")
 @to_handleable_error
 def get_ingredient(id: int) -> Response:  # noqa: A002
-    with IngredientRepository.get_repository(db) as repo:
+    with CRUDIngredient.get_repository(db) as repo:
         ingredient_in_db = repo.get_ingredient(id=id)
         return jsonify(ingredient_in_db.to_public().model_dump(mode="json"))
 
@@ -49,7 +49,7 @@ def create_ingredient() -> Response:
         image_uri=image_uri,
     )
 
-    with IngredientRepository.get_repository(db) as repo:
+    with CRUDIngredient.get_repository(db) as repo:
         ingredient_in_db = repo.create_ingredient(ingredient_create)
 
     return jsonify({"id": ingredient_in_db.id})

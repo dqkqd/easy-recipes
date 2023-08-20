@@ -1,4 +1,3 @@
-from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from typing import Iterator, Self
 
@@ -7,17 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_sqlalchemy.model import Model
 
 
-class AbstractRepository(ABC):
-    @abstractmethod
-    def add(self, instance: Model) -> None:
-        raise NotImplementedError
-
-    @abstractmethod
-    def delete(self, instance: Model) -> None:
-        raise NotImplementedError
-
-
-class SQLAlchemyRepository(AbstractRepository):
+class CRUDBase:
     def __init__(self, db: SQLAlchemy) -> None:
         self.db = db
 

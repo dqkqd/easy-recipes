@@ -1,9 +1,9 @@
+from app.crud.base import CRUDBase
 from app.models.ingredient import Ingredient
-from app.repositories.core import SQLAlchemyRepository
 from app.schemas.ingredient import IngredientCreate, IngredientInDB
 
 
-class IngredientRepository(SQLAlchemyRepository):
+class CRUDIngredient(CRUDBase):
     def create_ingredient(
         self,
         ingredient_create: IngredientCreate,
