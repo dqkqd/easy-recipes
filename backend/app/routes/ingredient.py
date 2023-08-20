@@ -46,3 +46,10 @@ def create_ingredient() -> Response:
 
     ingredient = crud_ingredient.add(ingredient_create)
     return jsonify({"id": ingredient.id})
+
+
+@api.route("/<int:id>", methods=["DELETE"])
+@to_handleable_error
+def delete_ingredient(id: int) -> Response:  # noqa: A002
+    crud_ingredient.delete(id)
+    return jsonify({"id": id})

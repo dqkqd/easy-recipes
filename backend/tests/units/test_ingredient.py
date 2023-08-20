@@ -214,3 +214,38 @@ def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert data == {"code": 404, "message": "Resources not found."}
     assert response.status_code == 404
+
+
+def test_200_delete_basic(client: FlaskClient) -> None:
+    client.post(
+        "/ingredients/",
+        json=mock_data.MockIngredient.random_valid_ingredient_data(),
+    )
+    response = client.get("/ingredients/1")
+    assert response.status_code == 200
+
+    response = client.delete("/ingredients/1")
+    assert response.status_code == 200
+
+
+def test_404_delete_non_existed(client: FlaskClient) -> None:
+    response = client.delete("/ingredients/1")
+    assert response.status_code == 404
+
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+
+
+def test_404_delete_twice(client: FlaskClient) -> None:
+    client.post(
+        "/ingredients/",
+        json=mock_data.MockIngredient.random_valid_ingredient_data(),
+    )
+    response = client.delete("/ingredients/1")
+    assert response.status_code == 200
+
+    response = client.delete("/ingredients/1")
+    assert response.status_code == 404
+
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
