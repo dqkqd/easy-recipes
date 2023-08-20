@@ -36,13 +36,13 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 def create_ingredient() -> Response:
     body = request.get_json()
 
-    ingredient_from_user = IngredientCreate(**body)
+    ingredient_create = IngredientCreate(**body)
 
-    if ingredient_from_user.image_uri is not None:
-        with ImageOnServer.from_source(ingredient_from_user.image_uri) as image_on_server:
-            ingredient_from_user.image_uri = image_on_server.uri
+    if ingredient_create.image_uri is not None:
+        with ImageOnServer.from_source(ingredient_create.image_uri) as image_on_server:
+            ingredient_create.image_uri = image_on_server.uri
 
     with CRUDIngredient.get_repository(db) as repo:
-        ingredient_in_db = repo.create(ingredient_from_user)
+        ingredient_in_db = repo.create(ingredient_create)
 
     return jsonify({"id": ingredient_in_db.id})

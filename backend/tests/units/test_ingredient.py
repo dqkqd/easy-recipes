@@ -17,10 +17,10 @@ if TYPE_CHECKING:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
-    ingredient_from_user = mock_data.MockIngredient.random_valid_ingredient()
+    ingredient_create = mock_data.MockIngredient.random_valid_ingredient()
     response = client.post(
         "/ingredients/",
-        json=ingredient_from_user.model_dump(mode="json"),
+        json=ingredient_create.model_dump(mode="json"),
     )
 
     data = json.loads(response.data)
@@ -31,13 +31,13 @@ def test_200_create_basic(client: FlaskClient) -> None:
         ingredient = repo.get_by_id(id=1)
 
         assert ingredient.id == 1
-        assert ingredient.name == ingredient_from_user.name
+        assert ingredient.name == ingredient_create.name
 
         # same image but different url
-        assert ingredient.image_uri != ingredient_from_user.image_uri
+        assert ingredient.image_uri != ingredient_create.image_uri
         assert compare_image_data_from_uri(
             ingredient.image_uri,
-            ingredient_from_user.image_uri,
+            ingredient_create.image_uri,
         )
 
 
@@ -159,10 +159,10 @@ def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
 
 
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
-    ingredient_from_user = mock_data.MockIngredient.random_valid_ingredient()
+    ingredient_create = mock_data.MockIngredient.random_valid_ingredient()
     response = client.post(
         "/ingredients/",
-        json=ingredient_from_user.model_dump(mode="json"),
+        json=ingredient_create.model_dump(mode="json"),
     )
 
     response = client.get("/ingredients/1")
@@ -170,13 +170,13 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
     ingredient_public = IngredientPublic(**data)
 
     assert response.status_code == 200
-    assert ingredient_from_user.model_dump(
+    assert ingredient_create.model_dump(
         exclude={"image_uri"},
     ) == ingredient_public.model_dump(exclude={"id", "image_uri"})
 
-    assert ingredient_from_user.image_uri != ingredient_public.image_uri
+    assert ingredient_create.image_uri != ingredient_public.image_uri
     assert compare_image_data_from_uri(
-        ingredient_from_user.image_uri,
+        ingredient_create.image_uri,
         ingredient_public.image_uri,
     )
 
