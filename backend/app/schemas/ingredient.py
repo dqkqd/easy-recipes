@@ -19,7 +19,6 @@ if TYPE_CHECKING:
 class IngredientBase(BaseSchema):
     name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
     image_uri: HttpUrl | None = None
-    recipes: set[int] = Field(default_factory=set)
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl) -> str:
@@ -27,7 +26,7 @@ class IngredientBase(BaseSchema):
 
 
 class IngredientCreate(IngredientBase):
-    pass
+    recipes: set[int] = Field(default_factory=set)
 
 
 class IngredientUpdate(IngredientBase):
@@ -36,6 +35,7 @@ class IngredientUpdate(IngredientBase):
 
 class IngredientInDB(IDModelMixin, IngredientBase):
     model_config = ConfigDict(from_attributes=True)
+
     recipes: set[RecipeInDB] = Field(default_factory=set)
 
     def to_public(self) -> IngredientPublic:
@@ -46,7 +46,7 @@ class IngredientInDB(IDModelMixin, IngredientBase):
 
 
 class IngredientPublic(IDModelMixin, IngredientBase):
-    pass
+    recipes: set[int] = Field(default_factory=set)
 
 
 # https://stackoverflow.com/questions/63420889/fastapi-pydantic-circular-references-in-separate-files

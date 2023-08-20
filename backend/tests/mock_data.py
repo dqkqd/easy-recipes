@@ -9,7 +9,7 @@ from PIL import Image
 from pydantic_core import Url
 
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import IngredientBase, IngredientCreate
+from app.schemas.ingredient import IngredientCreate
 
 
 def random_str(length: int = 5) -> str:
@@ -58,8 +58,8 @@ class MockImage:
 
 class MockIngredient:
     @staticmethod
-    def random_valid_ingredient() -> IngredientBase:
-        return IngredientBase(
+    def random_valid_ingredient() -> IngredientCreate:
+        return IngredientCreate(
             name="name",
             image_uri=MockImage.random_valid_image_uri(50, 50),
         )

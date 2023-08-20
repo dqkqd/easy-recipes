@@ -8,10 +8,9 @@ from app.crud.ingredient import CRUDIngredient
 from app.database import db
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import IngredientBase, IngredientCreate
+from app.schemas.ingredient import IngredientCreate
 
 if TYPE_CHECKING:
-    from pydantic import HttpUrl
     from werkzeug import Response
 
 api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
@@ -37,19 +36,13 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 def create_ingredient() -> Response:
     body = request.get_json()
 
-    ingredient_from_user = IngredientBase(**body)
+    ingredient_from_user = IngredientCreate(**body)
 
-    image_uri: HttpUrl | None = None
     if ingredient_from_user.image_uri is not None:
         with ImageOnServer.from_source(ingredient_from_user.image_uri) as image_on_server:
-            image_uri = image_on_server.uri
-
-    ingredient_create = IngredientCreate(
-        **ingredient_from_user.model_dump(exclude={"image_uri"}),
-        image_uri=image_uri,
-    )
+            ingredient_from_user.image_uri = image_on_server.uri
 
     with CRUDIngredient.get_repository(db) as repo:
-        ingredient_in_db = repo.create(ingredient_create)
+        ingredient_in_db = repo.create(ingredient_from_user)
 
     return jsonify({"id": ingredient_in_db.id})
