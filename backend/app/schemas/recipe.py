@@ -27,7 +27,7 @@ class RecipeBase(BaseSchema):
 
 
 class RecipeCreate(RecipeBase):
-    recipes: set[int] = Field(default_factory=set)
+    ingredients: set[int] = Field(default_factory=set)
 
 
 class RecipeUpdate(RecipeBase):
