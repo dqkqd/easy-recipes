@@ -330,3 +330,52 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
             assert len(data["ingredients"]) == config.PAGINATION_SIZE
         else:
             assert len(data["ingredients"]) == last_page_items
+
+
+def test_200_get_pagination_no_param(client: FlaskClient) -> None:
+    data = mock_data.MockIngredient.random_valid_ingredient_data()
+    client.post("/ingredients/", json=data)
+
+    response = client.get("/ingredients/")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data["total"] == 1
+    assert data["page"] == 1
+    assert len(data["ingredients"]) == 1
+
+
+def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
+    data = mock_data.MockIngredient.random_valid_ingredient_data()
+    client.post("/ingredients/", json=data)
+
+    response = client.get("/ingredients/100")
+    data = json.loads(response.data)
+    assert response.status_code == 404
+    assert data == {"code": 404, "message": "Resources not found."}
+
+
+def test_404_get_page_no_items(client: FlaskClient) -> None:
+    response = client.get("/ingredients/")
+    data = json.loads(response.data)
+    assert data == {"page": 1, "ingredients": [], "total": 0}
+    assert response.status_code == 200
+
+    response = client.get("/ingredients/?page=1")
+    data = json.loads(response.data)
+    assert response.status_code == 200
+    assert data == {"page": 1, "ingredients": [], "total": 0}
+
+
+def test_200_404_pagination_render_enough(client: FlaskClient) -> None:
+    for _ in range(config.PAGINATION_SIZE * 2):
+        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        client.post("/ingredients/", json=data)
+
+    response = client.get("/ingredients/?page=1")
+    assert response.status_code == 200
+
+    response = client.get("/ingredients/?page=2")
+    assert response.status_code == 200
+
+    response = client.get("/ingredients/?page=3")
+    assert response.status_code == 404
