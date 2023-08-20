@@ -5,6 +5,7 @@ import secrets
 from pathlib import Path
 
 MAX_IMAGE_SIZE = 512
+PAGINATION_SIZE = 10
 
 DEFAULT_IMAGE_LOCATION = Path(__file__).parent / "static" / "images" / "no-image-icon.png"
 if not DEFAULT_IMAGE_LOCATION.exists():
