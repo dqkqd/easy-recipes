@@ -30,6 +30,10 @@ def get_token() -> str:
     if token is None:
         raise exceptions.Unauthorized
 
+    token = token.strip()
+    if not token or len(token.split()) > 1:
+        raise exceptions.Unauthorized
+
     return token
 
 
