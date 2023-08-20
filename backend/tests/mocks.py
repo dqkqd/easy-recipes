@@ -72,3 +72,9 @@ class MockRecipe:
     @staticmethod
     def random_valid_recipe_data() -> dict[str, Any]:
         return MockRecipe.random_valid_recipe().model_dump(mode="json")
+
+
+class MockAuth:
+    @staticmethod
+    def authorization_header(token: str) -> dict[str, str]:
+        return {"Authorization": f"Bearer {token}"}
