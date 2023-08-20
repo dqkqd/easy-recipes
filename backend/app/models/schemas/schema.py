@@ -8,6 +8,7 @@ from pydantic import (
     ConfigDict,
     Field,
     HttpUrl,
+    field_serializer,
     field_validator,
 )
 
@@ -23,19 +24,13 @@ class IDModelMixin(Base):
 
 
 class IngredientBase(Base):
-    name: str
+    name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
     image_uri: HttpUrl | None = None
+    recipes: set[int] = Field(default_factory=set)
 
-    @field_validator("name")
-    @classmethod
-    def remove_trailing_spaces(cls, v: str) -> str:
-        return validate_trailing_spaces(v)
-
-
-class IngredientFromUser(Base):
-    name: Annotated[str, AfterValidator(lambda x: x.strip())]
-    image_uri: HttpUrl | None = None
-    recipes: list[int] = Field(default_factory=list)
+    @field_serializer("image_uri", when_used="unless-none")
+    def serialize_image_uri(self, image_uri: HttpUrl) -> str:
+        return str(image_uri)
 
 
 class IngredientCreate(IngredientBase):
@@ -48,7 +43,7 @@ class IngredientUpdate(IngredientBase):
 
 class IngredientInDB(IDModelMixin, IngredientBase):
     model_config = ConfigDict(from_attributes=True)
-    recipes: list[RecipeInDB] = Field(default_factory=list)
+    recipes: set[RecipeInDB] = Field(default_factory=set)
 
     def to_public(self) -> IngredientPublic:
         return IngredientPublic(
@@ -57,10 +52,8 @@ class IngredientInDB(IDModelMixin, IngredientBase):
         )
 
 
-class IngredientPublic(IDModelMixin):
-    name: str
-    image_uri: HttpUrl | None
-    recipes: list[int] = Field(default_factory=list)
+class IngredientPublic(IDModelMixin, IngredientBase):
+    pass
 
 
 class RecipeBase(Base):
@@ -83,4 +76,4 @@ class RecipeUpdate(RecipeBase):
 
 class RecipeInDB(IDModelMixin, RecipeBase):
     model_config = ConfigDict(from_attributes=True)
-    ingredients: list[IngredientInDB] = Field(default_factory=list)
+    ingredients: set[IngredientInDB] = Field(default_factory=set)

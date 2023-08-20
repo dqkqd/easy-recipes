@@ -58,8 +58,8 @@ class MockImage:
 
 class MockIngredient:
     @staticmethod
-    def random_valid_ingredient() -> schema.IngredientFromUser:
-        return schema.IngredientFromUser(
+    def random_valid_ingredient() -> schema.IngredientBase:
+        return schema.IngredientBase(
             name="name",
             image_uri=MockImage.random_valid_image_uri(50, 50),
         )

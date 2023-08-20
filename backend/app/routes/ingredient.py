@@ -37,7 +37,7 @@ def get_ingredient(id: int) -> Response:  # noqa: A002
 def create_ingredient() -> Response:
     body = request.get_json()
 
-    ingredient_from_user = schema.IngredientFromUser(**body)
+    ingredient_from_user = schema.IngredientBase(**body)
 
     image_uri: HttpUrl | None = None
     if ingredient_from_user.image_uri is not None:

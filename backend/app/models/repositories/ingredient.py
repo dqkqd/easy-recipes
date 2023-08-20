@@ -8,7 +8,7 @@ class IngredientRepository(SQLAlchemyRepository):
         self,
         ingredient: schema.IngredientCreate,
     ) -> schema.IngredientInDB:
-        ingredient_orm = orm.Ingredient(**ingredient.model_dump(mode="json"))
+        ingredient_orm = orm.Ingredient(**ingredient.model_dump())
         self.add(ingredient_orm)
 
         self.commit()  # is there a way we can make it auto_commit before yielding result?
