@@ -6,7 +6,7 @@ from werkzeug import exceptions
 
 from app.file_server import fs
 from app.file_server.file import FileOnServer
-from tests.mock_data import MockImage
+from tests.mocks import MockImage
 
 
 @pytest.mark.usefixtures("app_context")

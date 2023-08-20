@@ -4,7 +4,7 @@ import pytest
 
 from app import config
 from app.file_server.image import ImageOnServer
-from tests.mock_data import MockImage
+from tests.mocks import MockImage
 
 
 @pytest.mark.usefixtures("app_context")

@@ -9,7 +9,7 @@ from pydantic_core import Url
 from app import config
 from app.crud import crud_ingredient
 from app.schemas.ingredient import IngredientPublic
-from tests import mock_data
+from tests import mocks
 from tests.utils import compare_image_data_from_uri
 
 if TYPE_CHECKING:
@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
-    ingredient_create = mock_data.MockIngredient.random_valid_ingredient()
+    ingredient_create = mocks.MockIngredient.random_valid_ingredient()
     response = client.post(
         "/ingredients/",
         json=ingredient_create.model_dump(mode="json"),
@@ -50,7 +50,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
     ],
 )
 def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data["name"] = name
     response = client.post("/ingredients/", json=ingredient_data)
 
@@ -60,7 +60,7 @@ def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
 
 
 def test_422_create_no_name_provided(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data.pop("name")
     response = client.post("/ingredients/", json=ingredient_data)
 
@@ -71,7 +71,7 @@ def test_422_create_no_name_provided(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data["name"] = "   eggs  "
 
     response = client.post(
@@ -87,7 +87,7 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_empty_image_uri(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data["image_uri"] = None
     response = client.post("/ingredients/", json=ingredient_data)
 
@@ -101,7 +101,7 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data.pop("image_uri")
     response = client.post("/ingredients/", json=ingredient_data)
 
@@ -115,7 +115,7 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_422_create_invalid_uri(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data["image_uri"] = "invalid"
     response = client.post("/ingredients/", json=ingredient_data)
 
@@ -126,7 +126,7 @@ def test_422_create_invalid_uri(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_415_create_valid_uri_but_invalid_image(client: FlaskClient) -> None:
-    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data = mocks.MockIngredient.random_valid_ingredient_data()
     ingredient_data["image_uri"] = "https://example.com"
     response = client.post("/ingredients/", json=ingredient_data)
 
@@ -156,7 +156,7 @@ def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
 
 
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
-    ingredient_create = mock_data.MockIngredient.random_valid_ingredient()
+    ingredient_create = mocks.MockIngredient.random_valid_ingredient()
     response = client.post(
         "/ingredients/",
         json=ingredient_create.model_dump(mode="json"),
@@ -184,7 +184,7 @@ def test_200_get_ingredient_after_many_create(client: FlaskClient) -> None:
     for _ in range(num_datas):
         client.post(
             "/ingredients/",
-            json=mock_data.MockIngredient.random_valid_ingredient_data(),
+            json=mocks.MockIngredient.random_valid_ingredient_data(),
         )
 
     for ingredient_id in range(1, num_datas + 1):
@@ -220,7 +220,7 @@ def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
 def test_200_delete_basic(client: FlaskClient) -> None:
     client.post(
         "/ingredients/",
-        json=mock_data.MockIngredient.random_valid_ingredient_data(),
+        json=mocks.MockIngredient.random_valid_ingredient_data(),
     )
     response = client.get("/ingredients/1")
     assert response.status_code == 200
@@ -240,7 +240,7 @@ def test_404_delete_non_existed(client: FlaskClient) -> None:
 def test_404_delete_twice(client: FlaskClient) -> None:
     client.post(
         "/ingredients/",
-        json=mock_data.MockIngredient.random_valid_ingredient_data(),
+        json=mocks.MockIngredient.random_valid_ingredient_data(),
     )
     response = client.delete("/ingredients/1")
     assert response.status_code == 200
@@ -257,7 +257,7 @@ def test_200_get_all(client: FlaskClient) -> None:
 
     inserted_ingredients_data = []
     for _ in range(num_datas):
-        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        data = mocks.MockIngredient.random_valid_ingredient_data()
         client.post("/ingredients/", json=data)
         inserted_ingredients_data.append(data)
 
@@ -293,7 +293,7 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
 
     inserted_ingredients_data = []
     for _ in range(num_datas):
-        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        data = mocks.MockIngredient.random_valid_ingredient_data()
         client.post("/ingredients/", json=data)
         inserted_ingredients_data.append(data)
 
@@ -316,7 +316,7 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
     num_datas = total_pages * config.PAGINATION_SIZE + last_page_items
 
     for _ in range(num_datas):
-        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        data = mocks.MockIngredient.random_valid_ingredient_data()
         client.post("/ingredients/", json=data)
 
     for page in range(1, total_pages + 2):
@@ -333,7 +333,7 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
 
 
 def test_200_get_pagination_no_param(client: FlaskClient) -> None:
-    data = mock_data.MockIngredient.random_valid_ingredient_data()
+    data = mocks.MockIngredient.random_valid_ingredient_data()
     client.post("/ingredients/", json=data)
 
     response = client.get("/ingredients/")
@@ -345,7 +345,7 @@ def test_200_get_pagination_no_param(client: FlaskClient) -> None:
 
 
 def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
-    data = mock_data.MockIngredient.random_valid_ingredient_data()
+    data = mocks.MockIngredient.random_valid_ingredient_data()
     client.post("/ingredients/", json=data)
 
     response = client.get("/ingredients/100")
@@ -368,7 +368,7 @@ def test_404_get_page_no_items(client: FlaskClient) -> None:
 
 def test_200_404_pagination_render_enough(client: FlaskClient) -> None:
     for _ in range(config.PAGINATION_SIZE * 2):
-        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        data = mocks.MockIngredient.random_valid_ingredient_data()
         client.post("/ingredients/", json=data)
 
     response = client.get("/ingredients/?page=1")
