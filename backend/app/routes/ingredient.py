@@ -30,6 +30,22 @@ def get_ingredients() -> Response:
     )
 
 
+@api.route("/")
+@to_handleable_error
+def get_paginations() -> Response:
+    paginaged_ingredients = crud_ingredient.get_pagination()
+    return jsonify(
+        {
+            "page": paginaged_ingredients.page,
+            "ingredients": [
+                ingredient.to_schema(IngredientInDB).to_public().model_dump(mode="json")
+                for ingredient in paginaged_ingredients
+            ],
+            "total": paginaged_ingredients.total,
+        },
+    )
+
+
 @api.route("/<int:id>")
 @to_handleable_error
 def get_ingredient(id: int) -> Response:  # noqa: A002

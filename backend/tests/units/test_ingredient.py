@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 from pydantic_core import Url
 
+from app import config
 from app.crud import crud_ingredient
 from app.schemas.ingredient import IngredientPublic
 from tests import mock_data
@@ -307,3 +308,25 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
     assert response.status_code == 200
     data = json.loads(response.data)
     assert data["total"] == num_datas - num_delete_datas
+
+
+def test_200_get_pagination_basic(client: FlaskClient) -> None:
+    total_pages = 2
+    last_page_items = config.PAGINATION_SIZE // 2
+    num_datas = total_pages * config.PAGINATION_SIZE + last_page_items
+
+    for _ in range(num_datas):
+        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        client.post("/ingredients/", json=data)
+
+    for page in range(1, total_pages + 2):
+        response = client.get(f"/ingredients/?page={page}")
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data["total"] == num_datas
+
+        assert data["page"] == page
+        if page != total_pages + 1:
+            assert len(data["ingredients"]) == config.PAGINATION_SIZE
+        else:
+            assert len(data["ingredients"]) == last_page_items
