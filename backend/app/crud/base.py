@@ -1,13 +1,12 @@
 from contextlib import contextmanager
 from typing import Generic, Iterator, Self, TypeVar
 
-from flask import current_app, has_app_context
 from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy.model import Model
 
-from app import database
 from app.schemas.base import BaseSchema
 
-ModelType = TypeVar("ModelType", bound=database.Base)
+ModelType = TypeVar("ModelType", bound=Model)
 InDBSChemaType = TypeVar("InDBSChemaType", bound=BaseSchema)
 PublicSchemaType = TypeVar("PublicSchemaType", bound=BaseSchema)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseSchema)
@@ -36,19 +35,11 @@ class CRUDBase(
         self.db.session.commit()
 
     @classmethod
-    def _get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
+    @contextmanager
+    def get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
         try:
             yield cls(db)
         except Exception:
             db.session.rollback()
             db.session.close()
             raise
-
-    @classmethod
-    @contextmanager
-    def get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
-        if has_app_context():
-            yield from cls._get_repository(db)
-        else:
-            with current_app.app_context():
-                yield from cls._get_repository(db)
