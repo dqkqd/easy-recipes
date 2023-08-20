@@ -52,6 +52,22 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
         assert ingredient.image_uri is None
 
 
+@pytest.mark.usefixtures("app_context")
+def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
+    ingredient_from_user = schema.IngredientFromUser(name="eggs", image_uri=None)
+    ingredient_data = ingredient_from_user.model_dump(mode="json")
+    ingredient_data.pop("image_uri")
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert data == {"id": 1}
+    assert response.status_code == 200
+
+    with IngredientRepository.get_repository(db) as repo:
+        ingredient = repo.get_ingredient(id=1)
+        assert ingredient.image_uri is None
+
+
 """
 
 @pytest.mark.skip()
