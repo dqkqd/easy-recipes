@@ -4,9 +4,9 @@ import json
 from typing import TYPE_CHECKING
 
 import pytest
+from pydantic_core import Url
 
-from app.crud.ingredient import CRUDIngredient
-from app.database import db
+from app.crud import crud_ingredient
 from app.schemas.ingredient import IngredientPublic
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri
@@ -27,18 +27,17 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with CRUDIngredient.open(db) as crud:
-        ingredient = crud.get_by_id(id=1)
+    ingredient = crud_ingredient.get(id=1)
 
-        assert ingredient.id == 1
-        assert ingredient.name == ingredient_create.name
+    assert ingredient.id == 1
+    assert ingredient.name == ingredient_create.name
 
-        # same image but different url
-        assert ingredient.image_uri != ingredient_create.image_uri
-        assert compare_image_data_from_uri(
-            ingredient.image_uri,
-            ingredient_create.image_uri,
-        )
+    # same image but different url
+    assert Url(ingredient.image_uri) != ingredient_create.image_uri
+    assert compare_image_data_from_uri(
+        Url(ingredient.image_uri),
+        ingredient_create.image_uri,
+    )
 
 
 @pytest.mark.parametrize(
@@ -81,9 +80,8 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
     assert response.status_code == 200
 
-    with CRUDIngredient.open(db) as crud:
-        ingredient = crud.get_by_id(id=1)
-        assert ingredient.name == "eggs"
+    ingredient = crud_ingredient.get(id=1)
+    assert ingredient.name == "eggs"
 
 
 @pytest.mark.usefixtures("app_context")
@@ -96,9 +94,8 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with CRUDIngredient.open(db) as crud:
-        ingredient = crud.get_by_id(id=1)
-        assert ingredient.image_uri is None
+    ingredient = crud_ingredient.get(id=1)
+    assert ingredient.image_uri is None
 
 
 @pytest.mark.usefixtures("app_context")
@@ -111,9 +108,8 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with CRUDIngredient.open(db) as crud:
-        ingredient = crud.get_by_id(id=1)
-        assert ingredient.image_uri is None
+    ingredient = crud_ingredient.get(id=1)
+    assert ingredient.image_uri is None
 
 
 @pytest.mark.usefixtures("app_context")

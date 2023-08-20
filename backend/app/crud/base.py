@@ -1,45 +1,42 @@
-from contextlib import contextmanager
-from typing import Generic, Iterator, Self, TypeVar
+from __future__ import annotations
 
-from flask_sqlalchemy import SQLAlchemy
+from typing import Generic, TypeVar
+
 from flask_sqlalchemy.model import Model
 
+from app.database import safe_db
 from app.schemas.base import BaseSchema
 
 ModelType = TypeVar("ModelType", bound=Model)
-InDBSChemaType = TypeVar("InDBSChemaType", bound=BaseSchema)
-PublicSchemaType = TypeVar("PublicSchemaType", bound=BaseSchema)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseSchema)
 UpdateSchemaType = TypeVar("UpdateSchemaType", bound=BaseSchema)
 
 
 class CRUDBase(
-    Generic[
-        ModelType,
-        CreateSchemaType,
-        UpdateSchemaType,
-        InDBSChemaType,
-        PublicSchemaType,
-    ],
+    Generic[ModelType, CreateSchemaType, UpdateSchemaType],
 ):
-    def __init__(self, db: SQLAlchemy) -> None:
-        self.db = db
+    def __init__(
+        self,
+        model: type[ModelType],
+    ) -> None:
+        self.model = model
 
-    def add(self, instance: ModelType) -> None:
-        self.db.session.add(instance)
+    def get(self, id: int) -> ModelType:  # noqa: A002
+        with safe_db():
+            return self.model.query.filter_by(  # type: ignore  # noqa: PGH003
+                id=id,
+            ).one_or_404()
 
-    def delete(self, instance: ModelType) -> None:
-        self.db.session.delete(instance)
+    def add(self, obj_create: CreateSchemaType) -> ModelType:
+        with safe_db() as db:
+            obj = self.model(**obj_create.model_dump())
+            db.session.add(obj)
+            db.session.commit()
+            return obj
 
-    def commit(self) -> None:
-        self.db.session.commit()
-
-    @classmethod
-    @contextmanager
-    def open(cls, db: SQLAlchemy) -> Iterator[Self]:  # noqa: A003
-        try:
-            yield cls(db)
-        except Exception:
-            db.session.rollback()
-            db.session.close()
-            raise
+    def delete(self, id: int) -> ModelType:  # noqa: A002
+        with safe_db() as db:
+            obj = self.model.query.filter_by(id=id).one_or_404()
+            db.session.delete(obj)
+            db.session.commit()
+            return obj  # type: ignore  # noqa: PGH003

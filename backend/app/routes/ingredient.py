@@ -4,11 +4,10 @@ from typing import TYPE_CHECKING
 
 from flask import Blueprint, jsonify, request
 
-from app.crud.ingredient import CRUDIngredient
-from app.database import db
+from app.crud import crud_ingredient
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import IngredientCreate
+from app.schemas.ingredient import IngredientCreate, IngredientInDB
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -26,9 +25,12 @@ def get_ingredients() -> Response:
 @api.route("/<int:id>")
 @to_handleable_error
 def get_ingredient(id: int) -> Response:  # noqa: A002
-    with CRUDIngredient.open(db) as crud:
-        ingredient_in_db = crud.get_by_id(id=id)
-        return jsonify(ingredient_in_db.to_public().model_dump(mode="json"))
+    return jsonify(
+        crud_ingredient.get(id)
+        .to_schema(IngredientInDB)
+        .to_public()
+        .model_dump(mode="json"),
+    )
 
 
 @api.route("/", methods=["POST"])
@@ -42,7 +44,5 @@ def create_ingredient() -> Response:
         with ImageOnServer.from_source(ingredient_create.image_uri) as image_on_server:
             ingredient_create.image_uri = image_on_server.uri
 
-    with CRUDIngredient.open(db) as crud:
-        ingredient_in_db = crud.create(ingredient_create)
-
-    return jsonify({"id": ingredient_in_db.id})
+    ingredient = crud_ingredient.add(ingredient_create)
+    return jsonify({"id": ingredient.id})
