@@ -54,7 +54,9 @@ def test_add_from_bytes_clean_up_after_exception() -> None:
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
-    with pytest.raises(exceptions.InternalServerError), FileOnServer.from_source(  # noqa: PT012
+    with pytest.raises(  # noqa: PT012
+        exceptions.InternalServerError,
+    ), FileOnServer.from_source(
         image_bytes,
     ) as image_on_server:
         identifier = image_on_server.identifier

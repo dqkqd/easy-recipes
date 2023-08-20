@@ -4,7 +4,10 @@ from app.models.schemas import schema
 
 
 class IngredientRepository(SQLAlchemyRepository):
-    def create_ingredient(self, ingredient: schema.IngredientCreate) -> schema.IngredientInDB:
+    def create_ingredient(
+        self,
+        ingredient: schema.IngredientCreate,
+    ) -> schema.IngredientInDB:
         ingredient_orm = orm.Ingredient(**ingredient.model_dump(mode="json"))
         self.add(ingredient_orm)
 

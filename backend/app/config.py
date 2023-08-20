@@ -29,7 +29,9 @@ class BaseConfig:
     FILE_SERVER_ENCRYPT_KEY = os.environ.get("FILE_SERVER_ENCRYPT_KEY")
     FILE_SERVER_PASSWORD = os.environ.get("FILE_SERVER_PASSWORD")
 
-    FILE_SERVER_REQUEST_TIMEOUT = float(os.environ.get("FILE_SERVER_REQUEST_TIMEOUT", 1.0))
+    FILE_SERVER_REQUEST_TIMEOUT = float(
+        os.environ.get("FILE_SERVER_REQUEST_TIMEOUT", 1.0),
+    )
 
     @property
     def FILE_SERVER_URL(self) -> str:  # noqa: N802

@@ -17,7 +17,10 @@ if TYPE_CHECKING:
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
     ingredient_from_user = mock_data.MockIngredient.random_valid_ingredient()
-    response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
+    response = client.post(
+        "/ingredients/",
+        json=ingredient_from_user.model_dump(mode="json"),
+    )
 
     data = json.loads(response.data)
     assert data == {"id": 1}
@@ -31,7 +34,10 @@ def test_200_create_basic(client: FlaskClient) -> None:
 
         # same image but different url
         assert ingredient.image_uri != ingredient_from_user.image_uri
-        assert compare_image_data_from_uri(ingredient.image_uri, ingredient_from_user.image_uri)
+        assert compare_image_data_from_uri(
+            ingredient.image_uri,
+            ingredient_from_user.image_uri,
+        )
 
 
 @pytest.mark.usefixtures("app_context")

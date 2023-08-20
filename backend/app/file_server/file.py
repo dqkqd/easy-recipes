@@ -34,7 +34,11 @@ class FileOnServer:
 
     @singledispatchmethod
     @classmethod
-    def validator(cls, source: Any) -> Any:  # https://github.com/python/typeshed/issues/5560
+    def validator(
+        cls,
+        source: Any,
+    ) -> Any:
+        # https://github.com/python/typeshed/issues/5560
         raise NotImplementedError(type(source))
 
     @classmethod

@@ -14,7 +14,10 @@ def test_large_image_is_cropped() -> None:
     img.save(image_bytes, format="PNG")
 
     with ImageOnServer.from_source(image_bytes) as image_on_server:
-        assert image_on_server.image.size == (config.MAX_IMAGE_SIZE, config.MAX_IMAGE_SIZE)
+        assert image_on_server.image.size == (
+            config.MAX_IMAGE_SIZE,
+            config.MAX_IMAGE_SIZE,
+        )
 
 
 @pytest.mark.usefixtures("app_context")

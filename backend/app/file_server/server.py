@@ -11,7 +11,11 @@ from flask import current_app
 from pydantic_core import Url
 from werkzeug import exceptions
 
-from app.errors import ServerAlreadyInitializedError, ServerConfigError, ServerDeleteWrongFileError
+from app.errors import (
+    ServerAlreadyInitializedError,
+    ServerConfigError,
+    ServerDeleteWrongFileError,
+)
 
 if TYPE_CHECKING:
     from flask import Flask
