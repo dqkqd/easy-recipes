@@ -126,38 +126,22 @@ def test_422_create_invalid_uri(client: FlaskClient) -> None:
     assert data == {"code": 422, "message": "Invalid image_uri."}
 
 
+@pytest.mark.usefixtures("app_context")
+def test_415_create_valid_uri_but_invalid_image(client: FlaskClient) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["image_uri"] = "https://example.com"
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert response.status_code == 415
+    assert data == {"code": 415, "message": "Invalid image."}
+
+
 """
 @pytest.mark.skip()
 def test_200_create_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
 
-
-
-
-@pytest.mark.parametrize(
-    "image",
-    [
-        "this is not a url",
-    ],
-)
-def test_422_create_invalid_url(
-    client: FlaskClient,
-    image: str | None,
-) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
-    ingredient_data["image"] = image
-    response = client.post("/ingredients/", json=ingredient_data)
-
-    data = json.loads(response.data)
-
-    assert data == {"message": "Invalid image."}
-    assert response.status_code == 422
-
-
-@pytest.mark.skip("Update after implementing front-end")
-def test_422_create_invalid_image(client: FlaskClient) -> None:  # noqa: ARG001
-    msg = "valid url but invalid image"
-    raise NotImplementedError(msg)
 
 
 @pytest.mark.skip()
