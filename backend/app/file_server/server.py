@@ -65,7 +65,7 @@ class FileServer:
 
         return self._url
 
-    @cached_property
+    @property
     def header(self) -> dict[str, str]:
         token = self.fernet_model.encrypt(self.password.encode()).decode()
         return {"Authorization": f"{self.authorization_scheme} {token}"}
