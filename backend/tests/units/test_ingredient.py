@@ -70,6 +70,17 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
         assert ingredient.image_uri is None
 
 
+@pytest.mark.usefixtures("app_context")
+def test_422_create_invalid_uri(client: FlaskClient) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["image_uri"] = "invalid"
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert response.status_code == 422
+    assert data == {"code": 422, "message": "Invalid image_uri."}
+
+
 @pytest.mark.parametrize(
     "name",
     [
@@ -116,19 +127,6 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
 
 """
-
-
-@pytest.mark.skip("Update after implementing front-end")
-def test_200_create_uploaded_image_uri(client: FlaskClient) -> None:  # noqa: ARG001
-    msg = "save user uploaded image"
-    raise NotImplementedError(msg)
-
-
-@pytest.mark.skip("Update after implementing front-end")
-def test_200_create_crop_user_uploaded_image(client: FlaskClient) -> None:  # noqa: ARG001
-    raise NotImplementedError
-
-
 @pytest.mark.skip()
 def test_200_create_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
