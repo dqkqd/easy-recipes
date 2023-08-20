@@ -253,14 +253,11 @@ def test_404_delete_twice(client: FlaskClient) -> None:
 
 def test_200_get_all(client: FlaskClient) -> None:
     num_datas = 15
-    inserted_ingredients_data = []
 
+    inserted_ingredients_data = []
     for _ in range(num_datas):
         data = mock_data.MockIngredient.random_valid_ingredient_data()
-        client.post(
-            "/ingredients/",
-            json=data,
-        )
+        client.post("/ingredients/", json=data)
         inserted_ingredients_data.append(data)
 
     response = client.get("/ingredients/all")
@@ -294,13 +291,9 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
     num_delete_datas = num_datas // 2
 
     inserted_ingredients_data = []
-
     for _ in range(num_datas):
         data = mock_data.MockIngredient.random_valid_ingredient_data()
-        client.post(
-            "/ingredients/",
-            json=data,
-        )
+        client.post("/ingredients/", json=data)
         inserted_ingredients_data.append(data)
 
     response = client.get("/ingredients/all")
