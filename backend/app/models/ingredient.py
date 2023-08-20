@@ -15,6 +15,7 @@ class Ingredient(BaseModelMixin, ToSchemaModelMixin):
     __tablename__ = "ingredients"
 
     name: Mapped[str]
+    description: Mapped[str] = mapped_column(nullable=True)
     image_uri: Mapped[str] = mapped_column(nullable=True)
 
     recipes: Mapped[set[Recipe]] = relationship(

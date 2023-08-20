@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import secrets
 import uuid
 from typing import TYPE_CHECKING, Any
 
@@ -16,6 +17,10 @@ if TYPE_CHECKING:
 
 def random_id() -> str:
     return uuid.uuid4().hex
+
+
+def random_str(size: int = 256) -> str:
+    return secrets.token_urlsafe(size)
 
 
 class MockImage:
@@ -45,6 +50,7 @@ class MockIngredient:
     def random_valid_ingredient() -> IngredientCreate:
         return IngredientCreate(
             name=random_id(),
+            description=random_str(256),
             image_uri=MockImage.random_valid_image_uri(50, 50),
         )
 

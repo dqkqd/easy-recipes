@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
 class RecipeBase(BaseSchema):
     name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
+    description: str | None = None
     image_uri: HttpUrl | None = None
 
 
