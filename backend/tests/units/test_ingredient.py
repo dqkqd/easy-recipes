@@ -68,22 +68,25 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
         assert ingredient.image_uri is None
 
 
-"""
+@pytest.mark.parametrize(
+    "name",
+    [
+        None,
+        "",
+        " ",
+    ],
+)
+def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["name"] = name
+    response = client.post("/ingredients/", json=ingredient_data)
 
-@pytest.mark.skip()
-@pytest.mark.usefixtures("app_context")
-def test_200_create_use_default_image_uri(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
-    ingredient_data.pop("image")
-    response = client.post(
-        "/ingredients/",
-        json=ingredient_data,
-    )
     data = json.loads(response.data)
-    assert data == {"id": 1}
-    assert response.status_code == 200
+    assert response.status_code == 422
+    assert data == {"code": 422, "message": "Invalid name."}
 
 
+"""
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
     ingredient_data = mock_data.ingredient_create_data(name="  eggs  ")
@@ -113,22 +116,6 @@ def test_200_create_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.parametrize(
-    "name",
-    [
-        None,
-        "",
-        " ",
-    ],
-)
-def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
-    ingredient_data["name"] = name
-    response = client.post("/ingredients/", json=ingredient_data)
-
-    data = json.loads(response.data)
-    assert data == {"message": "Invalid name."}
-    assert response.status_code == 422
 
 
 @pytest.mark.parametrize(
