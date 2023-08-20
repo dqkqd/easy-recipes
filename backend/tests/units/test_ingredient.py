@@ -7,7 +7,6 @@ import pytest
 
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
-from app.models.schemas import schema
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri
 
@@ -17,10 +16,7 @@ if TYPE_CHECKING:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
-    ingredient_from_user = schema.IngredientFromUser(
-        name="eggs",
-        image_uri=mock_data.MockImage.random_valid_image_uri(50, 50),
-    )
+    ingredient_from_user = mock_data.MockIngredient.random_valid_ingredient()
     response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
 
     data = json.loads(response.data)
@@ -40,8 +36,9 @@ def test_200_create_basic(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_empty_image_uri(client: FlaskClient) -> None:
-    ingredient_from_user = schema.IngredientFromUser(name="eggs", image_uri=None)
-    response = client.post("/ingredients/", json=ingredient_from_user.model_dump(mode="json"))
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["image_uri"] = None
+    response = client.post("/ingredients/", json=ingredient_data)
 
     data = json.loads(response.data)
     assert data == {"id": 1}
@@ -54,8 +51,7 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
-    ingredient_from_user = schema.IngredientFromUser(name="eggs", image_uri=None)
-    ingredient_data = ingredient_from_user.model_dump(mode="json")
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
     ingredient_data.pop("image_uri")
     response = client.post("/ingredients/", json=ingredient_data)
 
