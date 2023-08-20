@@ -26,8 +26,8 @@ def get_ingredients() -> Response:
 @api.route("/<int:id>")
 @to_handleable_error
 def get_ingredient(id: int) -> Response:  # noqa: A002
-    with CRUDIngredient.get_repository(db) as repo:
-        ingredient_in_db = repo.get_by_id(id=id)
+    with CRUDIngredient.open(db) as crud:
+        ingredient_in_db = crud.get_by_id(id=id)
         return jsonify(ingredient_in_db.to_public().model_dump(mode="json"))
 
 
@@ -42,7 +42,7 @@ def create_ingredient() -> Response:
         with ImageOnServer.from_source(ingredient_create.image_uri) as image_on_server:
             ingredient_create.image_uri = image_on_server.uri
 
-    with CRUDIngredient.get_repository(db) as repo:
-        ingredient_in_db = repo.create(ingredient_create)
+    with CRUDIngredient.open(db) as crud:
+        ingredient_in_db = crud.create(ingredient_create)
 
     return jsonify({"id": ingredient_in_db.id})

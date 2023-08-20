@@ -36,7 +36,7 @@ class CRUDBase(
 
     @classmethod
     @contextmanager
-    def get_repository(cls, db: SQLAlchemy) -> Iterator[Self]:
+    def open(cls, db: SQLAlchemy) -> Iterator[Self]:  # noqa: A003
         try:
             yield cls(db)
         except Exception:

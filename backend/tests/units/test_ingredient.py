@@ -27,8 +27,8 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with CRUDIngredient.get_repository(db) as repo:
-        ingredient = repo.get_by_id(id=1)
+    with CRUDIngredient.open(db) as crud:
+        ingredient = crud.get_by_id(id=1)
 
         assert ingredient.id == 1
         assert ingredient.name == ingredient_create.name
@@ -81,8 +81,8 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
     assert response.status_code == 200
 
-    with CRUDIngredient.get_repository(db) as repo:
-        ingredient = repo.get_by_id(id=1)
+    with CRUDIngredient.open(db) as crud:
+        ingredient = crud.get_by_id(id=1)
         assert ingredient.name == "eggs"
 
 
@@ -96,8 +96,8 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with CRUDIngredient.get_repository(db) as repo:
-        ingredient = repo.get_by_id(id=1)
+    with CRUDIngredient.open(db) as crud:
+        ingredient = crud.get_by_id(id=1)
         assert ingredient.image_uri is None
 
 
@@ -111,8 +111,8 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
     assert data == {"id": 1}
     assert response.status_code == 200
 
-    with CRUDIngredient.get_repository(db) as repo:
-        ingredient = repo.get_by_id(id=1)
+    with CRUDIngredient.open(db) as crud:
+        ingredient = crud.get_by_id(id=1)
         assert ingredient.image_uri is None
 
 
