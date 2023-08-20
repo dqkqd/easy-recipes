@@ -137,14 +137,12 @@ def test_415_create_valid_uri_but_invalid_image(client: FlaskClient) -> None:
     assert data == {"code": 415, "message": "Invalid image."}
 
 
-"""
-@pytest.mark.skip()
+@pytest.mark.skip("Update after implementing recipes")
 def test_200_create_ingredient_with_added_recipes() -> None:
     raise NotImplementedError
 
 
-
-@pytest.mark.skip()
+@pytest.mark.skip("Update after implementing recipes")
 def test_422_create_ingredient_with_invalid_recipes() -> None:
     raise NotImplementedError
 
@@ -159,6 +157,7 @@ def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
     raise NotImplementedError
 
 
+"""
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
     ingredient_data = mock_data.ingredient_create_data()
     client.post("/ingredients/", json=ingredient_data)
