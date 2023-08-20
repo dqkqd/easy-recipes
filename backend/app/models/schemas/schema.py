@@ -9,10 +9,7 @@ from pydantic import (
     Field,
     HttpUrl,
     field_serializer,
-    field_validator,
 )
-
-from app.models.schemas.validators import validate_trailing_spaces
 
 
 class Base(BaseModel):
@@ -57,13 +54,8 @@ class IngredientPublic(IDModelMixin, IngredientBase):
 
 
 class RecipeBase(Base):
-    name: str
-    image_uri: HttpUrl | None
-
-    @field_validator("name")
-    @classmethod
-    def remove_trailing_spaces(cls, v: str) -> str:
-        return validate_trailing_spaces(v)
+    name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
+    image_uri: HttpUrl | None = None
 
 
 class RecipeCreate(RecipeBase):
