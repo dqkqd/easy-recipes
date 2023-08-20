@@ -1,5 +1,5 @@
 from app.models.database import orm
-from app.models.repositories.core import SQLAlchemyRepository
+from app.repositories.core import SQLAlchemyRepository
 from app.schemas import schema
 
 

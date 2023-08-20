@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 import pytest
 
 from app.models.database import db
-from app.models.repositories.ingredient import IngredientRepository
+from app.repositories.ingredient import IngredientRepository
 from app.schemas import schema
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri

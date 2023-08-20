@@ -7,7 +7,7 @@ from flask import Blueprint, jsonify, request
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
 from app.models.database import db
-from app.models.repositories.ingredient import IngredientRepository
+from app.repositories.ingredient import IngredientRepository
 from app.schemas import schema
 
 if TYPE_CHECKING:
