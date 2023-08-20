@@ -92,18 +92,24 @@ def test_422_create_no_name_provided(client: FlaskClient) -> None:
     assert data == {"code": 422, "message": "Invalid name."}
 
 
-"""
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data(name="  eggs  ")
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data["name"] = "   eggs  "
+
     response = client.post(
         "/ingredients/",
         json=ingredient_data,
     )
+
     assert response.status_code == 200
+
     with IngredientRepository.get_repository(db) as repo:
         ingredient = repo.get_ingredient(id=1)
         assert ingredient.name == "eggs"
+
+
+"""
 
 
 @pytest.mark.skip("Update after implementing front-end")
