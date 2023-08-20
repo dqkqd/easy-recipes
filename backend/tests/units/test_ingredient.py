@@ -7,7 +7,7 @@ import pytest
 
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
-from app.models.schemas import schema
+from app.schemas import schema
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri
 

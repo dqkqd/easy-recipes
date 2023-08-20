@@ -9,7 +9,7 @@ from PIL import Image
 from pydantic_core import Url
 
 from app.file_server.image import ImageOnServer
-from app.models.schemas import schema
+from app.schemas import schema
 
 
 def random_str(length: int = 5) -> str:

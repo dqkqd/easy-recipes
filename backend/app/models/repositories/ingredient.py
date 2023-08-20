@@ -1,6 +1,6 @@
 from app.models.database import orm
 from app.models.repositories.core import SQLAlchemyRepository
-from app.models.schemas import schema
+from app.schemas import schema
 
 
 class IngredientRepository(SQLAlchemyRepository):
