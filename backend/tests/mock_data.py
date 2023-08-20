@@ -60,7 +60,7 @@ class MockIngredient:
     @staticmethod
     def random_valid_ingredient() -> IngredientCreate:
         return IngredientCreate(
-            name="name",
+            name=random_str(10),
             image_uri=MockImage.random_valid_image_uri(50, 50),
         )
 
