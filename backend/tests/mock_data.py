@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import io
-import secrets
+import uuid
 from typing import Any
 
 import numpy as np
@@ -12,17 +12,17 @@ from app.file_server.image import ImageOnServer
 from app.schemas.ingredient import IngredientCreate
 
 
-def random_str(length: int = 5) -> str:
-    return secrets.token_urlsafe(length)
+def random_id() -> str:
+    return uuid.uuid4().hex
 
 
 def random_valid_url() -> Url:
-    return Url(f"http://{random_str(10)}.com/{random_str(10)}")
+    return Url(f"http://{random_id()}.com/{random_id()}")
 
 
 def ingredient_create_data(name: str | None = None) -> dict[str, Any]:
     ingredient = IngredientCreate(
-        name=name if name is not None else random_str(),
+        name=name if name is not None else random_id(),
         image_uri=random_valid_url(),
     )
     return ingredient.model_dump(mode="json")
@@ -60,7 +60,7 @@ class MockIngredient:
     @staticmethod
     def random_valid_ingredient() -> IngredientCreate:
         return IngredientCreate(
-            name=random_str(10),
+            name=random_id(),
             image_uri=MockImage.random_valid_image_uri(50, 50),
         )
 
