@@ -4,7 +4,7 @@ from app.schemas.ingredient import IngredientCreate, IngredientInDB
 
 
 class CRUDIngredient(CRUDBase):
-    def create_ingredient(
+    def create(
         self,
         ingredient_create: IngredientCreate,
     ) -> IngredientInDB:
@@ -14,6 +14,6 @@ class CRUDIngredient(CRUDBase):
         self.commit()  # is there a way we can make it auto_commit before yielding result?
         return IngredientInDB.model_validate(ingredient)
 
-    def get_ingredient(self, id: int) -> IngredientInDB:  # noqa: A002
+    def get_by_id(self, id: int) -> IngredientInDB:  # noqa: A002
         ingredient = Ingredient.query.filter_by(id=id).one_or_404()
         return IngredientInDB.model_validate(ingredient)
