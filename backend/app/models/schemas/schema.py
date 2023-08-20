@@ -35,6 +35,7 @@ class IngredientBase(Base):
 class IngredientFromUser(Base):
     name: Annotated[str, AfterValidator(lambda x: x.strip())]
     image_uri: HttpUrl | None = None
+    recipes: list[int] = Field(default_factory=list)
 
 
 class IngredientCreate(IngredientBase):
@@ -58,8 +59,8 @@ class IngredientInDB(IDModelMixin, IngredientBase):
 
 class IngredientPublic(IDModelMixin):
     name: str
-    image_uri: str | None
-    recipes: list[int]
+    image_uri: HttpUrl | None
+    recipes: list[int] = Field(default_factory=list)
 
 
 class RecipeBase(Base):

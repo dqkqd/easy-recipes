@@ -29,7 +29,7 @@ def get_ingredients() -> Response:
 def get_ingredient(id: int) -> Response:  # noqa: A002
     with IngredientRepository.get_repository(db) as repo:
         ingredient_in_db = repo.get_ingredient(id=id)
-        return jsonify(ingredient_in_db.model_dump(mode="json"))
+        return jsonify(ingredient_in_db.to_public().model_dump(mode="json"))
 
 
 @api.route("/", methods=["POST"])

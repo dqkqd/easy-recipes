@@ -7,6 +7,7 @@ import pytest
 
 from app.models.database import db
 from app.models.repositories.ingredient import IngredientRepository
+from app.models.schemas import schema
 from tests import mock_data
 from tests.utils import compare_image_data_from_uri
 
@@ -157,21 +158,30 @@ def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
     raise NotImplementedError
 
 
-"""
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
-    ingredient_data = mock_data.ingredient_create_data()
-    client.post("/ingredients/", json=ingredient_data)
+    ingredient_from_user = mock_data.MockIngredient.random_valid_ingredient()
+    response = client.post(
+        "/ingredients/",
+        json=ingredient_from_user.model_dump(mode="json"),
+    )
 
     response = client.get("/ingredients/1")
     data = json.loads(response.data)
+    ingredient_public = schema.IngredientPublic(**data)
 
     assert response.status_code == 200
-    assert data == {
-        "id": 1,
-        "recipes": [],
-        **ingredient_data,
-    }
+    assert ingredient_from_user.model_dump(
+        exclude={"image_uri"},
+    ) == ingredient_public.model_dump(exclude={"id", "image_uri"})
 
+    assert ingredient_from_user.image_uri != ingredient_public.image_uri
+    assert compare_image_data_from_uri(
+        ingredient_from_user.image_uri,
+        ingredient_public.image_uri,
+    )
+
+
+"""
 
 def test_200_get_ingredient_after_many_posts(client: FlaskClient) -> None:
     num_datas = 5
