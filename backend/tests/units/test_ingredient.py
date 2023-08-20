@@ -82,6 +82,16 @@ def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
     assert data == {"code": 422, "message": "Invalid name."}
 
 
+def test_422_create_no_name_provided(client: FlaskClient) -> None:
+    ingredient_data = mock_data.MockIngredient.random_valid_ingredient_data()
+    ingredient_data.pop("name")
+    response = client.post("/ingredients/", json=ingredient_data)
+
+    data = json.loads(response.data)
+    assert response.status_code == 422
+    assert data == {"code": 422, "message": "Invalid name."}
+
+
 """
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
