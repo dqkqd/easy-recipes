@@ -249,3 +249,33 @@ def test_404_delete_twice(client: FlaskClient) -> None:
 
     data = json.loads(response.data)
     assert data == {"code": 404, "message": "Resources not found."}
+
+
+def test_200_get_all(client: FlaskClient) -> None:
+    num_datas = 15
+    inserted_ingredients_data = []
+
+    for _ in range(num_datas):
+        data = mock_data.MockIngredient.random_valid_ingredient_data()
+        client.post(
+            "/ingredients/",
+            json=data,
+        )
+        inserted_ingredients_data.append(data)
+
+    response = client.get("/ingredients/all")
+    assert response.status_code == 200
+
+    data = json.loads(response.data)
+    assert data["total"] == num_datas
+
+    for response_data, inserted_data in zip(
+        data["ingredients"],
+        inserted_ingredients_data,
+    ):
+        response_data.pop("image_uri")
+        response_data.pop("id")
+
+        inserted_data.pop("image_uri")
+
+        assert response_data == inserted_data

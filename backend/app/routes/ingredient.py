@@ -15,11 +15,19 @@ if TYPE_CHECKING:
 api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 
 
-@api.route("/")
+@api.route("/all")
 @to_handleable_error
 def get_ingredients() -> Response:
-    msg = "TODO"
-    raise NotImplementedError(msg)
+    ingredients = crud_ingredient.get_all()
+    return jsonify(
+        {
+            "total": len(ingredients),
+            "ingredients": [
+                ingredient.to_schema(IngredientInDB).to_public().model_dump(mode="json")
+                for ingredient in ingredients
+            ],
+        },
+    )
 
 
 @api.route("/<int:id>")
