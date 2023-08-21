@@ -10,40 +10,57 @@ from tests.mocks import MockAuth, MockIngredient, MockRecipe
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
-    from pytest_mock import MockerFixture
 
 
-def test_200_create_ingredient_basic(mocker: MockerFixture, client: FlaskClient) -> None:
-    token = auth.CREATE_INGREDIENT_PERMISSION
-
-    mocker.patch(
-        "app.auth.verify_decode_jwt",
-        return_value=auth.Permissions(permissions=[token]),
-    )
+def test_200_create_ingredient(client: FlaskClient) -> None:
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(token),
+        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
         json=MockIngredient.random_valid_ingredient_data(),
     )
     assert response.status_code == 200
 
 
-def test_200_create_recipes_basic(mocker: MockerFixture, client: FlaskClient) -> None:
-    token = auth.CREATE_RECIPE_PERMISSION
-
-    mocker.patch(
-        "app.auth.verify_decode_jwt",
-        return_value=auth.Permissions(permissions=[token]),
+def test_200_delete_ingredient(client: FlaskClient) -> None:
+    client.post(
+        "/ingredients/",
+        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        json=MockIngredient.random_valid_ingredient_data(),
     )
+
+    response = client.delete(
+        "/ingredients/1",
+        headers=MockAuth.authorization_header(auth.DELETE_INGREDIENT_PERMISSION),
+        json=MockIngredient.random_valid_ingredient_data(),
+    )
+    assert response.status_code == 200
+
+
+def test_200_create_recipe(client: FlaskClient) -> None:
     response = client.post(
         "/recipes/",
-        headers=MockAuth.authorization_header(token),
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
         json=MockRecipe.random_valid_recipe_data(),
     )
     assert response.status_code == 200
 
 
-def test_401_create_ingredient_missing_authorization(
+def test_200_delete_recipe(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_valid_recipe_data(),
+    )
+
+    response = client.delete(
+        "/recipes/1",
+        headers=MockAuth.authorization_header(auth.DELETE_RECIPE_PERMISSION),
+        json=MockRecipe.random_valid_recipe_data(),
+    )
+    assert response.status_code == 200
+
+
+def test_401_create_and_delete_missing_authorization_ingredient(
     client: FlaskClient,
 ) -> None:
     response = client.post(
@@ -54,9 +71,39 @@ def test_401_create_ingredient_missing_authorization(
     data = json.loads(response.data)
     assert data == {"code": 401, "message": "Unauthorized."}
 
+    client.post(
+        "/ingredients/",
+        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        json=MockIngredient.random_valid_ingredient_data(),
+    )
+    response = client.delete(
+        "/ingredients/1",
+        json=MockIngredient.random_valid_ingredient_data(),
+    )
+    assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
+
+
+def test_401_create_and_delete_missing_authorization_recipe(
+    client: FlaskClient,
+) -> None:
     response = client.post(
         "/recipes/",
-        json=MockIngredient.random_valid_ingredient_data(),
+        json=MockRecipe.random_valid_recipe_data(),
+    )
+    assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
+
+    client.post(
+        "/recipes/",
+        headers=MockAuth.authorization_header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_valid_recipe_data(),
+    )
+    response = client.delete(
+        "/recipes/1",
+        json=MockRecipe.random_valid_recipe_data(),
     )
     assert response.status_code == 401
     data = json.loads(response.data)
