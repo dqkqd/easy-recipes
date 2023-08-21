@@ -28,6 +28,9 @@ def to_handleable_error(f: Callable[..., Any]) -> Callable[..., Any]:
         except exceptions.Unauthorized as e:
             e.description = "Unauthorized."
             raise ApplicationHTTPError.from_http_error(e) from e
+        except exceptions.Forbidden as e:
+            e.description = "Forbidden."
+            raise ApplicationHTTPError.from_http_error(e) from e
         except exceptions.HTTPException as e:
             raise ApplicationHTTPError.from_http_error(e) from e
         except ValidationError as e:

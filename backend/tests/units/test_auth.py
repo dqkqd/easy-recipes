@@ -10,6 +10,7 @@ from tests.mocks import MockAuth, MockIngredient, MockRecipe
 
 if TYPE_CHECKING:
     from flask.testing import FlaskClient
+    from pytest_mock import MockerFixture
 
 
 def test_200_create_ingredient(client: FlaskClient) -> None:
@@ -158,3 +159,78 @@ def test_401_delete_recipe_authorization_invalid(
     assert response.status_code == 401
     data = json.loads(response.data)
     assert data == {"code": 401, "message": "Unauthorized."}
+
+
+def test_403_create_invalid_permission(
+    mocker: MockerFixture,
+    client: FlaskClient,
+) -> None:
+    mocker.patch(
+        "app.auth.verify_decode_jwt",
+        return_value=auth.Permissions(permissions=["invalid"]),
+    )
+    response = client.post(
+        "/ingredients/",
+        headers=MockAuth.header("invalid"),
+        json=MockIngredient.random_data(),
+    )
+    assert response.status_code == 403
+    data = json.loads(response.data)
+    assert data == {"code": 403, "message": "Forbidden."}
+
+    response = client.post(
+        "/recipes/",
+        headers=MockAuth.header("invalid"),
+        json=MockRecipe.random_data(),
+    )
+    assert response.status_code == 403
+    data = json.loads(response.data)
+    assert data == {"code": 403, "message": "Forbidden."}
+
+
+def test_403_delete_ingredient_invalid_permission(
+    mocker: MockerFixture,
+    client: FlaskClient,
+) -> None:
+    client.post(
+        "/ingredients/",
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+        json=MockIngredient.random_data(),
+    )
+    mocker.patch(
+        "app.auth.verify_decode_jwt",
+        return_value=auth.Permissions(permissions=["invalid"]),
+    )
+
+    response = client.delete(
+        "/ingredients/1",
+        headers=MockAuth.header("invalid"),
+        json=MockIngredient.random_data(),
+    )
+    assert response.status_code == 403
+    data = json.loads(response.data)
+    assert data == {"code": 403, "message": "Forbidden."}
+
+
+def test_403_delete_recipe_invalid_permission(
+    mocker: MockerFixture,
+    client: FlaskClient,
+) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+    mocker.patch(
+        "app.auth.verify_decode_jwt",
+        return_value=auth.Permissions(permissions=["invalid"]),
+    )
+
+    response = client.delete(
+        "/recipes/1",
+        headers=MockAuth.header("invalid"),
+        json=MockRecipe.random_data(),
+    )
+    assert response.status_code == 403
+    data = json.loads(response.data)
+    assert data == {"code": 403, "message": "Forbidden."}
