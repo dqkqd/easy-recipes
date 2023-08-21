@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import TYPE_CHECKING
 
 import pytest
@@ -50,18 +51,22 @@ def test_401_create_ingredient_missing_authorization(
         json=MockIngredient.random_valid_ingredient_data(),
     )
     assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
 
     response = client.post(
         "/recipes/",
         json=MockIngredient.random_valid_ingredient_data(),
     )
     assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
 
 
 @pytest.mark.parametrize(
     "headers",
     [
-        None,
+        {},
         {"Authorization": ""},
         {"Authorization": "Bearer"},
     ],
@@ -76,6 +81,8 @@ def test_401_create_ingredient_authorization_invalid(
         json=MockIngredient.random_valid_ingredient_data(),
     )
     assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
 
     response = client.post(
         "/recipes/",
@@ -83,3 +90,5 @@ def test_401_create_ingredient_authorization_invalid(
         json=MockRecipe.random_valid_recipe_data(),
     )
     assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
