@@ -18,10 +18,10 @@ if TYPE_CHECKING:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_basic(client: FlaskClient) -> None:
-    ingredient_create = MockIngredient.random_valid_ingredient()
+    ingredient_create = MockIngredient.random()
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_create.model_dump(mode="json"),
     )
 
@@ -51,11 +51,11 @@ def test_200_create_basic(client: FlaskClient) -> None:
     ],
 )
 def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data["name"] = name
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -65,11 +65,11 @@ def test_422_create_invalid_name(client: FlaskClient, name: str | None) -> None:
 
 
 def test_422_create_no_name_provided(client: FlaskClient) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data.pop("name")
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -80,12 +80,12 @@ def test_422_create_no_name_provided(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_name_stripped(client: FlaskClient) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data["name"] = "   eggs  "
 
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -97,11 +97,11 @@ def test_200_create_name_stripped(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_empty_image_uri(client: FlaskClient) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data["image_uri"] = None
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -115,11 +115,11 @@ def test_200_create_empty_image_uri(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data.pop("image_uri")
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -133,11 +133,11 @@ def test_200_create_no_image_uri_provided(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_422_create_invalid_uri(client: FlaskClient) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data["image_uri"] = "invalid"
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -148,11 +148,11 @@ def test_422_create_invalid_uri(client: FlaskClient) -> None:
 
 @pytest.mark.usefixtures("app_context")
 def test_415_create_valid_uri_but_invalid_image(client: FlaskClient) -> None:
-    ingredient_data = MockIngredient.random_valid_ingredient_data()
+    ingredient_data = MockIngredient.random_data()
     ingredient_data["image_uri"] = "https://example.com"
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_data,
     )
 
@@ -182,10 +182,10 @@ def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
 
 
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
-    ingredient_create = MockIngredient.random_valid_ingredient()
+    ingredient_create = MockIngredient.random()
     response = client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=ingredient_create.model_dump(mode="json"),
     )
 
@@ -211,8 +211,8 @@ def test_200_get_ingredient_after_many_create(client: FlaskClient) -> None:
     for _ in range(num_datas):
         client.post(
             "/ingredients/",
-            headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
-            json=MockIngredient.random_valid_ingredient_data(),
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
         )
 
     for ingredient_id in range(1, num_datas + 1):
@@ -248,15 +248,15 @@ def test_404_get_invalid_ingredient(client: FlaskClient) -> None:
 def test_200_delete_basic(client: FlaskClient) -> None:
     client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
-        json=MockIngredient.random_valid_ingredient_data(),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+        json=MockIngredient.random_data(),
     )
     response = client.get("/ingredients/1")
     assert response.status_code == 200
 
     response = client.delete(
         "/ingredients/1",
-        headers=MockAuth.authorization_header(auth.DELETE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.DELETE_INGREDIENT_PERMISSION),
     )
     assert response.status_code == 200
 
@@ -264,7 +264,7 @@ def test_200_delete_basic(client: FlaskClient) -> None:
 def test_404_delete_non_existed(client: FlaskClient) -> None:
     response = client.delete(
         "/ingredients/1",
-        headers=MockAuth.authorization_header(auth.DELETE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.DELETE_INGREDIENT_PERMISSION),
     )
     assert response.status_code == 404
 
@@ -275,18 +275,18 @@ def test_404_delete_non_existed(client: FlaskClient) -> None:
 def test_404_delete_twice(client: FlaskClient) -> None:
     client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
-        json=MockIngredient.random_valid_ingredient_data(),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+        json=MockIngredient.random_data(),
     )
     response = client.delete(
         "/ingredients/1",
-        headers=MockAuth.authorization_header(auth.DELETE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.DELETE_INGREDIENT_PERMISSION),
     )
     assert response.status_code == 200
 
     response = client.delete(
         "/ingredients/1",
-        headers=MockAuth.authorization_header(auth.DELETE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.DELETE_INGREDIENT_PERMISSION),
     )
     assert response.status_code == 404
 
@@ -299,10 +299,10 @@ def test_200_get_all(client: FlaskClient) -> None:
 
     inserted_ingredients_data = []
     for _ in range(num_datas):
-        data = MockIngredient.random_valid_ingredient_data()
+        data = MockIngredient.random_data()
         client.post(
             "/ingredients/",
-            headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
             json=data,
         )
         inserted_ingredients_data.append(data)
@@ -339,10 +339,10 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
 
     inserted_ingredients_data = []
     for _ in range(num_datas):
-        data = MockIngredient.random_valid_ingredient_data()
+        data = MockIngredient.random_data()
         client.post(
             "/ingredients/",
-            headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
             json=data,
         )
         inserted_ingredients_data.append(data)
@@ -353,7 +353,7 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
     for ingredient_id in range(1, num_delete_datas + 1):
         response = client.delete(
             f"/ingredients/{ingredient_id}",
-            headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         )
         assert response.status_code == 200
 
@@ -369,10 +369,10 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
     num_datas = total_pages * config.PAGINATION_SIZE + last_page_items
 
     for _ in range(num_datas):
-        data = MockIngredient.random_valid_ingredient_data()
+        data = MockIngredient.random_data()
         client.post(
             "/ingredients/",
-            headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
             json=data,
         )
 
@@ -390,10 +390,10 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
 
 
 def test_200_get_pagination_no_param(client: FlaskClient) -> None:
-    data = MockIngredient.random_valid_ingredient_data()
+    data = MockIngredient.random_data()
     client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=data,
     )
 
@@ -406,10 +406,10 @@ def test_200_get_pagination_no_param(client: FlaskClient) -> None:
 
 
 def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
-    data = MockIngredient.random_valid_ingredient_data()
+    data = MockIngredient.random_data()
     client.post(
         "/ingredients/",
-        headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+        headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
         json=data,
     )
 
@@ -433,10 +433,10 @@ def test_404_get_page_no_items(client: FlaskClient) -> None:
 
 def test_200_404_pagination_render_enough(client: FlaskClient) -> None:
     for _ in range(config.PAGINATION_SIZE * 2):
-        data = MockIngredient.random_valid_ingredient_data()
+        data = MockIngredient.random_data()
         client.post(
             "/ingredients/",
-            headers=MockAuth.authorization_header(auth.CREATE_INGREDIENT_PERMISSION),
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
             json=data,
         )
 
