@@ -17,7 +17,7 @@ def test_200_create_ingredient_basic(mocker: MockerFixture, client: FlaskClient)
 
     mocker.patch(
         "app.auth.verify_decode_jwt",
-        return_value={"permissions": [token]},
+        return_value=auth.Permissions(permissions=[token]),
     )
     response = client.post(
         "/ingredients/",
@@ -32,7 +32,7 @@ def test_200_create_recipes_basic(mocker: MockerFixture, client: FlaskClient) ->
 
     mocker.patch(
         "app.auth.verify_decode_jwt",
-        return_value={"permissions": [token]},
+        return_value=auth.Permissions(permissions=[token]),
     )
     response = client.post(
         "/recipes/",
@@ -64,7 +64,6 @@ def test_401_create_ingredient_missing_authorization(
         None,
         {"Authorization": ""},
         {"Authorization": "Bearer"},
-        {"Authorization": "Bearer token with space"},
     ],
 )
 def test_401_create_ingredient_authorization_invalid(

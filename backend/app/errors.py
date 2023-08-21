@@ -77,3 +77,19 @@ class ServerConfigError(exceptions.InternalServerError):
 
 class ServerDeleteWrongFileError(exceptions.InternalServerError):
     ...
+
+
+class NoAuthorizationHeaderError(exceptions.Unauthorized):
+    ...
+
+
+class InvalidAuthorizationTypeError(exceptions.Unauthorized):
+    ...
+
+
+class InvalidAuthorizationTokenError(exceptions.Unauthorized):
+    ...
+
+
+class InvalidPermissionError(exceptions.Forbidden):
+    ...
