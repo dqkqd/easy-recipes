@@ -13,7 +13,7 @@ from pydantic import (
 from app.schemas.base import BaseSchema, IDModelMixin
 
 if TYPE_CHECKING:
-    from app.schemas.recipe import RecipeInDB
+    from app.schemas.recipe import RecipeInDBBase
 
 
 class IngredientBase(BaseSchema):
@@ -34,23 +34,14 @@ class IngredientUpdate(IngredientBase):
     pass
 
 
-class IngredientInDB(IDModelMixin, IngredientBase):
+class IngredientInDBBase(IDModelMixin, IngredientBase):
     model_config = ConfigDict(from_attributes=True)
 
-    recipes: set[RecipeInDB] = Field(default_factory=set)
 
-    def to_public(self) -> IngredientPublic:
-        return IngredientPublic(
-            **self.model_dump(exclude={"recipes"}),
-            recipes={recipe.id for recipe in self.recipes},
-        )
+class Ingredient(IngredientInDBBase):
+    recipes: set[RecipeInDBBase] = Field(default_factory=set)
 
 
-class IngredientPublic(IDModelMixin, IngredientBase):
-    recipes: set[int] = Field(default_factory=set)
+from app.schemas.recipe import RecipeInDBBase  # noqa: TCH001, F811, E402
 
-
-# https://stackoverflow.com/questions/63420889/fastapi-pydantic-circular-references-in-separate-files
-from app.schemas.recipe import RecipeInDB  # noqa: E402, F811, TCH001
-
-IngredientInDB.model_rebuild()
+Ingredient.model_rebuild()
