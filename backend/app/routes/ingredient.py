@@ -8,7 +8,7 @@ from app import auth
 from app.crud import crud_ingredient
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import IngredientCreate, IngredientInDB
+from app.schemas.ingredient import Ingredient, IngredientCreate
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -24,7 +24,7 @@ def get_ingredients() -> Response:
         {
             "total": len(ingredients),
             "ingredients": [
-                ingredient.to_schema(IngredientInDB).to_public().model_dump(mode="json")
+                Ingredient.model_validate(ingredient).model_dump(mode="json")
                 for ingredient in ingredients
             ],
         },
@@ -46,7 +46,7 @@ def get_paginations() -> Response:
         {
             "page": paginaged_ingredients.page,
             "ingredients": [
-                ingredient.to_schema(IngredientInDB).to_public().model_dump(mode="json")
+                Ingredient.model_validate(ingredient).model_dump(mode="json")
                 for ingredient in paginaged_ingredients
             ],
             "total": paginaged_ingredients.total,
@@ -58,10 +58,9 @@ def get_paginations() -> Response:
 @to_handleable_error
 def get_ingredient(id: int) -> Response:  # noqa: A002
     return jsonify(
-        crud_ingredient.get(id)
-        .to_schema(IngredientInDB)
-        .to_public()
-        .model_dump(mode="json"),
+        Ingredient.model_validate(
+            crud_ingredient.get(id),
+        ).model_dump(mode="json"),
     )
 
 

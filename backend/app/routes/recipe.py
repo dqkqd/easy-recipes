@@ -8,7 +8,7 @@ from app import auth
 from app.crud import crud_recipe
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.recipe import RecipeCreate, RecipeInDB
+from app.schemas.recipe import Recipe, RecipeCreate
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -24,7 +24,7 @@ def get_recipes() -> Response:
         {
             "total": len(recipes),
             "recipes": [
-                recipe.to_schema(RecipeInDB).to_public().model_dump(mode="json")
+                Recipe.model_validate(recipe).model_dump(mode="json")
                 for recipe in recipes
             ],
         },
@@ -43,7 +43,7 @@ def get_paginations() -> Response:
         {
             "page": paginaged_recipes.page,
             "recipes": [
-                recipe.to_schema(RecipeInDB).to_public().model_dump(mode="json")
+                Recipe.model_validate(recipe).model_dump(mode="json")
                 for recipe in paginaged_recipes
             ],
             "total": paginaged_recipes.total,
@@ -55,7 +55,7 @@ def get_paginations() -> Response:
 @to_handleable_error
 def get_recipe(id: int) -> Response:  # noqa: A002
     return jsonify(
-        crud_recipe.get(id).to_schema(RecipeInDB).to_public().model_dump(mode="json"),
+        Recipe.model_validate(crud_recipe.get(id)).model_dump(mode="json"),
     )
 
 

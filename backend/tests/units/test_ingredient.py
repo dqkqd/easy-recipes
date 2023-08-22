@@ -8,7 +8,7 @@ from pydantic_core import Url
 
 from app import auth, config
 from app.crud import crud_ingredient
-from app.schemas.ingredient import IngredientPublic
+from app.schemas.ingredient import Ingredient
 from tests.mocks import MockAuth, MockIngredient
 from tests.utils import compare_image_data_from_uri
 
@@ -191,17 +191,17 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
 
     response = client.get("/ingredients/1")
     data = json.loads(response.data)
-    ingredient_public = IngredientPublic(**data)
+    ingredient = Ingredient(**data)
 
     assert response.status_code == 200
     assert ingredient_create.model_dump(
         exclude={"image_uri"},
-    ) == ingredient_public.model_dump(exclude={"id", "image_uri"})
+    ) == ingredient.model_dump(exclude={"id", "image_uri"})
 
-    assert ingredient_create.image_uri != ingredient_public.image_uri
+    assert ingredient_create.image_uri != ingredient.image_uri
     assert compare_image_data_from_uri(
         ingredient_create.image_uri,
-        ingredient_public.image_uri,
+        ingredient.image_uri,
     )
 
 
