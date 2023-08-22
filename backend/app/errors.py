@@ -57,8 +57,8 @@ class BaseError(exceptions.HTTPException):
 
 
 class ApplicationHTTPError(BaseError):
-    code = 422
-    description = "Unprocessable."
+    code: int = 422
+    description: str = "Unprocessable."
 
     @classmethod
     def from_http_error(cls, e: exceptions.HTTPException) -> Self:
