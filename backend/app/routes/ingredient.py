@@ -8,7 +8,7 @@ from app import auth
 from app.crud import crud_ingredient
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import Ingredient, IngredientCreate
+from app.schemas.ingredient import Ingredient, IngredientCreate, IngredientUpdate
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -86,3 +86,19 @@ def create_ingredient() -> Response:
 def delete_ingredient(id: int) -> Response:  # noqa: A002
     crud_ingredient.delete(id)
     return jsonify({"id": id})
+
+
+@api.route("/<int:id>", methods=["PATCH"])
+@to_handleable_error
+@auth.require(auth.UPDATE_INGREDIENT_PERMISSION)
+def update_ingredient(id: int) -> Response:  # noqa: A002
+    body = request.get_json()
+    ingredient_update = IngredientUpdate(**body)
+
+    if ingredient_update.image_uri is not None:
+        with ImageOnServer.from_source(ingredient_update.image_uri) as image_on_server:
+            ingredient_update.image_uri = image_on_server.uri
+
+    ingredient_db = crud_ingredient.get(id=id)
+    ingredient = crud_ingredient.update(ingredient_db, ingredient_update)
+    return jsonify(Ingredient.model_validate(ingredient).model_dump(mode="json"))
