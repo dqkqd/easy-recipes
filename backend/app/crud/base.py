@@ -2,12 +2,15 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Generic, TypeVar
 
+from sqlalchemy import inspect
+
 from app import config
 from app.database import BaseORMModel, safe_db
 from app.schemas.base import BaseSchema
 
 if TYPE_CHECKING:
     from flask_sqlalchemy.pagination import Pagination
+    from sqlalchemy.orm import Mapper
 
 ModelType = TypeVar("ModelType", bound=BaseORMModel)
 CreateSchemaType = TypeVar("CreateSchemaType", bound=BaseSchema)
@@ -54,3 +57,15 @@ class CRUDBase(
             db.session.delete(obj)
             db.session.commit()
             return obj  # type: ignore  # noqa: PGH003
+
+    def update(self, obj_db: ModelType, obj_update: UpdateSchemaType) -> ModelType:
+        mapper: Mapper = inspect(self.model)  # type:ignore  # noqa: PGH003
+        update_data = obj_update.model_dump(exclude_unset=True)
+        with safe_db() as db:
+            for column in mapper.columns:
+                if column.name not in update_data:
+                    continue
+                setattr(obj_db, column.name, update_data[column.name])
+            db.session.commit()
+            db.session.refresh(obj_db)
+            return obj_db
