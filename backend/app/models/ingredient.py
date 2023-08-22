@@ -4,14 +4,14 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.models.base import BaseModelMixin, ToSchemaModelMixin
+from app.models.base import BaseModelMixin
 from app.models.references import recipes_ingredients_association_table
 
 if TYPE_CHECKING:
     from app.models.recipe import Recipe
 
 
-class Ingredient(BaseModelMixin, ToSchemaModelMixin):
+class Ingredient(BaseModelMixin):
     __tablename__ = "ingredients"
 
     name: Mapped[str]

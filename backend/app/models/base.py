@@ -11,10 +11,3 @@ SchemaType = TypeVar("SchemaType", bound=BaseModel)
 
 class BaseModelMixin(db.Model):  # type: ignore  # noqa: PGH003
     __abstract__ = True
-
-
-class ToSchemaModelMixin(db.Model):  # type: ignore  # noqa: PGH003
-    __abstract__ = True
-
-    def to_schema(self, schema: type[SchemaType]) -> SchemaType:
-        return schema.model_validate(self)
