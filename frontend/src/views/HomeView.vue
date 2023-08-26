@@ -1,9 +1,18 @@
+<template>
+  <nav>
+    <div>Easy Recipes</div>
+  </nav>
+  <RecipeView />
+</template>
+
 <script setup lang="ts">
-import TheWelcome from '../components/TheWelcome.vue';
+import RecipeView from './RecipeView.vue';
 </script>
 
-<template>
-  <main>
-    <TheWelcome />
-  </main>
-</template>
+<style scoped>
+nav {
+  font-weight: 600;
+  font-size: 2rem;
+  border-bottom: 2px solid #ddd;
+}
+</style>
