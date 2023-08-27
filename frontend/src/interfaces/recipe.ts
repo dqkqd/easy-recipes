@@ -1,22 +1,22 @@
-import { type IngredientBase } from './ingredient';
+import { type IIngredientBase } from './ingredient';
 
-export interface RecipeBase {
+export interface IRecipeBase {
   name: string;
   description: string | null;
   image_uri: string | null;
 }
 
-export interface RecipeCreate extends RecipeBase {}
+export interface IRecipeCreate extends IRecipeBase {}
 
-export interface RecipeWithID extends RecipeBase {
+export interface IRecipeWithID extends IRecipeBase {
   id: number;
 }
 
-export interface Recipe extends RecipeWithID {
-  ingredients: Array<IngredientBase>;
+export interface IRecipe extends IRecipeWithID {
+  ingredients: Array<IIngredientBase>;
 }
 
-export class TRecipe implements RecipeBase {
+export class RecipeBase implements IRecipeBase {
   name: string;
   description: string | null;
   image_uri: string | null;
@@ -26,3 +26,5 @@ export class TRecipe implements RecipeBase {
     this.image_uri = image_uri;
   }
 }
+
+export class RecipeCreate extends RecipeBase {}

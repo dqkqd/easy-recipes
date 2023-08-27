@@ -1,6 +1,6 @@
 import { useFetchWithParsable } from '@/composables/fetch';
 import { apiUrl } from '@/env';
-import { TRecipe } from '@/interfaces/recipe';
+import { RecipeCreate } from '@/interfaces/recipe';
 import { RecipesResponseSchema } from '@/validator/recipe';
 import { ref } from 'vue';
 
@@ -10,7 +10,7 @@ export function getRecipes() {
 }
 
 export function createRecipe() {
-  const recipeCreate = ref<TRecipe>(new TRecipe('', null, null));
+  const recipeCreate = ref<RecipeCreate>(new RecipeCreate('', null, null));
   const error = ref<Error>();
   const create = async () => {
     try {
