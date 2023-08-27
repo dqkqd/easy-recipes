@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <div v-if="hasResponse">
+    <div v-if="error">Something wrong</div>
+    <div v-else-if="recipesResponse">
       <span v-for="recipe in recipesResponse?.recipes" :key="recipe.id">
         <SummaryBox :recipe="recipe" />
       </span>
@@ -11,20 +12,8 @@
 
 <script setup lang="ts">
 import SummaryBox from '@/components/SummaryBox.vue';
-import { apiUrl } from '@/env';
-import { RecipesResponseSchema } from '@/validator/recipe';
-import { computed, onMounted, ref } from 'vue';
-
-const recipesResponse = ref();
-const hasResponse = computed(() => recipesResponse.value && recipesResponse.value.recipes.length);
-onMounted(() => {
-  fetch(`${apiUrl}/recipes`)
-    .then((res) => res.json())
-    .then((res) => {
-      recipesResponse.value = RecipesResponseSchema.parse(res);
-    })
-    .catch((err) => console.log(err));
-});
+import { getRecipes } from '@/services/recipe';
+const { recipesResponse, error } = getRecipes();
 </script>
 
 <style scoped>
@@ -36,3 +25,4 @@ span {
   display: inline-block;
 }
 </style>
+@/services/recipe
