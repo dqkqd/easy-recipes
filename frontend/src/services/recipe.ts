@@ -6,7 +6,7 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export function getRecipes() {
-  const { data, error } = useFetchWithParsable(RecipesResponseSchema, `${apiUrl}/recipes`);
+  const { data, error } = useFetchWithParsable(RecipesResponseSchema, `${apiUrl}/recipes/`);
   return { recipesResponse: data, error };
 }
 
