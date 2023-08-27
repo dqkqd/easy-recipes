@@ -8,6 +8,7 @@ dependencies = [
     "cryptography",
     "filetype",
     "flask",
+    "flask_cors",
     "flask_migrate",
     "flask_sqlalchemy",
     "gunicorn",

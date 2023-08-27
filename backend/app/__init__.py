@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from flask import Flask
+from flask_cors import CORS
 
 from app.config import BaseConfig, Config
 
@@ -10,6 +11,8 @@ def create_app(config_cls: type[BaseConfig] = Config) -> Flask:
 
     config = config_cls()
     app.config.from_object(config)
+
+    CORS(app)
 
     from app.database import db, migrate
 
