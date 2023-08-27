@@ -17,10 +17,10 @@ import { useRoute } from 'vue-router';
 const route = useRoute();
 const { recipe, error } = getRecipe(route.params.id);
 const image_uri = computed(() => {
-  if (!recipe.value.image_uri) {
-    return recipe.value.image_uri;
+  if (recipe.value && recipe.value.image_uri) {
+    return convertFileServerDev(recipe.value.image_uri);
   }
-  return convertFileServerDev(recipe.value.image_uri);
+  return null;
 });
 </script>
 
