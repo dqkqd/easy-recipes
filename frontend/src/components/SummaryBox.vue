@@ -6,8 +6,8 @@
 </template>
 
 <script setup lang="ts">
+import { convertFileServerDev } from '@/env';
 import { computed } from 'vue';
-import { convertFileServerDev } from '../env';
 
 const props = defineProps(['recipe']);
 const image_uri = computed(() => {
