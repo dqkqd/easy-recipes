@@ -33,4 +33,3 @@ span {
   display: inline-block;
 }
 </style>
-@/services/recipe
