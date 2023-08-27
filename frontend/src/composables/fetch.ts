@@ -1,4 +1,4 @@
-import { ref, toValue, watchEffect } from 'vue';
+import { ref, toValue, watchEffect, type Ref } from 'vue';
 
 export function useFetch(url: string) {
   const data = ref();
@@ -20,7 +20,10 @@ export function useFetch(url: string) {
   return { data, error };
 }
 
-export function useFetchWithParsable<Type>(c: { parse(data: unknown): Type }, url: string) {
+export function useFetchWithParsable<Type>(
+  c: { parse(data: unknown): Type },
+  url: string
+): { data: Ref<Type>; error: Ref<Error | undefined> } {
   const data = ref();
   const error = ref<Error>();
 
