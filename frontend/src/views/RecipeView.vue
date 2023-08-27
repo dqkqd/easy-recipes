@@ -3,7 +3,9 @@
     <div v-if="error">Something wrong</div>
     <div v-else-if="recipesResponse">
       <span v-for="recipe in recipesResponse?.recipes" :key="recipe.id">
-        <SummaryBox :recipe="recipe" />
+        <router-link :to="{ name: 'RecipeDetails', params: { id: recipe.id } }">
+          <SummaryBox :recipe="recipe" />
+        </router-link>
       </span>
     </div>
     <div v-else>Loading recipes...</div>
