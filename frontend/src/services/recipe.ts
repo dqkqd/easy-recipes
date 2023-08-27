@@ -10,12 +10,8 @@ export function getRecipes() {
   return { recipesResponse: data, error };
 }
 
-export function getRecipe(id: any) {
-  const parsedId = parseInt(id);
-  if (isNaN(parsedId)) {
-    return { recipe: ref(null), error: ref(new TypeError(`Invalid route with recipe id = ${id}`)) };
-  }
-  const { data, error } = useFetchWithParsable(RecipeSchema, `${apiUrl}/recipes/${parsedId}`);
+export function getRecipe(id: number | string) {
+  const { data, error } = useFetchWithParsable(RecipeSchema, `${apiUrl}/recipes/${id}`);
   return { recipe: data, error };
 }
 
