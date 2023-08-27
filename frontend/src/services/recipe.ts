@@ -1,17 +1,26 @@
 import { useFetchWithParsable } from '@/composables/fetch';
 import { apiUrl } from '@/env';
 import { RecipeCreate } from '@/interfaces/recipe';
-import { RecipesResponseSchema } from '@/validator/recipe';
+import { RecipeSchema, RecipesResponseSchema } from '@/validator/recipe';
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export function getRecipes() {
   const { data, error } = useFetchWithParsable(RecipesResponseSchema, `${apiUrl}/recipes`);
   return { recipesResponse: data, error };
 }
 
+export function getRecipe(id: number | string | string[]) {
+  const { data, error } = useFetchWithParsable(RecipeSchema, `${apiUrl}/recipes/${id}`);
+  return { recipe: data, error };
+}
+
 export function createRecipe() {
   const recipeCreate = ref<RecipeCreate>(new RecipeCreate('', null, null));
   const error = ref<Error>();
+
+  const router = useRouter();
+
   const create = async () => {
     try {
       error.value = undefined;
@@ -25,7 +34,7 @@ export function createRecipe() {
         body: JSON.stringify(recipeCreate.value)
       });
       const result = await response.json();
-      console.log(result.message);
+      router.push(`/recipes/${result.id}`);
     } catch (e) {
       error.value = e as Error;
     }
