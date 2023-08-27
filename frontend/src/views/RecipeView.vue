@@ -12,16 +12,16 @@
 <script setup lang="ts">
 import SummaryBox from '@/components/SummaryBox.vue';
 import { apiUrl } from '@/env';
+import { RecipesResponseSchema } from '@/validator/recipe';
 import { computed, onMounted, ref } from 'vue';
-import { getRecipeSchema, type RecipesResponse } from '../schema/recipe';
 
-const recipesResponse = ref<RecipesResponse>();
-const hasResponse = computed(() => recipesResponse.value && recipesResponse.value?.recipes.length);
+const recipesResponse = ref();
+const hasResponse = computed(() => recipesResponse.value && recipesResponse.value.recipes.length);
 onMounted(() => {
   fetch(`${apiUrl}/recipes`)
     .then((res) => res.json())
     .then((res) => {
-      recipesResponse.value = getRecipeSchema.parse(res);
+      recipesResponse.value = RecipesResponseSchema.parse(res);
     })
     .catch((err) => console.log(err));
 });
