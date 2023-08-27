@@ -6,7 +6,7 @@
 </template>
 
 <script setup lang="ts">
-import RecipeView from './recipe/RecipeView.vue';
+import RecipeView from './RecipeView.vue';
 </script>
 
 <style scoped>

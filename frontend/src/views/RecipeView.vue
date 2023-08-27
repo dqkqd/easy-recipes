@@ -10,15 +10,15 @@
   </div>
   <button @click="showModal = !showModal">New Recipe</button>
   <Teleport to="body">
-    <RecipeCreateModal v-if="showModal" @close="showModal = false" />
+    <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
   </Teleport>
 </template>
 
 <script setup lang="ts">
 import SummaryBox from '@/components/SummaryBox.vue';
+import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { getRecipes } from '@/services/recipe';
 import { ref } from 'vue';
-import RecipeCreateModal from './RecipeCreateModal.vue';
 
 const { recipesResponse, error } = getRecipes();
 const showModal = ref(false);
