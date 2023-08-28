@@ -36,8 +36,8 @@ describe('FormRecipeCreate', () => {
     await description.setValue('Recipe description 1');
     await imageUrl.setValue('Recipe image url 1');
 
-    const submitButtons = wrapper.findAll('button')[0];
-    await submitButtons.trigger('click');
+    const submitButton = wrapper.get('button[type=submit]');
+    await submitButton.trigger('click');
     const submittedEvent = wrapper.emitted('submit');
 
     expect(submittedEvent).toHaveLength(1);
@@ -50,8 +50,8 @@ describe('FormRecipeCreate', () => {
   it('Form Close', async () => {
     const wrapper = mount(FormRecipeCreate);
 
-    const closeButtons = wrapper.findAll('button')[1];
-    await closeButtons.trigger('click');
+    const closeButton = wrapper.get('button:not([type=submit])');
+    await closeButton.trigger('click');
     const closeEvent = wrapper.emitted('close');
 
     expect(closeEvent).toHaveLength(1);
