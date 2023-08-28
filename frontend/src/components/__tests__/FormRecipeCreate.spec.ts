@@ -36,8 +36,7 @@ describe('FormRecipeCreate', () => {
     await description.setValue('Recipe description 1');
     await imageUrl.setValue('Recipe image url 1');
 
-    const submitButton = wrapper.get('button[type=submit]');
-    await submitButton.trigger('click');
+    await wrapper.find('form').trigger('submit');
     const submittedEvent = wrapper.emitted('submit');
 
     expect(submittedEvent).toHaveLength(1);

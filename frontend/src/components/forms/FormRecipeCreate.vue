@@ -5,7 +5,7 @@
       <FormInput v-model="recipe.name" label="Name" value="" />
       <FormInput v-model="recipe.description" label="Description" value="" />
       <FormInput v-model="recipe.image_uri" label="Image URL" value="" />
-      <button type="submit" @click="submit">Submit</button>
+      <button type="submit">Submit</button>
       <button @click="close">Close</button>
     </form>
   </div>
