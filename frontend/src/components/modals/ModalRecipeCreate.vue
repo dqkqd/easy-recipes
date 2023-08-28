@@ -1,21 +1,25 @@
 <template>
   <div class="modal-mask">
     <div class="modal-container">
-      <FormRecipeCreate @submit="createNewRecipe" @close="$emit('close')" />
+      <div v-if="error">Something wrong ...</div>
+      <FormRecipeCreate v-else @submit="createNewRecipe" @close="$emit('close')" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { RecipeCreate } from '@/interfaces/recipe';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
+const error = ref();
 const router = useRouter();
 async function createNewRecipe(recipeCreate: RecipeCreate) {
-  const { id, error } = await recipeCreate.insert();
+  const { id, e } = await recipeCreate.insert();
+  error.value = e;
   if (!error.value) {
-    router.push(`/recipes/${id.value}`);
+    router.push(`/recipes/${id}`);
   }
 }
 </script>

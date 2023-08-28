@@ -1,5 +1,4 @@
 import { apiUrl } from '@/env';
-import { ref } from 'vue';
 import { type IIngredientBase } from './ingredient';
 
 export interface IRecipeBase {
@@ -31,12 +30,7 @@ export class RecipeBase implements IRecipeBase {
 
 export class RecipeCreate extends RecipeBase {
   async insert() {
-    const id = ref<number>();
-    const error = ref<Error>();
-
     try {
-      error.value = undefined;
-
       const response = await fetch(`${apiUrl}/recipes`, {
         method: 'POST',
         headers: {
@@ -48,11 +42,13 @@ export class RecipeCreate extends RecipeBase {
 
       const result = await response.json();
 
-      id.value = result.id;
-    } catch (e) {
-      error.value = e as Error;
-    }
+      if (!result.ok) {
+        throw new Error('Invalid Recipe input.');
+      }
 
-    return { id, error };
+      return { id: result.id, undefined };
+    } catch (e) {
+      return { undefined, e };
+    }
   }
 }
