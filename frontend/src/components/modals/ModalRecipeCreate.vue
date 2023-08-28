@@ -1,30 +1,22 @@
 <template>
   <div class="modal-mask">
     <div class="modal-container">
-      <h3>Create New Recipe</h3>
-      <form>
-        <FormInput v-model="recipeCreate.name" label="Name" value="" />
-        <FormInput v-model="recipeCreate.description" label="Description" value="" />
-        <FormInput v-model="recipeCreate.image_uri" label="Image URL" value="" />
-      </form>
-      <button @click="onSubmit">Submit</button>
-      <button @click="$emit('close')">Close</button>
+      <FormRecipeCreate @submit="createNewRecipe" @close="$emit('close')" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import FormInput from '@/components/forms/FormInput.vue';
-import { createRecipe } from '@/services/recipe';
-const emit = defineEmits<{
-  (e: 'close'): void;
-}>();
+import { RecipeCreate } from '@/interfaces/recipe';
+import { useRouter } from 'vue-router';
+import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
-const { recipeCreate, create } = createRecipe();
-
-function onSubmit() {
-  create();
-  emit('close');
+const router = useRouter();
+async function createNewRecipe(recipeCreate: RecipeCreate) {
+  const { id, error } = await recipeCreate.insert();
+  if (!error.value) {
+    router.push(`/recipes/${id.value}`);
+  }
 }
 </script>
 
