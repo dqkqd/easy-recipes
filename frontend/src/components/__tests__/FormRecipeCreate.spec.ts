@@ -10,7 +10,7 @@ describe('FormRecipeCreate', () => {
     const wrapper = mount(FormRecipeCreate);
 
     const label = wrapper.find('h3');
-    expect(label.element.textContent).toBe('Create New Recipe');
+    expect(label.text()).toBe('Create New Recipe');
   });
 
   it('Form Input label', () => {
@@ -19,9 +19,9 @@ describe('FormRecipeCreate', () => {
     const formInputs = wrapper.findAllComponents(FormInput);
     expect(formInputs).toHaveLength(3);
 
-    expect(formInputs[0].vm.label).toBe('Name');
-    expect(formInputs[1].vm.label).toBe('Description');
-    expect(formInputs[2].vm.label).toBe('Image URL');
+    expect(formInputs[0].find('label').text()).toBe('Name:');
+    expect(formInputs[1].find('label').text()).toBe('Description:');
+    expect(formInputs[2].find('label').text()).toBe('Image URL:');
   });
 
   it('Form Submit', async () => {
