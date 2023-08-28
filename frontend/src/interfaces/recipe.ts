@@ -31,7 +31,7 @@ export class RecipeBase implements IRecipeBase {
 export class RecipeCreate extends RecipeBase {
   async insert() {
     try {
-      const response = await fetch(`${apiUrl}/recipes`, {
+      const response = await fetch(`${apiUrl}/recipes/`, {
         method: 'POST',
         headers: {
           'content-type': 'application/json',
@@ -39,12 +39,11 @@ export class RecipeCreate extends RecipeBase {
         },
         body: JSON.stringify(this)
       });
-
-      const result = await response.json();
-
-      if (!result.ok) {
+      if (!response.ok) {
         throw new Error('Invalid Recipe input.');
       }
+
+      const result = await response.json();
 
       return { id: result.id, undefined };
     } catch (e) {
