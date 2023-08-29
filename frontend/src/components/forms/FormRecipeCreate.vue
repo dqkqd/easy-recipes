@@ -2,9 +2,9 @@
   <div>
     <h3>Create New Recipe</h3>
     <form @submit.prevent="submit">
-      <FormInput v-model="recipe.name" label="Name" value="" />
-      <FormInput v-model="recipe.description" label="Description" value="" />
-      <FormInput v-model="recipe.image_uri" label="Image URL" value="" />
+      <FormInput v-model="recipe.name" label="Name" />
+      <FormInput v-model="recipe.description" label="Description" />
+      <FormInput v-model="recipe.image_uri" label="Image URL" />
       <button type="submit">Submit</button>
       <button @click="close">Close</button>
     </form>
