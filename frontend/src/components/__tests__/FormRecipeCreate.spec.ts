@@ -13,7 +13,7 @@ describe('FormRecipeCreate', () => {
     expect(label.text()).toBe('Create New Recipe');
   });
 
-  it('Form Input label', () => {
+  it('Render form', () => {
     const wrapper = mount(FormRecipeCreate);
 
     const formInputs = wrapper.findAllComponents(FormInput);
@@ -24,7 +24,7 @@ describe('FormRecipeCreate', () => {
     expect(formInputs[2].find('label').text()).toBe('Image URL:');
   });
 
-  it('Form Submit', async () => {
+  it('Submit form', async () => {
     const wrapper = mount(FormRecipeCreate);
 
     const formInputs = wrapper.findAllComponents(FormInput);
@@ -46,7 +46,7 @@ describe('FormRecipeCreate', () => {
     ]);
   });
 
-  it('Form Close', async () => {
+  it('Close form', async () => {
     const wrapper = mount(FormRecipeCreate);
 
     const closeButton = wrapper.get('button:not([type=submit])');
