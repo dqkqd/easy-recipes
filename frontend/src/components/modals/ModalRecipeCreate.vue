@@ -3,33 +3,33 @@
     <div class="modal-container">
       <div v-if="hasError">Something wrong ...</div>
       <div v-else-if="isCreating">Loading ...</div>
-      <FormRecipeCreate v-else @submit="createNewRecipe" @close="$emit('close')" />
+      <FormRecipeCreate v-else @submit="submit" @close="$emit('close')" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { RecipeCreate } from '@/interfaces/recipe';
+import { type RecipeCreate } from '@/interfaces/recipe';
 import { createRecipe } from '@/services/recipe';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
+const router = useRouter();
 const hasError = ref();
 const isCreating = ref(false);
 
-const router = useRouter();
-async function createNewRecipe(recipeCreate: RecipeCreate) {
+async function submit(recipeCreate: RecipeCreate) {
   isCreating.value = true;
 
   const { id, error } = await createRecipe(recipeCreate);
 
   isCreating.value = false;
 
-  hasError.value = error.value;
+  hasError.value = error;
 
   if (!hasError.value) {
-    router.push(`/recipes/${id.value}`);
+    router.push({ name: 'RecipeDetails', params: { id: id } });
   }
 }
 </script>
