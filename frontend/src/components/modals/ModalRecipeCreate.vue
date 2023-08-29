@@ -25,10 +25,9 @@ async function submit(recipeCreate: RecipeCreate) {
   const { id, error } = await createRecipe(recipeCreate);
 
   isCreating.value = false;
-
   hasError.value = error;
 
-  if (!hasError.value) {
+  if (error === undefined && id !== undefined) {
     router.push({ name: 'RecipeDetails', params: { id: id } });
   }
 }
