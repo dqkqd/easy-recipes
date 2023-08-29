@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { RecipeCreate } from '@/interfaces/recipe';
+import { createRecipe } from '@/services/recipe';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
@@ -21,14 +22,14 @@ const router = useRouter();
 async function createNewRecipe(recipeCreate: RecipeCreate) {
   isCreating.value = true;
 
-  const { id, error } = await recipeCreate.insert();
+  const { id, error } = await createRecipe(recipeCreate);
 
   isCreating.value = false;
 
-  hasError.value = error;
+  hasError.value = error.value;
 
   if (!hasError.value) {
-    router.push(`/recipes/${id}`);
+    router.push(`/recipes/${id.value}`);
   }
 }
 </script>

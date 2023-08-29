@@ -1,6 +1,3 @@
-import { apiUrl } from '@/env';
-import axios from 'axios';
-import { ref } from 'vue';
 import { type IIngredientBase } from './ingredient';
 
 export interface IRecipeBase {
@@ -30,28 +27,4 @@ export class RecipeBase implements IRecipeBase {
   }
 }
 
-export class RecipeCreate extends RecipeBase {
-  async insert() {
-    const id = ref();
-    const error = ref();
-
-    try {
-      id.value = null;
-      error.value = null;
-
-      const res = await axios.post(`${apiUrl}/recipes/`, this, {
-        headers: {
-          authorization: 'bearer create:recipe'
-        }
-      });
-
-      const result = await res.data;
-
-      id.value = result.id;
-    } catch (e) {
-      error.value = e;
-    }
-
-    return { id, error };
-  }
-}
+export class RecipeCreate extends RecipeBase {}

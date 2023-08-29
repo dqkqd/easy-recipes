@@ -2,8 +2,8 @@ import { useFetchWithParsable } from '@/composables/fetch';
 import { apiUrl } from '@/env';
 import { RecipeCreate } from '@/interfaces/recipe';
 import { RecipeSchema, RecipesResponseSchema } from '@/validator/recipe';
+import axios from 'axios';
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
 export function getRecipes() {
   const { data, error } = useFetchWithParsable(RecipesResponseSchema, `${apiUrl}/recipes/`);
@@ -15,29 +15,26 @@ export function getRecipe(id: number | string) {
   return { recipe: data, error };
 }
 
-export function createRecipe() {
-  const recipeCreate = ref<RecipeCreate>(new RecipeCreate('', null, null));
+export async function createRecipe(recipe: RecipeCreate) {
+  const id = ref();
   const error = ref<Error>();
 
-  const router = useRouter();
+  try {
+    id.value = null;
+    error.value = undefined;
 
-  const create = async () => {
-    try {
-      error.value = undefined;
+    const res = await axios.post(`${apiUrl}/recipes/`, recipe, {
+      headers: {
+        authorization: 'bearer create:recipe'
+      }
+    });
 
-      const response = await fetch(`${apiUrl}/recipes`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          authorization: 'bearer create:recipe'
-        },
-        body: JSON.stringify(recipeCreate.value)
-      });
-      const result = await response.json();
-      router.push(`/recipes/${result.id}`);
-    } catch (e) {
-      error.value = e as Error;
-    }
-  };
-  return { recipeCreate, create };
+    const result = await res.data;
+
+    id.value = result.id;
+  } catch (e) {
+    error.value = e as Error;
+  }
+
+  return { id, error };
 }
