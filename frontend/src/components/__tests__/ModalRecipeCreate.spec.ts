@@ -65,4 +65,29 @@ describe('ModalRecipeCreate', () => {
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(push).toHaveBeenCalledTimes(0);
   });
+
+  it('Create recipe with loading', async () => {
+    const push = vi.fn();
+    // @ts-ignore
+    useRouter.mockImplementationOnce(() => ({
+      push
+    }));
+
+    const wrapper = mount(ModalRecipeCreate);
+
+    vi.spyOn(axios, 'post').mockResolvedValue({
+      data: { id: 1, error: undefined }
+    });
+
+    const inputs = wrapper.findAll('input');
+    await inputs[0].setValue('one');
+    await wrapper.find('form').trigger('submit');
+
+    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(wrapper.html()).toContain('Loading ...');
+
+    await flushPromises();
+
+    expect(wrapper.html()).not.toContain('Loading ...');
+  });
 });
