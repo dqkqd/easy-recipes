@@ -1,7 +1,7 @@
 <template>
   <div>
     <label>{{ props.label }}:</label>
-    <input :placeholder="props.label" v-model="value" />
+    <input :placeholder="props.placeholder" v-model="value" />
   </div>
 </template>
 
@@ -10,6 +10,7 @@ import { computed } from 'vue';
 
 const props = defineProps<{
   label: string;
+  placeholder: string;
   modelValue: string | null;
 }>();
 
