@@ -1,4 +1,5 @@
 import { apiUrl } from '@/env';
+import axios from 'axios';
 import { type IIngredientBase } from './ingredient';
 
 export interface IRecipeBase {
@@ -31,23 +32,16 @@ export class RecipeBase implements IRecipeBase {
 export class RecipeCreate extends RecipeBase {
   async insert() {
     try {
-      const response = await fetch(`${apiUrl}/recipes/`, {
-        method: 'POST',
+      const res = await axios.post(`${apiUrl}/recipes/`, this, {
         headers: {
-          'content-type': 'application/json',
           authorization: 'bearer create:recipe'
-        },
-        body: JSON.stringify(this)
+        }
       });
-      if (!response.ok) {
-        throw new Error('Invalid Recipe input.');
-      }
 
-      const result = await response.json();
-
-      return { id: result.id, undefined };
+      const result = await res.data;
+      return result.id;
     } catch (e) {
-      return { undefined, e };
+      return undefined;
     }
   }
 }

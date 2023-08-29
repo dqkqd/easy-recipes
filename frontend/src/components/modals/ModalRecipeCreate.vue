@@ -16,9 +16,8 @@ import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 const error = ref();
 const router = useRouter();
 async function createNewRecipe(recipeCreate: RecipeCreate) {
-  const { id, e } = await recipeCreate.insert();
-  error.value = e;
-  if (!error.value) {
+  const id = await recipeCreate.insert();
+  if (id != undefined) {
     router.push(`/recipes/${id}`);
   }
 }
