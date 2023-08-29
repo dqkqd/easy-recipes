@@ -1,7 +1,8 @@
 <template>
   <div class="modal-mask">
     <div class="modal-container">
-      <div v-if="error">Something wrong ...</div>
+      <div v-if="hasError">Something wrong ...</div>
+      <div v-else-if="isCreating">Loading ...</div>
       <FormRecipeCreate v-else @submit="createNewRecipe" @close="$emit('close')" />
     </div>
   </div>
@@ -13,11 +14,20 @@ import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
-const error = ref();
+const hasError = ref();
+const isCreating = ref(false);
+
 const router = useRouter();
 async function createNewRecipe(recipeCreate: RecipeCreate) {
-  const id = await recipeCreate.insert();
-  if (id != undefined) {
+  isCreating.value = true;
+
+  const { id, error } = await recipeCreate.insert();
+
+  isCreating.value = false;
+
+  hasError.value = error;
+
+  if (!hasError.value) {
     router.push(`/recipes/${id}`);
   }
 }
