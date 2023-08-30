@@ -1,16 +1,27 @@
 <template>
   <div>
-    <h3>Create New Recipe</h3>
+    <h3 data-test="form-recipe-create-title">Create New Recipe</h3>
     <form @submit.prevent="submit">
-      <FormInput v-model="recipe.name" label="Name" placeholder="Recipe's name" />
+      <FormInput
+        v-model="recipe.name"
+        label="Name"
+        placeholder="Recipe's name"
+        data-test="form-recipe-create-name"
+      />
       <FormInput
         v-model="recipe.description"
         label="Description"
         placeholder="Recipe's description"
+        data-test="form-recipe-create-description"
       />
-      <FormInput v-model="recipe.image_uri" label="Image URL" placeholder="Recipe's image url" />
-      <button class="submit" type="submit">Submit</button>
-      <button class="close" @click="close">Close</button>
+      <FormInput
+        v-model="recipe.image_uri"
+        label="Image URL"
+        placeholder="Recipe's image url"
+        data-test="form-recipe-create-image-uri"
+      />
+      <button type="submit" data-test="form-recipe-create-submit">Submit</button>
+      <button @click="close" data-test="form-recipe-create-close">Close</button>
     </form>
   </div>
 </template>

@@ -17,8 +17,7 @@ describe('ModalRecipeCreate', () => {
   it('Emit close', async () => {
     const wrapper = mount(ModalRecipeCreate);
 
-    const closeButton = wrapper.findAll('button')[1];
-    await closeButton.trigger('click');
+    await wrapper.find('[data-test=form-recipe-create-close]').trigger('click');
 
     expect(wrapper.emitted('close')).toHaveLength(1);
   });
@@ -36,8 +35,10 @@ describe('ModalRecipeCreate', () => {
       data: { id: 1 }
     });
 
-    const inputs = wrapper.findAll('input');
-    await inputs[0].setValue('Name of the recipe');
+    await wrapper
+      .find('[data-test=form-recipe-create-name]')
+      .find('input')
+      .setValue('Name of the recipe');
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
@@ -67,8 +68,10 @@ describe('ModalRecipeCreate', () => {
       throw new Error('Unexpected error');
     });
 
-    const inputs = wrapper.findAll('input');
-    await inputs[0].setValue('one');
+    await wrapper
+      .find('[data-test=form-recipe-create-name]')
+      .find('input')
+      .setValue('Name of the recipe');
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
@@ -90,12 +93,14 @@ describe('ModalRecipeCreate', () => {
       data: { id: 1 }
     });
 
-    const inputs = wrapper.findAll('input');
-    await inputs[0].setValue('one');
+    await wrapper
+      .find('[data-test=form-recipe-create-name]')
+      .find('input')
+      .setValue('Name of the recipe');
     await wrapper.find('form').trigger('submit');
 
     expect(axios.request).toHaveBeenCalledTimes(1);
-    expect(wrapper.html()).toContain('Loading ...');
+    expect(wrapper.find('[data-test=modal-recipe-create-loading]').text()).toBe('Loading ...');
 
     await flushPromises();
 
@@ -115,20 +120,24 @@ describe('ModalRecipeCreate', () => {
       data: { message: 'error' }
     });
 
-    const inputs = wrapper.findAll('input');
-    await inputs[0].setValue('one');
+    await wrapper
+      .find('[data-test=form-recipe-create-name]')
+      .find('input')
+      .setValue('Name of the recipe');
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
     expect(axios.request).toHaveBeenCalledTimes(1);
     expect(push).toHaveBeenCalledTimes(0);
-    expect(wrapper.html()).toContain('Something wrong ...');
+    expect(wrapper.find('[data-test=modal-recipe-create-error]').text()).toBe(
+      'Something wrong ...'
+    );
   });
 
   it('Emit close', async () => {
     const wrapper = mount(ModalRecipeCreate);
 
-    await wrapper.find('[class=close]').trigger('click');
+    await wrapper.find('[data-test=form-recipe-create-close]').trigger('click');
 
     expect(wrapper.emitted('close')).toHaveLength(1);
   });

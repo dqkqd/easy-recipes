@@ -23,25 +23,29 @@ describe('BoxRecipe', () => {
       new Recipe(1, 'Recipe name', 'Recipe Description', 'Sample image', [])
     );
 
-    expect(wrapper.find('[class=name]').text()).toBe('Recipe name');
-    expect(wrapper.find('[class=description]').text()).toBe('Recipe Description');
-    expect(wrapper.find('[class=recipe-image]').attributes('src')).toBe('Sample image');
+    expect(wrapper.find('[data-test=box-recipe-name]').text()).toBe('Recipe name');
+    expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('Recipe Description');
+    expect(wrapper.find('[data-test=box-recipe-valid-image]').attributes('src')).toBe(
+      'Sample image'
+    );
   });
 
   it('Do not show empty description', async () => {
     const wrapper = boxRecipeFactory(new Recipe(1, 'Recipe name', '', null, []));
 
-    expect(wrapper.find('[class=description]').exists()).toBe(false);
+    expect(wrapper.find('[data-test=box-recipe-description]').exists()).toBe(false);
 
     await wrapper.setProps({ recipe: new Recipe(1, 'Recipe name', null, null, []) });
 
-    expect(wrapper.find('[class=description]').exists()).toBe(false);
+    expect(wrapper.find('[data-test=box-recipe-description]').exists()).toBe(false);
   });
 
   it('Render default image if no specify', () => {
     const wrapper = boxRecipeFactory(new Recipe(1, 'Recipe name', 'Recipe Description', null, []));
 
-    expect(wrapper.find('[class=recipe-image]').attributes('src')).toBe('/no-image-icon.png');
+    expect(wrapper.find('[data-test=box-recipe-default-image]').attributes('src')).toBe(
+      '/no-image-icon.png'
+    );
   });
 
   it('Move to recipe details when click', async () => {
@@ -53,7 +57,7 @@ describe('BoxRecipe', () => {
 
     const wrapper = boxRecipeFactory(new Recipe(1, 'Recipe name', null, null, []));
 
-    await wrapper.find('[class=box]').trigger('click');
+    await wrapper.trigger('click');
 
     expect(push).toHaveBeenCalledTimes(1);
     expect(push).toBeCalledWith({ name: 'RecipeDetails', params: { id: 1 } });

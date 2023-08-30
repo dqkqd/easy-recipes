@@ -1,9 +1,21 @@
 <template>
   <div class="box" @click="toRecipeDetails">
-    <div class="name">{{ props.recipe.name }}</div>
-    <div class="description" v-if="props.recipe.description">{{ props.recipe.description }}</div>
-    <img v-if="props.recipe.image_uri" class="recipe-image" :src="image_uri" />
-    <img v-else class="recipe-image" src="/no-image-icon.png" />
+    <div data-test="box-recipe-name">{{ props.recipe.name }}</div>
+    <div v-if="props.recipe.description" data-test="box-recipe-description">
+      {{ props.recipe.description }}
+    </div>
+    <img
+      v-if="props.recipe.image_uri"
+      class="recipe-image"
+      :src="image_uri"
+      data-test="box-recipe-valid-image"
+    />
+    <img
+      v-else
+      class="recipe-image"
+      src="/no-image-icon.png"
+      data-test="box-recipe-default-image"
+    />
   </div>
 </template>
 

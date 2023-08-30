@@ -1,9 +1,14 @@
 <template>
   <div class="modal-mask">
     <div class="modal-container">
-      <div v-if="error">Something wrong ...</div>
-      <div v-else-if="isLoading">Loading ...</div>
-      <FormRecipeCreate v-else @submit="submit" @close="$emit('close')" />
+      <div v-if="error" data-test="modal-recipe-create-error">Something wrong ...</div>
+      <div v-else-if="isLoading" data-test="modal-recipe-create-loading">Loading ...</div>
+      <FormRecipeCreate
+        v-else
+        @submit="submit"
+        @close="$emit('close')"
+        data-test="modal-recipe-create-form"
+      />
     </div>
   </div>
 </template>
