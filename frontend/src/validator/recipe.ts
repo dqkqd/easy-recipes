@@ -14,6 +14,6 @@ export const RecipeSchema = RecipeBaseSchema.extend({
 
 export const RecipesResponseSchema = z.object({
   page: z.number(),
-  recipes: RecipeBaseSchema.array(),
+  recipes: RecipeSchema.array(),
   total: z.number()
 });
