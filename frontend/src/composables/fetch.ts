@@ -67,7 +67,7 @@ export function useAxios<T>(
     isLoading.value = true;
     error.value = undefined;
     try {
-      const response = await axios(config).then(handleResponse);
+      const response = await axios.request(config).then(handleResponse);
       result.value = response;
       return response;
     } catch (e) {

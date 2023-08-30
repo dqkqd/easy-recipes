@@ -1,6 +1,8 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
+import { apiUrl } from '@/env';
+import { RecipeCreate } from '@/interfaces/recipe';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -30,16 +32,24 @@ describe('ModalRecipeCreate', () => {
 
     const wrapper = mount(ModalRecipeCreate);
 
-    vi.spyOn(axios, 'post').mockResolvedValue({
-      data: { id: 1, error: undefined }
+    vi.spyOn(axios, 'request').mockResolvedValue({
+      data: { id: 1 }
     });
 
     const inputs = wrapper.findAll('input');
-    await inputs[0].setValue('one');
+    await inputs[0].setValue('Name of the recipe');
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.request).toHaveBeenCalledTimes(1);
+    expect(axios.request).toBeCalledWith({
+      method: 'post',
+      url: `${apiUrl}/recipes/`,
+      data: new RecipeCreate('Name of the recipe', null, null),
+      headers: {
+        authorization: 'bearer create:recipe'
+      }
+    });
     expect(push).toHaveBeenCalledTimes(1);
     expect(push).toBeCalledWith({ name: 'RecipeDetails', params: { id: 1 } });
   });
@@ -53,7 +63,7 @@ describe('ModalRecipeCreate', () => {
 
     const wrapper = mount(ModalRecipeCreate);
 
-    vi.spyOn(axios, 'post').mockImplementationOnce(() => {
+    vi.spyOn(axios, 'request').mockImplementationOnce(() => {
       throw new Error('Unexpected error');
     });
 
@@ -62,7 +72,7 @@ describe('ModalRecipeCreate', () => {
     await wrapper.find('form').trigger('submit');
     await flushPromises();
 
-    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.request).toHaveBeenCalledTimes(1);
     expect(push).toHaveBeenCalledTimes(0);
     expect(wrapper.html()).toContain('Something wrong ...');
   });
@@ -76,15 +86,15 @@ describe('ModalRecipeCreate', () => {
 
     const wrapper = mount(ModalRecipeCreate);
 
-    vi.spyOn(axios, 'post').mockResolvedValue({
-      data: { id: 1, error: undefined }
+    vi.spyOn(axios, 'request').mockResolvedValue({
+      data: { id: 1 }
     });
 
     const inputs = wrapper.findAll('input');
     await inputs[0].setValue('one');
     await wrapper.find('form').trigger('submit');
 
-    expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.request).toHaveBeenCalledTimes(1);
     expect(wrapper.html()).toContain('Loading ...');
 
     await flushPromises();
