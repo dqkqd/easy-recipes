@@ -53,8 +53,8 @@ describe('ModalRecipeCreate', () => {
 
     const wrapper = mount(ModalRecipeCreate);
 
-    vi.spyOn(axios, 'post').mockResolvedValue({
-      data: { id: undefined, error: new Error('Unexpected error') }
+    vi.spyOn(axios, 'post').mockImplementationOnce(() => {
+      throw new Error('Unexpected error');
     });
 
     const inputs = wrapper.findAll('input');
@@ -64,6 +64,7 @@ describe('ModalRecipeCreate', () => {
 
     expect(axios.post).toHaveBeenCalledTimes(1);
     expect(push).toHaveBeenCalledTimes(0);
+    expect(wrapper.html()).toContain('Something wrong ...');
   });
 
   it('Create recipe with loading', async () => {
