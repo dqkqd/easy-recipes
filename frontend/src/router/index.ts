@@ -13,7 +13,8 @@ const router = createRouter({
     {
       path: '/recipes/:id(\\d+)',
       name: 'RecipeDetails',
-      component: RecipeDetails
+      component: RecipeDetails,
+      props: true
     }
   ]
 });
