@@ -1,5 +1,5 @@
 <template>
-  <div class="box">
+  <div class="box" @click="toRecipeDetails">
     <div class="name">{{ props.recipe.name }}</div>
     <div class="description" v-if="props.recipe.description">{{ props.recipe.description }}</div>
     <img v-if="props.recipe.image_uri" class="recipe-image" :src="image_uri" />
@@ -11,6 +11,9 @@
 import { convertFileServerDev } from '@/env';
 import type { Recipe } from '@/interfaces/recipe';
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
 
 const props = defineProps<{
   recipe: Recipe;
@@ -19,6 +22,10 @@ const props = defineProps<{
 const image_uri = computed(() => {
   return props.recipe.image_uri ? convertFileServerDev(props.recipe.image_uri) : undefined;
 });
+
+function toRecipeDetails() {
+  router.push({ name: 'RecipeDetails', params: { id: props.recipe.id } });
+}
 </script>
 
 <style scoped>

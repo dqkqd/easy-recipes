@@ -2,10 +2,8 @@
   <div class="container">
     <div v-if="error">Something wrong</div>
     <div v-else-if="recipesResponse">
-      <span v-for="recipe in recipesResponse?.recipes" :key="recipe.id">
-        <router-link :to="{ name: 'RecipeDetails', params: { id: recipe.id } }">
-          <BoxRecipe :recipe="recipe" />
-        </router-link>
+      <span v-for="recipe in recipesResponse.recipes" :key="recipe.id">
+        <BoxRecipe :recipe="recipe" />
       </span>
     </div>
     <div v-else>Loading recipes...</div>
