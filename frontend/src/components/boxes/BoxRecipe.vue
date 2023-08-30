@@ -1,7 +1,8 @@
 <template>
   <div class="box">
-    <div class="title">{{ props.recipe.name }}</div>
-    <img class="img" v-if="props.recipe.image_uri" :src="image_uri" />
+    <div class="name">{{ props.recipe.name }}</div>
+    <div class="description">{{ props.recipe.description }}</div>
+    <img class="recipe-image" v-if="props.recipe.image_uri" :src="image_uri" />
   </div>
 </template>
 
