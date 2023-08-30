@@ -1,8 +1,15 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
 
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import { Recipe } from '@/interfaces/recipe';
 import { mount } from '@vue/test-utils';
+import { useRouter } from 'vue-router';
+
+vi.mock('vue-router', () => ({
+  useRouter: vi.fn(() => ({
+    push: () => {}
+  }))
+}));
 
 describe('BoxRecipe', () => {
   function boxRecipeFactory(recipe: Recipe) {
@@ -25,5 +32,20 @@ describe('BoxRecipe', () => {
     const wrapper = boxRecipeFactory(new Recipe(1, 'Recipe name', 'Recipe Description', null, []));
 
     expect(wrapper.find('[class=recipe-image]').attributes('src')).toBe('/no-image-icon.png');
+  });
+
+  it('Move to recipe details when click', async () => {
+    const push = vi.fn();
+    // @ts-ignore
+    useRouter.mockImplementationOnce(() => ({
+      push
+    }));
+
+    const wrapper = boxRecipeFactory(new Recipe(1, 'Recipe name', null, null, []));
+
+    await wrapper.find('[class=box]').trigger('click');
+
+    expect(push).toHaveBeenCalledTimes(1);
+    expect(push).toBeCalledWith({ name: 'RecipeDetails', params: { id: 1 } });
   });
 });
