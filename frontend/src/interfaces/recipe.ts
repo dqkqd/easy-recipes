@@ -1,4 +1,4 @@
-import { type IIngredientBase } from './ingredient';
+import { IngredientBase, type IIngredientBase } from './ingredient';
 
 export interface IRecipeBase {
   name: string;
@@ -28,3 +28,20 @@ export class RecipeBase implements IRecipeBase {
 }
 
 export class RecipeCreate extends RecipeBase {}
+
+export class Recipe extends RecipeBase implements IRecipe {
+  id: number;
+  ingredients: IngredientBase[];
+
+  constructor(
+    id: number,
+    name: string,
+    description: string | null,
+    image_uri: string | null,
+    ingredients: IngredientBase[]
+  ) {
+    super(name, description, image_uri);
+    this.id = id;
+    this.ingredients = ingredients;
+  }
+}
