@@ -8,11 +8,15 @@
 
 <script setup lang="ts">
 import { convertFileServerDev } from '@/env';
+import type { Recipe } from '@/interfaces/recipe';
 import { computed } from 'vue';
 
-const props = defineProps(['recipe']);
+const props = defineProps<{
+  recipe: Recipe;
+}>();
+
 const image_uri = computed(() => {
-  return convertFileServerDev(props.recipe.image_uri);
+  return props.recipe.image_uri ? convertFileServerDev(props.recipe.image_uri) : undefined;
 });
 </script>
 
