@@ -124,4 +124,12 @@ describe('ModalRecipeCreate', () => {
     expect(push).toHaveBeenCalledTimes(0);
     expect(wrapper.html()).toContain('Something wrong ...');
   });
+
+  it('Emit close', async () => {
+    const wrapper = mount(ModalRecipeCreate);
+
+    await wrapper.find('[class=close]').trigger('click');
+
+    expect(wrapper.emitted('close')).toHaveLength(1);
+  });
 });

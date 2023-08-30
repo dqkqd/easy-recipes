@@ -9,8 +9,8 @@
         placeholder="Recipe's description"
       />
       <FormInput v-model="recipe.image_uri" label="Image URL" placeholder="Recipe's image url" />
-      <button type="submit">Submit</button>
-      <button @click="close">Close</button>
+      <button class="submit" type="submit">Submit</button>
+      <button class="close" @click="close">Close</button>
     </form>
   </div>
 </template>
