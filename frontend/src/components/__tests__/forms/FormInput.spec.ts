@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import FormInput from '@/components/forms/FormInput.vue';
 import { mount } from '@vue/test-utils';
-import FormInput from '../forms/FormInput.vue';
 
 describe('FormInput', () => {
   it('Render correctly', async () => {

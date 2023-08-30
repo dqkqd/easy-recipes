@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
+import FormInput from '@/components/forms/FormInput.vue';
+import FormRecipeCreate from '@/components/forms/FormRecipeCreate.vue';
 import { RecipeCreate } from '@/interfaces/recipe';
 import { mount } from '@vue/test-utils';
-import FormInput from '../forms/FormInput.vue';
-import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
 describe('FormRecipeCreate', () => {
   it('Render title', () => {

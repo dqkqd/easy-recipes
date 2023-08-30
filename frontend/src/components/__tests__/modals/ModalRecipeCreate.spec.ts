@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
-import ModalRecipeCreate from '../modals/ModalRecipeCreate.vue';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
