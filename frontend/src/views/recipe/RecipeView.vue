@@ -4,7 +4,7 @@
     <div v-else-if="recipesResponse">
       <span v-for="recipe in recipesResponse?.recipes" :key="recipe.id">
         <router-link :to="{ name: 'RecipeDetails', params: { id: recipe.id } }">
-          <SummaryBox :recipe="recipe" />
+          <BoxRecipe :recipe="recipe" />
         </router-link>
       </span>
     </div>
@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import SummaryBox from '@/components/SummaryBox.vue';
+import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { getRecipes } from '@/services/recipe';
 import { ref } from 'vue';
