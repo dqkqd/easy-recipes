@@ -101,4 +101,27 @@ describe('ModalRecipeCreate', () => {
 
     expect(wrapper.html()).not.toContain('Loading ...');
   });
+
+  it('Create recipe response invalid id', async () => {
+    const push = vi.fn();
+    // @ts-ignore
+    useRouter.mockImplementationOnce(() => ({
+      push
+    }));
+
+    const wrapper = mount(ModalRecipeCreate);
+
+    vi.spyOn(axios, 'request').mockResolvedValue({
+      data: { message: 'error' }
+    });
+
+    const inputs = wrapper.findAll('input');
+    await inputs[0].setValue('one');
+    await wrapper.find('form').trigger('submit');
+    await flushPromises();
+
+    expect(axios.request).toHaveBeenCalledTimes(1);
+    expect(push).toHaveBeenCalledTimes(0);
+    expect(wrapper.html()).toContain('Something wrong ...');
+  });
 });

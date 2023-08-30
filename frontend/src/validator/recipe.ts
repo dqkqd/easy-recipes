@@ -17,3 +17,7 @@ export const RecipesResponseSchema = z.object({
   recipes: RecipeSchema.array(),
   total: z.number()
 });
+
+export const RecipeCreatedResponseSchema = z.object({
+  id: z.number()
+});
