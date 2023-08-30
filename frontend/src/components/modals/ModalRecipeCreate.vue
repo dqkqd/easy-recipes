@@ -19,13 +19,15 @@ import { apiUrl } from '@/env';
 import { type RecipeCreate } from '@/interfaces/recipe';
 import { RecipeCreatedResponseSchema } from '@/validator/recipe';
 import { useRouter } from 'vue-router';
+import { type z } from 'zod';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
 const router = useRouter();
-const { result, error, isLoading, execute } = useAxios<number>((r) => {
-  const { id } = RecipeCreatedResponseSchema.parse(r.data);
-  return id;
-});
+const { result, error, isLoading, execute } = useAxios<z.infer<typeof RecipeCreatedResponseSchema>>(
+  (r) => {
+    return RecipeCreatedResponseSchema.parse(r.data);
+  }
+);
 
 async function submit(recipeCreate: RecipeCreate) {
   await execute({
@@ -38,7 +40,7 @@ async function submit(recipeCreate: RecipeCreate) {
   });
 
   if (!error.value && result.value) {
-    router.push({ name: 'RecipeDetails', params: { id: result.value } });
+    router.push({ name: 'RecipeDetails', params: { id: result.value.id } });
   }
 }
 </script>
