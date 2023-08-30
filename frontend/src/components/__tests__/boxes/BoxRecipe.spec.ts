@@ -20,4 +20,10 @@ describe('BoxRecipe', () => {
     expect(wrapper.find('[class=description]').text()).toBe('Recipe Description');
     expect(wrapper.find('[class=recipe-image]').attributes('src')).toBe('Sample image');
   });
+
+  it('Render default image if no specify', () => {
+    const wrapper = boxRecipeFactory(new Recipe(1, 'Recipe name', 'Recipe Description', null, []));
+
+    expect(wrapper.find('[class=recipe-image]').attributes('src')).toBe('/no-image-icon.png');
+  });
 });

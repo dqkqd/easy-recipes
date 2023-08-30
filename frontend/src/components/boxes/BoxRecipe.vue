@@ -1,8 +1,9 @@
 <template>
   <div class="box">
     <div class="name">{{ props.recipe.name }}</div>
-    <div class="description">{{ props.recipe.description }}</div>
-    <img class="recipe-image" v-if="props.recipe.image_uri" :src="image_uri" />
+    <div class="description" v-if="props.recipe.description">{{ props.recipe.description }}</div>
+    <img v-if="props.recipe.image_uri" class="recipe-image" :src="image_uri" />
+    <img v-else class="recipe-image" src="/no-image-icon.png" />
   </div>
 </template>
 
@@ -46,7 +47,7 @@ const image_uri = computed(() => {
   transform: scale(1.2);
 }
 
-.img {
+.recipe-image {
   width: 150px;
   height: 150px;
   margin: auto;
