@@ -1,34 +1,35 @@
 <template>
   <div class="modal-mask">
     <div class="modal-container">
-      <div v-if="hasError">Something wrong ...</div>
-      <div v-else-if="isCreating">Loading ...</div>
+      <div v-if="error">Something wrong ...</div>
+      <div v-else-if="isLoading">Loading ...</div>
       <FormRecipeCreate v-else @submit="submit" @close="$emit('close')" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { type RecipeCreate } from '@/interfaces/recipe';
-import { createRecipe } from '@/services/recipe';
-import { ref } from 'vue';
+import { useAxios } from '@/composables/fetch';
+import { apiUrl } from '@/env';
+import { RecipeCreate } from '@/interfaces/recipe';
 import { useRouter } from 'vue-router';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 
 const router = useRouter();
-const hasError = ref();
-const isCreating = ref(false);
+const { result, error, isLoading, execute } = useAxios<{ id: number }>((r) => r.data);
 
 async function submit(recipeCreate: RecipeCreate) {
-  isCreating.value = true;
+  await execute({
+    method: 'post',
+    url: `${apiUrl}/recipes/`,
+    data: recipeCreate,
+    headers: {
+      authorization: 'bearer create:recipe'
+    }
+  });
 
-  const { id, error } = await createRecipe(recipeCreate);
-
-  isCreating.value = false;
-  hasError.value = error;
-
-  if (error === undefined && id !== undefined) {
-    router.push({ name: 'RecipeDetails', params: { id: id } });
+  if (!error.value && result.value) {
+    router.push({ name: 'RecipeDetails', params: { id: result.value.id } });
   }
 }
 </script>
