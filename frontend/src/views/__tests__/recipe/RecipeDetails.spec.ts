@@ -1,20 +1,21 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import { apiUrl } from '@/env';
-import { Recipe } from '@/interfaces/recipe';
+import { RecipeSchema } from '@/schema/recipe';
 import RecipeDetails from '@/views/recipe/RecipeDetails.vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 
 describe('RecipeDetails', () => {
   it('Render recipe successfully', async () => {
-    const recipe = new Recipe(
-      1,
-      'Recipe name',
-      'Recipe description',
-      'http://localhost:8080/valid-image-url',
-      []
-    );
+    const recipe = RecipeSchema.parse({
+      id: 1,
+      name: 'Recipe name',
+      description: 'Recipe description',
+      image_uri: 'http://localhost:8080/valid-image-url',
+      ingredients: []
+    });
+
     vi.spyOn(axios, 'request').mockResolvedValue({
       data: recipe
     });
@@ -40,7 +41,13 @@ describe('RecipeDetails', () => {
   });
 
   it('Render default image successfully', async () => {
-    const recipe = new Recipe(1, 'Recipe name', 'Recipe description', null, []);
+    const recipe = RecipeSchema.parse({
+      id: 1,
+      name: 'Recipe name',
+      description: 'Recipe description',
+      image_uri: null,
+      ingredients: []
+    });
     vi.spyOn(axios, 'request').mockResolvedValue({
       data: recipe
     });
@@ -66,7 +73,13 @@ describe('RecipeDetails', () => {
   });
 
   it('Render with loading', async () => {
-    const recipe = new Recipe(1, 'Recipe name', 'Recipe description', null, []);
+    const recipe = RecipeSchema.parse({
+      id: 1,
+      name: 'Recipe name',
+      description: 'Recipe description',
+      image_uri: null,
+      ingredients: []
+    });
     vi.spyOn(axios, 'request').mockResolvedValue({
       data: recipe
     });

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import FormRecipeCreate from '@/components/forms/FormRecipeCreate.vue';
-import { RecipeCreate } from '@/interfaces/recipe';
 import { mount } from '@vue/test-utils';
 
 describe('FormRecipeCreate', () => {
@@ -28,7 +27,7 @@ describe('FormRecipeCreate', () => {
     await wrapper
       .find('[data-test=form-recipe-create-image-uri]')
       .find('input')
-      .setValue('Recipe image url 1');
+      .setValue('http://localhost/valid-image-url');
 
     await wrapper.find('form').trigger('submit');
     const submittedEvent = wrapper.emitted('submit');
@@ -36,7 +35,11 @@ describe('FormRecipeCreate', () => {
     expect(submittedEvent).toHaveLength(1);
     // @ts-ignore
     expect(submittedEvent[0]).toStrictEqual([
-      new RecipeCreate('Recipe name 1', 'Recipe description 1', 'Recipe image url 1')
+      {
+        name: 'Recipe name 1',
+        description: 'Recipe description 1',
+        image_uri: 'http://localhost/valid-image-url'
+      }
     ]);
   });
 

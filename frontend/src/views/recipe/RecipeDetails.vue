@@ -12,14 +12,13 @@
 <script setup lang="ts">
 import { useAxios } from '@/composables/fetch';
 import { apiUrl } from '@/env';
-import { Recipe } from '@/interfaces/recipe';
-import { RecipeSchema } from '@/validator/recipe';
+import { RecipeSchema, type Recipe } from '@/schema/recipe';
 import { onMounted } from 'vue';
 
 const props = defineProps<{ id: number | string }>();
 
 const { result, error, execute } = useAxios<Recipe>((r) => {
-  return Recipe.from_object(RecipeSchema.parse(r.data)).with_converted_image();
+  return RecipeSchema.parse(r.data);
 });
 
 onMounted(async () => {
@@ -31,3 +30,4 @@ onMounted(async () => {
 </script>
 
 <style scoped></style>
+@/schema/recipe

@@ -11,3 +11,6 @@ export const IngredientBaseSchema = z.object({
 export const IngredientSchema = IngredientBaseSchema.extend({
   recipes: z.lazy(() => RecipeBaseSchema.array())
 });
+
+export type IngredientBase = z.infer<typeof IngredientBaseSchema>;
+export type Ingredient = z.infer<typeof IngredientSchema>;

@@ -3,19 +3,19 @@
     <h3 data-test="form-recipe-create-title">Create New Recipe</h3>
     <form @submit.prevent="submit">
       <FormInput
-        v-model="recipe.name"
+        v-model="name"
         label="Name"
         placeholder="Recipe's name"
         data-test="form-recipe-create-name"
       />
       <FormInput
-        v-model="recipe.description"
+        v-model="description"
         label="Description"
         placeholder="Recipe's description"
         data-test="form-recipe-create-description"
       />
       <FormInput
-        v-model="recipe.image_uri"
+        v-model="image_uri"
         label="Image URL"
         placeholder="Recipe's image url"
         data-test="form-recipe-create-image-uri"
@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import FormInput from '@/components/forms/FormInput.vue';
-import { RecipeCreate } from '@/interfaces/recipe';
+import { RecipeCreateSchema, type RecipeCreate } from '@/schema/recipe';
 import { ref } from 'vue';
 
 const emit = defineEmits<{
@@ -36,15 +36,25 @@ const emit = defineEmits<{
   (e: 'submit', recipe: RecipeCreate): void;
 }>();
 
-const recipe = ref<RecipeCreate>(new RecipeCreate('', null, null));
+const name = ref('');
+const description = ref(null);
+const image_uri = ref(null);
 
-async function submit() {
-  emit('submit', recipe.value);
+function submit() {
+  emit(
+    'submit',
+    RecipeCreateSchema.parse({
+      name: name.value,
+      description: description.value,
+      image_uri: image_uri.value
+    })
+  );
 }
 
-async function close() {
+function close() {
   emit('close');
 }
 </script>
 
 <style scoped></style>
+@/schema/recipe

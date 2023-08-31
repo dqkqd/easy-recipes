@@ -21,3 +21,15 @@ export const RecipesResponseSchema = z.object({
 export const RecipeCreatedResponseSchema = z.object({
   id: z.number()
 });
+
+export const RecipeCreateSchema = z.object({
+  name: z.string(),
+  description: z.string().nullable(),
+  image_uri: z.string().url().nullable()
+});
+
+export type RecipeBase = z.infer<typeof RecipeBaseSchema>;
+export type Recipe = z.infer<typeof RecipeSchema>;
+export type RecipesResponse = z.infer<typeof RecipesResponseSchema>;
+export type RecipeCreatedResponse = z.infer<typeof RecipeCreatedResponseSchema>;
+export type RecipeCreate = z.infer<typeof RecipeCreateSchema>;

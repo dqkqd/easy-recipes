@@ -5,7 +5,7 @@
       {{ props.recipe.description }}
     </div>
     <img
-      v-if="props.recipe.image_uri"
+      v-if="image_uri"
       class="recipe-image"
       :src="image_uri"
       data-test="box-recipe-valid-image"
@@ -21,7 +21,7 @@
 
 <script setup lang="ts">
 import { convertFileServerDev } from '@/env';
-import type { Recipe } from '@/interfaces/recipe';
+import type { Recipe } from '@/schema/recipe';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -32,7 +32,7 @@ const props = defineProps<{
 }>();
 
 const image_uri = computed(() => {
-  return props.recipe.image_uri ? convertFileServerDev(props.recipe.image_uri) : undefined;
+  return convertFileServerDev(props.recipe.image_uri);
 });
 
 function toRecipeDetails() {
@@ -73,3 +73,4 @@ function toRecipeDetails() {
   display: block;
 }
 </style>
+@/schema/recipe

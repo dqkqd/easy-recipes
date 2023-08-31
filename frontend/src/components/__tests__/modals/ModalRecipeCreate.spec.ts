@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { apiUrl } from '@/env';
-import { RecipeCreate } from '@/interfaces/recipe';
+import { RecipeCreateSchema } from '@/schema/recipe';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
@@ -46,7 +46,11 @@ describe('ModalRecipeCreate', () => {
     expect(axios.request).toBeCalledWith({
       method: 'post',
       url: `${apiUrl}/recipes/`,
-      data: new RecipeCreate('Name of the recipe', null, null),
+      data: RecipeCreateSchema.parse({
+        name: 'Name of the recipe',
+        description: null,
+        image_uri: null
+      }),
       headers: {
         authorization: 'bearer create:recipe'
       }

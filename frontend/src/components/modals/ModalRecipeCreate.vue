@@ -16,8 +16,7 @@
 <script setup lang="ts">
 import { useAxios } from '@/composables/fetch';
 import { apiUrl } from '@/env';
-import { type RecipeCreate } from '@/interfaces/recipe';
-import { RecipeCreatedResponseSchema } from '@/validator/recipe';
+import { RecipeCreatedResponseSchema, type RecipeCreate } from '@/schema/recipe';
 import { useRouter } from 'vue-router';
 import { type z } from 'zod';
 import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
@@ -68,3 +67,4 @@ async function submit(recipeCreate: RecipeCreate) {
   transition: all 0.3s ease;
 }
 </style>
+@/schema/recipe
