@@ -17,7 +17,7 @@
 <script setup lang="ts">
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
-import { useAxios } from '@/composables/fetch';
+import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipesResponseSchema, type RecipesResponse } from '@/schema/recipe';
 import { onMounted, ref } from 'vue';

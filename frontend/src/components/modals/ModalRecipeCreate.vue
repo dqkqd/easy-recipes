@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAxios } from '@/composables/fetch';
+import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipeCreatedResponseSchema, type RecipeCreate } from '@/schema/recipe';
 import { useRouter } from 'vue-router';

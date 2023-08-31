@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAxios } from '@/composables/fetch';
+import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipeSchema, type Recipe } from '@/schema/recipe';
 import { onMounted } from 'vue';
