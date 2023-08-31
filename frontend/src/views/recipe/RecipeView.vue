@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <div v-if="error">Something wrong</div>
-    <div v-else-if="recipesResponse">
-      <span v-for="recipe in recipesResponse.recipes" :key="recipe.id">
+    <div v-else-if="result">
+      <span v-for="recipe in result.recipes" :key="recipe.id">
         <BoxRecipe :recipe="recipe" />
       </span>
     </div>
@@ -17,11 +17,23 @@
 <script setup lang="ts">
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
-import { getRecipes } from '@/services/recipe';
-import { ref } from 'vue';
+import { useAxios } from '@/composables/fetch';
+import { apiUrl } from '@/env';
+import { RecipesResponseSchema, type RecipesResponse } from '@/schema/recipe';
+import { onMounted, ref } from 'vue';
 
-const { recipesResponse, error } = getRecipes();
 const showModal = ref(false);
+
+const { result, error, execute } = useAxios<RecipesResponse>((r) => {
+  return RecipesResponseSchema.parse(r.data);
+});
+
+onMounted(async () => {
+  await execute({
+    method: 'get',
+    url: `${apiUrl}/recipes/`
+  });
+});
 </script>
 
 <style scoped>
