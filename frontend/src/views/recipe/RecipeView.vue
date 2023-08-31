@@ -1,14 +1,14 @@
 <template>
   <div class="container">
-    <div v-if="error">Something wrong</div>
-    <div v-else-if="result">
+    <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
+    <div v-else-if="result" data-test="recipe-view-result">
       <span v-for="recipe in result.recipes" :key="recipe.id">
         <BoxRecipe :recipe="recipe" />
       </span>
     </div>
-    <div v-else>Loading recipes...</div>
+    <div v-else data-test="recipe-view-loading">Loading ...</div>
   </div>
-  <button @click="showModal = !showModal">New Recipe</button>
+  <button @click="showModal = true" data-test="recipe-view-new-button">New Recipe</button>
   <Teleport to="body">
     <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
   </Teleport>
