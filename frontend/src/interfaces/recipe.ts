@@ -37,9 +37,7 @@ export class RecipeBase implements IRecipeBase {
   }
 
   with_converted_image() {
-    if (this.image_uri) {
-      this.image_uri = convertFileServerDev(this.image_uri);
-    }
+    this.image_uri = convertFileServerDev(this.image_uri);
     return this;
   }
 }

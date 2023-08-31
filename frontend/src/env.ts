@@ -7,7 +7,11 @@ if (env.MODE == 'development') {
   _fileServerURL = `http://${env.VITE_FILE_SERVER_HOST}`;
 }
 
-export function convertFileServerDev(url: string) {
+export function convertFileServerDev(url: string | null) {
+  if (!url) {
+    return url;
+  }
+
   if (env.MODE != 'development') {
     return url;
   }
