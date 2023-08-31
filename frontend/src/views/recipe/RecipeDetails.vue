@@ -1,12 +1,12 @@
 <template>
-  <div v-if="error">Something wrong.</div>
+  <div v-if="error" data-test="recipe-details-error">Something wrong ...</div>
   <div v-else-if="result">
-    <h1>{{ result.name }}</h1>
-    <p>{{ result.description }}</p>
-    <img v-if="image_uri" :src="image_uri" />
-    <img v-else src="/no-image-icon.png" />
+    <h1 data-test="recipe-details-name">{{ result.name }}</h1>
+    <p data-test="recipe-details-description">{{ result.description }}</p>
+    <img v-if="image_uri" :src="image_uri" data-test="recipe-details-valid-image" />
+    <img v-else src="/no-image-icon.png" data-test="recipe-details-default-image" />
   </div>
-  <div v-else>Loading...</div>
+  <div v-else data-test="recipe-details-loading">Loading ...</div>
 </template>
 
 <script setup lang="ts">
