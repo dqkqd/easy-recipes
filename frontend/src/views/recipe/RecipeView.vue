@@ -1,5 +1,6 @@
 <template>
-  <div class="container">
+  <HomeTitle />
+  <div class="content-body">
     <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
     <div v-else-if="result" data-test="recipe-view-result">
       <span v-for="recipe in result.recipes" :key="recipe.id">
@@ -15,6 +16,7 @@
 </template>
 
 <script setup lang="ts">
+import HomeTitle from '@/components/HomeTitle.vue';
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { useAxios } from '@/composables';
@@ -37,7 +39,7 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.container {
+.content-body {
   display: flex;
   flex-wrap: wrap;
 }
