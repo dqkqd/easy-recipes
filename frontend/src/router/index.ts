@@ -1,6 +1,7 @@
 import HomeView from '@/views/HomeView.vue';
 import IngredientView from '@/views/ingredient/IngredientView.vue';
 import RecipeDetails from '@/views/recipe/RecipeDetails.vue';
+import RecipeView from '@/views/recipe/RecipeView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
 const router = createRouter({
@@ -10,6 +11,11 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/recipes/',
+      name: 'RecipeView',
+      component: RecipeView
     },
     {
       path: '/ingredients/',

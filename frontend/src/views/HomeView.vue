@@ -2,15 +2,13 @@
   <div class="container">
     <div class="title">Easy Recipes</div>
     <nav class="content">
+      <router-link to="/recipes/" class="content-link"> Recipes </router-link>
       <router-link to="/ingredients/" class="content-link"> Ingredients </router-link>
     </nav>
   </div>
-  <RecipeView />
 </template>
 
-<script setup lang="ts">
-import RecipeView from './recipe/RecipeView.vue';
-</script>
+<script setup lang="ts"></script>
 
 <style scoped>
 .container {
@@ -29,11 +27,13 @@ import RecipeView from './recipe/RecipeView.vue';
 }
 
 .content {
+  display: flex;
   padding-left: 30px;
 }
 
 .content-link {
   display: flex;
+  padding-left: 30px;
   height: 100%;
   font-size: 20px;
   text-decoration: none;
