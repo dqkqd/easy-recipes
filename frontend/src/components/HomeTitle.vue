@@ -1,9 +1,15 @@
 <template>
-  <div class="container">
-    <div class="title">Easy Recipes</div>
-    <nav class="content">
-      <router-link to="/recipes/" class="content-link"> Recipes </router-link>
-      <router-link to="/ingredients/" class="content-link"> Ingredients </router-link>
+  <div class="main-header">
+    <router-link :to="{ name: 'home' }" class="app-title text-scale-on-hover"
+      >Easy Recipes</router-link
+    >
+    <nav class="app-content">
+      <router-link :to="{ name: 'RecipeView' }" class="app-content-link text-scale-on-hover"
+        >Recipes</router-link
+      >
+      <router-link :to="{ name: 'IngredientView' }" class="app-content-link text-scale-on-hover"
+        >Ingredients</router-link
+      >
     </nav>
   </div>
 </template>
@@ -11,38 +17,39 @@
 <script setup lang="ts"></script>
 
 <style scoped>
-.container {
+.main-header {
   display: flex;
+  align-items: center;
   padding-bottom: 10px;
-  border-bottom: 2px solid #ddd;
+  background-color: #dce0e8;
 }
 
-.title {
-  width: 180px;
+.app-title {
+  width: 230px;
   font-size: 30px;
   font-weight: 800;
-  background-color: #bcc0cc;
   padding: 5px;
   text-align: center;
+  text-decoration: none;
+  color: #4c4f69;
 }
 
-.content {
+.app-content {
   display: flex;
-  padding-left: 30px;
+  flex-direction: row;
+  align-items: center;
 }
 
-.content-link {
-  display: flex;
+.app-content-link {
   padding-left: 30px;
   height: 100%;
   font-size: 20px;
   text-decoration: none;
-  position: relative;
-  align-items: center;
   padding: 0 10px;
+  color: #4c4f69;
 }
 
-.content-link:hover {
-  background-color: #eee;
+.text-scale-on-hover:hover {
+  transform: scale(1.05);
 }
 </style>
