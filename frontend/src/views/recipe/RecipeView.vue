@@ -1,5 +1,5 @@
 <template>
-  <HomeTitle />
+  <MainHeader />
   <div class="content-body">
     <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
     <div v-else-if="result" data-test="recipe-view-result">
@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import HomeTitle from '@/components/HomeTitle.vue';
+import MainHeader from '@/components/MainHeader.vue';
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { useAxios } from '@/composables';
