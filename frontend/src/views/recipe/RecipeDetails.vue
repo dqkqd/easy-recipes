@@ -1,4 +1,5 @@
 <template>
+  <MainHeader />
   <div v-if="error" data-test="recipe-details-error">Something wrong ...</div>
   <div v-else-if="result">
     <h1 data-test="recipe-details-name">{{ result.name }}</h1>
@@ -17,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import MainHeader from '@/components/MainHeader.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import { useAxios } from '@/composables';
 import { apiUrl, convertFileServerDev } from '@/env';
