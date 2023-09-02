@@ -1,4 +1,4 @@
-import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
+import CardRecipe from '@/components/cards/CardRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { describe, expect, it, vi } from 'vitest';
 
@@ -65,7 +65,7 @@ describe('RecipeView', () => {
     expect(wrapper.find('[data-test=recipe-view-loading]').exists()).toBe(false);
     expect(wrapper.find('[data-test=recipe-view-new-button]').exists()).toBe(true);
 
-    expect(wrapper.findAllComponents(BoxRecipe)).toHaveLength(response.recipes.length);
+    expect(wrapper.findAllComponents(CardRecipe)).toHaveLength(response.recipes.length);
     expect(wrapper.findComponent(ModalRecipeCreate).exists()).toBe(false);
   });
 

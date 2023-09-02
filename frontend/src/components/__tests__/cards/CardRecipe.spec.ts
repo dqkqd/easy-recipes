@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
+import CardRecipe from '@/components/cards/CardRecipe.vue';
 import vuetify from '@/components/plugins/vuetify';
 import { RecipeSchema, type Recipe } from '@/schema/recipe';
 import { mount } from '@vue/test-utils';
@@ -12,9 +12,9 @@ vi.mock('vue-router', () => ({
   }))
 }));
 
-describe('BoxRecipe', () => {
+describe('CardRecipe', () => {
   function factory(recipe: Recipe) {
-    return mount(BoxRecipe, {
+    return mount(CardRecipe, {
       props: { recipe: RecipeSchema.parse(recipe) },
       globals: {
         plugins: [vuetify]

@@ -6,7 +6,7 @@
         <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
         <div v-else-if="result" data-test="recipe-view-result">
           <span v-for="recipe in result.recipes" :key="recipe.id">
-            <BoxRecipe :recipe="recipe" />
+            <CardRecipe :recipe="recipe" />
           </span>
         </div>
         <div v-else data-test="recipe-view-loading">Loading ...</div>
@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import MainAppBar from '@/components/MainAppBar.vue';
-import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
+import CardRecipe from '@/components/cards/CardRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
