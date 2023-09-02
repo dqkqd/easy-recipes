@@ -1,24 +1,26 @@
 <template>
-  <MainHeader />
-  <div v-if="error" data-test="recipe-details-error">Something wrong ...</div>
-  <div v-else-if="result">
-    <h1 data-test="recipe-details-name">{{ result.name }}</h1>
-    <p data-test="recipe-details-description">{{ result.description }}</p>
-    <img v-if="image_uri" :src="image_uri" data-test="recipe-details-valid-image" />
-    <img v-else src="/no-image-icon.png" data-test="recipe-details-default-image" />
-    <div>
-      <DeleteButton label="Delete recipe" @close="deleteRecipe" />
-      <div v-if="deletedError" data-test="recipe-details-delete-error">
-        Error while deleting ...
+  <VApp>
+    <MainAppBar />
+    <div v-if="error" data-test="recipe-details-error">Something wrong ...</div>
+    <div v-else-if="result">
+      <h1 data-test="recipe-details-name">{{ result.name }}</h1>
+      <p data-test="recipe-details-description">{{ result.description }}</p>
+      <img v-if="image_uri" :src="image_uri" data-test="recipe-details-valid-image" />
+      <img v-else src="/no-image-icon.png" data-test="recipe-details-default-image" />
+      <div>
+        <DeleteButton label="Delete recipe" @close="deleteRecipe" />
+        <div v-if="deletedError" data-test="recipe-details-delete-error">
+          Error while deleting ...
+        </div>
+        <div v-else-if="isDeleteing" data-test="recipe-details-delete-loading">Deleting ...</div>
       </div>
-      <div v-else-if="isDeleteing" data-test="recipe-details-delete-loading">Deleting ...</div>
     </div>
-  </div>
-  <div v-else data-test="recipe-details-loading">Loading ...</div>
+    <div v-else data-test="recipe-details-loading">Loading ...</div>
+  </VApp>
 </template>
 
 <script setup lang="ts">
-import MainHeader from '@/components/MainHeader.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
 import { useAxios } from '@/composables';
 import { apiUrl, convertFileServerDev } from '@/env';

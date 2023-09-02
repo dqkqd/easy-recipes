@@ -1,10 +1,14 @@
 <template>
-  <MainHeader />
-  <div>Ingredients</div>
+  <VApp>
+    <MainAppBar />
+    <VMain>
+      <div>Ingredients</div>
+    </VMain>
+  </VApp>
 </template>
 
 <script setup lang="ts">
-import MainHeader from '@/components/MainHeader.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 </script>
 
 <style scoped></style>

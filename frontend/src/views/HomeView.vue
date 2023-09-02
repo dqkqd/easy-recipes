@@ -1,9 +1,11 @@
 <template>
-  <MainHeader />
+  <VApp>
+    <MainAppBar />
+  </VApp>
 </template>
 
 <script setup lang="ts">
-import MainHeader from '@/components/MainHeader.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 </script>
 
 <style scoped></style>

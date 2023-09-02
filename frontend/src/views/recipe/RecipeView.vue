@@ -1,22 +1,26 @@
 <template>
-  <MainHeader />
-  <div class="content-body">
-    <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
-    <div v-else-if="result" data-test="recipe-view-result">
-      <span v-for="recipe in result.recipes" :key="recipe.id">
-        <BoxRecipe :recipe="recipe" />
-      </span>
-    </div>
-    <div v-else data-test="recipe-view-loading">Loading ...</div>
-  </div>
-  <button @click="showModal = true" data-test="recipe-view-new-button">New Recipe</button>
-  <Teleport to="body">
-    <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
-  </Teleport>
+  <VApp>
+    <MainAppBar />
+    <VMain>
+      <div class="content-body">
+        <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
+        <div v-else-if="result" data-test="recipe-view-result">
+          <span v-for="recipe in result.recipes" :key="recipe.id">
+            <BoxRecipe :recipe="recipe" />
+          </span>
+        </div>
+        <div v-else data-test="recipe-view-loading">Loading ...</div>
+      </div>
+      <button @click="showModal = true" data-test="recipe-view-new-button">New Recipe</button>
+      <Teleport to="body">
+        <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
+      </Teleport>
+    </VMain>
+  </VApp>
 </template>
 
 <script setup lang="ts">
-import MainHeader from '@/components/MainHeader.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
 import { useAxios } from '@/composables';
