@@ -8,7 +8,7 @@ import RecipeView from '@/views/recipe/RecipeView.vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 
-import vuetify from '@/components/plugins/vuetify';
+import vuetify from '@/plugins/vuetify';
 
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({

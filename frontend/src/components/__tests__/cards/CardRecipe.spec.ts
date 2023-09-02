@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import CardRecipe from '@/components/cards/CardRecipe.vue';
-import vuetify from '@/components/plugins/vuetify';
+import vuetify from '@/plugins/vuetify';
 import { RecipeSchema, type Recipe } from '@/schema/recipe';
 import { mount } from '@vue/test-utils';
 import { useRouter } from 'vue-router';

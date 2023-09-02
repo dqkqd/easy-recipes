@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
-import vuetify from '@/components/plugins/vuetify';
 import { apiUrl } from '@/env';
+import vuetify from '@/plugins/vuetify';
 import { RecipeSchema } from '@/schema/recipe';
 import RecipeDetails from '@/views/recipe/RecipeDetails.vue';
 import { flushPromises, mount } from '@vue/test-utils';
