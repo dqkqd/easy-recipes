@@ -88,11 +88,11 @@ describe('RecipeView', () => {
     const wrapper = factory();
 
     expect(wrapper.find('[data-test=recipe-view-loading]').exists()).toBe(true);
-    expect(wrapper.find('[data-test=recipe-view-loading]').text()).toBe('Loading ...');
   });
 
   it('Click create-new-recipe button', async () => {
     const wrapper = factory();
+    await flushPromises();
 
     const newRecipeButton = wrapper.find('[data-test=recipe-view-new-button]');
     await newRecipeButton.trigger('click');
@@ -102,6 +102,7 @@ describe('RecipeView', () => {
 
   it('Click close create-new-recipe modal', async () => {
     const wrapper = factory();
+    await flushPromises();
 
     const newRecipeButton = wrapper.find('[data-test=recipe-view-new-button]');
     await newRecipeButton.trigger('click');

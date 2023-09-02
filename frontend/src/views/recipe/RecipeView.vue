@@ -2,21 +2,25 @@
   <VApp>
     <MainAppBar />
     <VMain>
-      <div class="content-body">
-        <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
-        <div v-else-if="result" data-test="recipe-view-result">
-          <span v-for="recipe in result.recipes" :key="recipe.id">
+      <div v-if="error" data-test="recipe-view-error">Something wrong ...</div>
+
+      <div v-else-if="result" data-test="recipe-view-result">
+        <div class="d-flex flex-wrap">
+          <VSheet rounded v-for="recipe in result.recipes" :key="recipe.id" class="pa-2 ma-2">
             <CardRecipe :recipe="recipe" />
-          </span>
+          </VSheet>
         </div>
-        <div v-else data-test="recipe-view-loading">Loading ...</div>
+
+        <VBtn @click="showModal = true" data-test="recipe-view-new-button" text="New Recipe"></VBtn>
+
+        <Teleport to="body">
+          <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
+        </Teleport>
       </div>
 
-      <VBtn @click="showModal = true" data-test="recipe-view-new-button" text="New Recipe"></VBtn>
-
-      <Teleport to="body">
-        <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
-      </Teleport>
+      <div v-else data-test="recipe-view-loading">
+        <VProgressLinear indeterminate color="blue"></VProgressLinear>
+      </div>
     </VMain>
   </VApp>
 </template>
@@ -44,12 +48,4 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped>
-.content-body {
-  display: flex;
-  flex-wrap: wrap;
-}
-span {
-  display: inline-block;
-}
-</style>
+<style scoped></style>
