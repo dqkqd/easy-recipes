@@ -422,13 +422,23 @@ def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
 def test_404_get_page_no_items(client: FlaskClient) -> None:
     response = client.get("/ingredients/")
     data = json.loads(response.data)
-    assert data == {"page": 1, "ingredients": [], "total": 0}
+    assert data == {
+        "page": 1,
+        "ingredients": [],
+        "total": 0,
+        "per_page": config.PAGINATION_SIZE,
+    }
     assert response.status_code == 200
 
     response = client.get("/ingredients/?page=1")
     data = json.loads(response.data)
     assert response.status_code == 200
-    assert data == {"page": 1, "ingredients": [], "total": 0}
+    assert data == {
+        "page": 1,
+        "ingredients": [],
+        "total": 0,
+        "per_page": config.PAGINATION_SIZE,
+    }
 
 
 def test_200_404_pagination_render_enough(client: FlaskClient) -> None:

@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from flask import Blueprint, abort, jsonify, request
 
-from app import auth
+from app import auth, config
 from app.crud import crud_ingredient
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
@@ -50,6 +50,7 @@ def get_paginations() -> Response:
                 for ingredient in paginaged_ingredients
             ],
             "total": paginaged_ingredients.total,
+            "per_page": config.PAGINATION_SIZE,
         },
     )
 
