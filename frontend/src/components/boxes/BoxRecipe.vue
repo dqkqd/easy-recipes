@@ -1,22 +1,26 @@
 <template>
-  <div class="box" @click="toRecipeDetails">
-    <div data-test="box-recipe-name">{{ props.recipe.name }}</div>
-    <div v-if="props.recipe.description" data-test="box-recipe-description">
-      {{ props.recipe.description }}
-    </div>
-    <img
-      v-if="image_uri"
-      class="recipe-image"
-      :src="image_uri"
-      data-test="box-recipe-valid-image"
-    />
-    <img
-      v-else
-      class="recipe-image"
-      src="/no-image-icon.png"
-      data-test="box-recipe-default-image"
-    />
-  </div>
+  <VCard>
+    <VCardTitle class="text-h5" data-test="box-recipe-name">{{ props.recipe.name }}</VCardTitle>
+    <VAvatar :size="256" :rounded="0">
+      <VImg v-if="image_uri" :src="image_uri" data-test="box-recipe-image"></VImg>
+      <VImg v-else src="/no-image-icon.png" data-test="box-recipe-image"></VImg>
+    </VAvatar>
+    <VCardText>
+      <div v-if="props.recipe.description" data-test="box-recipe-description">
+        {{ props.recipe.description }}
+      </div>
+      <div
+        v-else
+        class="font-weight-light font-weight-thin font-italic"
+        data-test="box-recipe-description"
+      >
+        No description
+      </div>
+    </VCardText>
+    <VCardActions>
+      <VBtn @click="toRecipeDetails" data-test="box-recipe-to-recipe-details-button">See more</VBtn>
+    </VCardActions>
+  </VCard>
 </template>
 
 <script setup lang="ts">
@@ -40,37 +44,4 @@ function toRecipeDetails() {
 }
 </script>
 
-<style scoped>
-.title {
-  font-size: 1.5rem;
-  margin: 5px;
-  font-weight: bold;
-  text-align: center;
-}
-
-.box {
-  width: 200px;
-  height: 200px;
-  border: 1px solid;
-  transition: transform 0.2s;
-  margin: 5px;
-}
-
-.bigger-box {
-  width: 500px;
-  height: 500px;
-}
-
-.box:hover {
-  box-shadow: 5px 5px 5px #eee;
-  transform: scale(1.2);
-}
-
-.recipe-image {
-  width: 150px;
-  height: 150px;
-  margin: auto;
-  display: block;
-}
-</style>
-@/schema/recipe
+<style scoped></style>

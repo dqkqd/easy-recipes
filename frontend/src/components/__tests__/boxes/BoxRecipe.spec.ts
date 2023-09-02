@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from 'vitest';
 
 import BoxRecipe from '@/components/boxes/BoxRecipe.vue';
+import vuetify from '@/components/plugins/vuetify';
 import { RecipeSchema, type Recipe } from '@/schema/recipe';
 import { mount } from '@vue/test-utils';
 import { useRouter } from 'vue-router';
@@ -12,14 +13,17 @@ vi.mock('vue-router', () => ({
 }));
 
 describe('BoxRecipe', () => {
-  function boxRecipeFactory(recipe: Recipe) {
+  function factory(recipe: Recipe) {
     return mount(BoxRecipe, {
-      props: { recipe: RecipeSchema.parse(recipe) }
+      props: { recipe: RecipeSchema.parse(recipe) },
+      globals: {
+        plugins: [vuetify]
+      }
     });
   }
 
   it('Render properly', () => {
-    const wrapper = boxRecipeFactory({
+    const wrapper = factory({
       id: 1,
       name: 'Recipe name',
       description: 'Recipe Description',
@@ -29,13 +33,13 @@ describe('BoxRecipe', () => {
 
     expect(wrapper.find('[data-test=box-recipe-name]').text()).toBe('Recipe name');
     expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('Recipe Description');
-    expect(wrapper.find('[data-test=box-recipe-valid-image]').attributes('src')).toBe(
+    expect(wrapper.find('[data-test=box-recipe-image]').attributes('src')).toBe(
       'http://localhost/valid-image-url'
     );
   });
 
-  it('Do not show empty description', async () => {
-    const wrapper = boxRecipeFactory({
+  it('Empty description should be shown as `No description`', async () => {
+    const wrapper = factory({
       id: 1,
       name: 'Recipe name',
       description: '',
@@ -43,23 +47,23 @@ describe('BoxRecipe', () => {
       ingredients: []
     });
 
-    expect(wrapper.find('[data-test=box-recipe-description]').exists()).toBe(false);
+    expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('No description');
 
     await wrapper.setProps({
       recipe: {
         id: 1,
         name: 'Recipe name',
-        description: '',
+        description: null,
         image_uri: null,
         ingredients: []
       }
     });
 
-    expect(wrapper.find('[data-test=box-recipe-description]').exists()).toBe(false);
+    expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('No description');
   });
 
   it('Render default image if no specify', () => {
-    const wrapper = boxRecipeFactory({
+    const wrapper = factory({
       id: 1,
       name: 'Recipe name',
       description: '',
@@ -67,7 +71,7 @@ describe('BoxRecipe', () => {
       ingredients: []
     });
 
-    expect(wrapper.find('[data-test=box-recipe-default-image]').attributes('src')).toBe(
+    expect(wrapper.find('[data-test=box-recipe-image]').attributes('src')).toBe(
       '/no-image-icon.png'
     );
   });
@@ -79,7 +83,7 @@ describe('BoxRecipe', () => {
       push
     }));
 
-    const wrapper = boxRecipeFactory({
+    const wrapper = factory({
       id: 1,
       name: 'Recipe name',
       description: '',
@@ -87,7 +91,8 @@ describe('BoxRecipe', () => {
       ingredients: []
     });
 
-    await wrapper.trigger('click');
+    const moveButton = wrapper.find('[data-test=box-recipe-to-recipe-details-button]');
+    await moveButton.trigger('click');
 
     expect(push).toHaveBeenCalledTimes(1);
     expect(push).toBeCalledWith({ name: 'RecipeDetails', params: { id: 1 } });
