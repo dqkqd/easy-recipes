@@ -20,8 +20,8 @@
 </template>
 
 <script setup lang="ts">
-import MainAppBar from '@/components/MainAppBar.vue';
 import DeleteButton from '@/components/buttons/DeleteButton.vue';
+import MainAppBar from '@/components/navs/MainAppBar.vue';
 import { useAxios } from '@/composables';
 import { apiUrl, convertFileServerDev } from '@/env';
 import {

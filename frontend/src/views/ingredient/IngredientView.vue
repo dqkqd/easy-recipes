@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import MainAppBar from '@/components/MainAppBar.vue';
+import MainAppBar from '@/components/navs/MainAppBar.vue';
 </script>
 
 <style scoped></style>

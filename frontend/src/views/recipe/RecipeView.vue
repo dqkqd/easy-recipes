@@ -26,9 +26,9 @@
 </template>
 
 <script setup lang="ts">
-import MainAppBar from '@/components/MainAppBar.vue';
 import CardRecipe from '@/components/cards/CardRecipe.vue';
 import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
+import MainAppBar from '@/components/navs/MainAppBar.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipesResponseSchema, type RecipesResponse } from '@/schema/recipe';
