@@ -11,7 +11,9 @@
         </div>
         <div v-else data-test="recipe-view-loading">Loading ...</div>
       </div>
-      <button @click="showModal = true" data-test="recipe-view-new-button">New Recipe</button>
+
+      <VBtn @click="showModal = true" data-test="recipe-view-new-button" text="New Recipe"></VBtn>
+
       <Teleport to="body">
         <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
       </Teleport>
