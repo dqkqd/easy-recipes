@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 
+import vuetify from '@/components/plugins/vuetify';
 import { apiUrl } from '@/env';
 import { RecipeSchema } from '@/schema/recipe';
 import RecipeDetails from '@/views/recipe/RecipeDetails.vue';
@@ -8,6 +9,15 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 
 describe('RecipeDetails', () => {
+  function factory() {
+    return mount(RecipeDetails, {
+      props: { id: 1 },
+      global: {
+        plugins: [vuetify]
+      }
+    });
+  }
+
   const recipe = RecipeSchema.parse({
     id: 1,
     name: 'Recipe name',
@@ -22,7 +32,7 @@ describe('RecipeDetails', () => {
         data: recipe
       });
 
-      const wrapper = mount(RecipeDetails, { props: { id: 1 } });
+      const wrapper = factory();
       await flushPromises();
 
       expect(axios.request).toBeCalledTimes(1);
@@ -53,7 +63,7 @@ describe('RecipeDetails', () => {
         data: recipeWithNullImage
       });
 
-      const wrapper = mount(RecipeDetails, { props: { id: 1 } });
+      const wrapper = factory();
       await flushPromises();
 
       expect(axios.request).toBeCalledTimes(1);
@@ -76,7 +86,7 @@ describe('RecipeDetails', () => {
         data: recipe
       });
 
-      const wrapper = mount(RecipeDetails, { props: { id: 1 } });
+      const wrapper = factory();
 
       expect(wrapper.find('[data-test=recipe-details-loading]').text()).toBe('Loading ...');
     });
@@ -86,7 +96,7 @@ describe('RecipeDetails', () => {
         throw new Error('Unexpected error');
       });
 
-      const wrapper = mount(RecipeDetails, { props: { id: 1 } });
+      const wrapper = factory();
       await flushPromises();
 
       expect(axios.request).toBeCalledTimes(1);
@@ -116,7 +126,7 @@ describe('RecipeDetails', () => {
         data: recipe
       });
 
-      const wrapper = mount(RecipeDetails, { props: { id: 1 } });
+      const wrapper = factory();
       await flushPromises();
 
       vi.spyOn(axios, 'request').mockResolvedValueOnce({
@@ -151,7 +161,7 @@ describe('RecipeDetails', () => {
         data: recipe
       });
 
-      const wrapper = mount(RecipeDetails, { props: { id: 1 } });
+      const wrapper = factory();
       await flushPromises();
 
       vi.spyOn(axios, 'request').mockImplementationOnce(() => {

@@ -8,6 +8,8 @@ import RecipeView from '@/views/recipe/RecipeView.vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import axios from 'axios';
 
+import vuetify from '@/components/plugins/vuetify';
+
 vi.mock('vue-router', () => ({
   useRouter: vi.fn(() => ({
     push: () => {}
@@ -15,6 +17,14 @@ vi.mock('vue-router', () => ({
 }));
 
 describe('RecipeView', () => {
+  function factory() {
+    return mount(RecipeView, {
+      global: {
+        plugins: [vuetify]
+      }
+    });
+  }
+
   const response: RecipesResponse = {
     page: 1,
     total: 2,
@@ -41,7 +51,7 @@ describe('RecipeView', () => {
       data: response
     });
 
-    const wrapper = mount(RecipeView);
+    const wrapper = factory();
     await flushPromises();
 
     expect(axios.request).toBeCalledTimes(1);
@@ -64,7 +74,7 @@ describe('RecipeView', () => {
       throw new Error('Unexpected error');
     });
 
-    const wrapper = mount(RecipeView);
+    const wrapper = factory();
     await flushPromises();
 
     expect(wrapper.find('[data-test=recipe-view-error]').text()).toBe('Something wrong ...');
@@ -75,25 +85,26 @@ describe('RecipeView', () => {
       data: response
     });
 
-    const wrapper = mount(RecipeView);
+    const wrapper = factory();
 
     expect(wrapper.find('[data-test=recipe-view-loading]').exists()).toBe(true);
     expect(wrapper.find('[data-test=recipe-view-loading]').text()).toBe('Loading ...');
   });
 
   it('Click create-new-recipe button', async () => {
-    const wrapper = mount(RecipeView);
+    const wrapper = factory();
 
-    await wrapper.find('[data-test=recipe-view-new-button').trigger('click');
+    const newRecipeButton = wrapper.find('[data-test=recipe-view-new-button]');
+    await newRecipeButton.trigger('click');
 
-    expect(wrapper.find('[data-test=recipe-view-new-button]').exists()).toBe(true);
     expect(wrapper.findComponent(ModalRecipeCreate).exists()).toBe(true);
   });
 
   it('Click close create-new-recipe modal', async () => {
-    const wrapper = mount(RecipeView);
+    const wrapper = factory();
 
-    await wrapper.find('[data-test=recipe-view-new-button').trigger('click');
+    const newRecipeButton = wrapper.find('[data-test=recipe-view-new-button]');
+    await newRecipeButton.trigger('click');
 
     const modal = wrapper.findComponent(ModalRecipeCreate);
     await modal.find('[data-test=form-recipe-create-close]').trigger('click');
