@@ -17,7 +17,11 @@
           <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
         </Teleport>
 
-        <VPagination :length="pageLength" v-model="currentPage"></VPagination>
+        <VPagination
+          :length="pageLength"
+          v-model="currentPage"
+          data-test="recipe-view-pagination"
+        ></VPagination>
       </div>
 
       <div v-else data-test="recipe-view-loading">
