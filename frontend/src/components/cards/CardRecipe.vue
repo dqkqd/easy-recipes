@@ -1,26 +1,22 @@
 <template>
-  <VCard>
-    <VCardTitle class="text-h5" data-test="box-recipe-name">{{ props.recipe.name }}</VCardTitle>
-    <VAvatar :size="256" :rounded="0">
-      <VImg v-if="image_uri" :src="image_uri" data-test="box-recipe-image"></VImg>
-      <VImg v-else src="/no-image-icon.png" data-test="box-recipe-image"></VImg>
-    </VAvatar>
-    <VCardText>
-      <div v-if="props.recipe.description" data-test="box-recipe-description">
-        {{ props.recipe.description }}
-      </div>
-      <div
-        v-else
-        class="font-weight-light font-weight-thin font-italic"
-        data-test="box-recipe-description"
-      >
-        No description
-      </div>
-    </VCardText>
-    <VCardActions>
-      <VBtn @click="toRecipeDetails" data-test="box-recipe-to-recipe-details-button">See more</VBtn>
-    </VCardActions>
-  </VCard>
+  <VHover v-slot="hover">
+    <VCard
+      :loading="loading"
+      @click="toRecipeDetails"
+      :elevation="hover && hover.isHovering ? 12 : 2"
+      data-test="card-to-recipe-details"
+      v-bind="hover && hover.props"
+      :class="{ 'recipe-on-hover': hover && hover.isHovering }"
+    >
+      <VAvatar class="ma-3" :size="256" :rounded="0">
+        <VImg v-if="image_uri" :src="image_uri" data-test="card-recipe-image"></VImg>
+        <VImg v-else src="/no-image-icon.png" data-test="card-recipe-image"></VImg>
+      </VAvatar>
+      <VCardTitle class="text-h5 text-center font-weight-bold" data-test="card-recipe-name">{{
+        recipe.name
+      }}</VCardTitle>
+    </VCard>
+  </VHover>
 </template>
 
 <script setup lang="ts">
@@ -35,6 +31,8 @@ const props = defineProps<{
   recipe: Recipe;
 }>();
 
+const loading = computed(() => !props.recipe);
+
 const image_uri = computed(() => {
   return convertFileServerDev(props.recipe.image_uri);
 });
@@ -44,4 +42,8 @@ function toRecipeDetails() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.recipe-on-hover {
+  color: #40a02b;
+}
+</style>

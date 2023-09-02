@@ -31,35 +31,10 @@ describe('CardRecipe', () => {
       ingredients: []
     });
 
-    expect(wrapper.find('[data-test=box-recipe-name]').text()).toBe('Recipe name');
-    expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('Recipe Description');
-    expect(wrapper.find('[data-test=box-recipe-image]').attributes('src')).toBe(
+    expect(wrapper.find('[data-test=card-recipe-name]').text()).toBe('Recipe name');
+    expect(wrapper.find('[data-test=card-recipe-image]').attributes('src')).toBe(
       'http://localhost/valid-image-url'
     );
-  });
-
-  it('Empty description should be shown as `No description`', async () => {
-    const wrapper = factory({
-      id: 1,
-      name: 'Recipe name',
-      description: '',
-      image_uri: null,
-      ingredients: []
-    });
-
-    expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('No description');
-
-    await wrapper.setProps({
-      recipe: {
-        id: 1,
-        name: 'Recipe name',
-        description: null,
-        image_uri: null,
-        ingredients: []
-      }
-    });
-
-    expect(wrapper.find('[data-test=box-recipe-description]').text()).toBe('No description');
   });
 
   it('Render default image if no specify', () => {
@@ -71,7 +46,7 @@ describe('CardRecipe', () => {
       ingredients: []
     });
 
-    expect(wrapper.find('[data-test=box-recipe-image]').attributes('src')).toBe(
+    expect(wrapper.find('[data-test=card-recipe-image]').attributes('src')).toBe(
       '/no-image-icon.png'
     );
   });
@@ -91,7 +66,7 @@ describe('CardRecipe', () => {
       ingredients: []
     });
 
-    const moveButton = wrapper.find('[data-test=box-recipe-to-recipe-details-button]');
+    const moveButton = wrapper.find('[data-test=card-to-recipe-details]');
     await moveButton.trigger('click');
 
     expect(push).toHaveBeenCalledTimes(1);
