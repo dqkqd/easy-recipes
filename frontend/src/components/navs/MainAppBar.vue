@@ -1,20 +1,24 @@
 <template>
   <VAppBar>
     <VAppBarTitle class="overflow-x-visible">
-      <VBtn height="100vh" @click="moveToHomePage" data-test="main-app-bar-home-button">
+      <VBtn
+        height="100vh"
+        @click="router.push({ name: 'home' })"
+        data-test="main-app-bar-home-button"
+      >
         <a class="app-title">Easy Recipes</a></VBtn
       >
 
       <VBtn
         height="100vh"
-        @click="moveToRecipeView"
+        @click="router.push({ name: 'RecipeView' })"
         text="Recipes"
         data-test="main-app-bar-recipes-button"
       />
 
       <VBtn
         height="100vh"
-        @click="moveToIngredientView"
+        @click="router.push({ name: 'IngredientView' })"
         text="Ingredients"
         data-test="main-app-bar-ingredients-button"
       />
@@ -24,20 +28,7 @@
 
 <script setup lang="ts">
 import { useRouter } from 'vue-router';
-
 const router = useRouter();
-
-function moveToHomePage() {
-  router.push({ name: 'home' });
-}
-
-function moveToRecipeView() {
-  router.push({ name: 'RecipeView' });
-}
-
-function moveToIngredientView() {
-  router.push({ name: 'IngredientView' });
-}
 </script>
 
 <style scoped>
