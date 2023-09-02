@@ -16,6 +16,8 @@
         <Teleport to="body">
           <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
         </Teleport>
+
+        <VPagination :length="pageLength" v-model="currentPage"></VPagination>
       </div>
 
       <div v-else data-test="recipe-view-loading">
@@ -32,18 +34,38 @@ import MainAppBar from '@/components/navs/MainAppBar.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipesResponseSchema, type RecipesResponse } from '@/schema/recipe';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const showModal = ref(false);
+const currentPage = ref(1);
 
 const { result, error, execute } = useAxios<RecipesResponse>((r) => {
   return RecipesResponseSchema.parse(r.data);
+});
+
+const pageLength = computed(() => {
+  if (!result.value || result.value.per_page === 0) {
+    return 1;
+  }
+  return Math.ceil(result.value.total / result.value.per_page);
 });
 
 onMounted(async () => {
   await execute({
     method: 'get',
     url: `${apiUrl}/recipes/`
+  });
+});
+
+watch(currentPage, async () => {
+  await execute({
+    method: 'get',
+    url: `${apiUrl}/recipes/?page=${currentPage.value}`
+  });
+  window.scrollTo({
+    top: 0,
+    left: 0,
+    behavior: 'smooth'
   });
 });
 </script>

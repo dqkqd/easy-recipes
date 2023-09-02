@@ -28,6 +28,7 @@ describe('RecipeView', () => {
   const response: RecipesResponse = {
     page: 1,
     total: 2,
+    per_page: 10,
     recipes: [
       {
         id: 1,
