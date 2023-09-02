@@ -33,12 +33,8 @@ const router = useRouter();
 
 <style scoped>
 .app-title {
-  width: 230px;
   font-size: 30px;
   font-weight: 800;
-  padding: 5px;
-  text-align: center;
-  text-decoration: none;
   color: #4c4f69;
 }
 </style>
