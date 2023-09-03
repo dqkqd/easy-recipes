@@ -3,7 +3,7 @@
     <VCardTitle>
       <VIcon size="x-large" icon="mdi-emoticon-sad-outline" />
       <VCardItem class="font-weight-black text-h5">Oops</VCardItem>
-      <VCardText class="text-h6">
+      <VCardText class="text-h6" data-test="card-error-text">
         <slot name="error-message"></slot>
       </VCardText>
     </VCardTitle>
