@@ -55,7 +55,7 @@
         />
 
         <VDialog v-model="hasError" :width="500" transition="fade-transition">
-          <CardError>
+          <CardError data-test="card-form-recipe-create-error">
             <template v-slot:error-message>Can't add new recipe. Please try again.</template>
           </CardError>
         </VDialog>

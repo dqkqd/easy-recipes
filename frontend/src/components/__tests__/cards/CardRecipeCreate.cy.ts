@@ -136,3 +136,28 @@ it('Create valid recipe with loading', function () {
     .find('textarea')
     .should('not.have.attr', 'disabled');
 });
+
+it('Mock create recipe with network error', function () {
+  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  cy.mount(CardRecipeCreate);
+  cy.intercept(
+    { method: 'POST', url: `${apiUrl}/recipes/`, times: 1 },
+    { forceNetworkError: true }
+  ).as('createRecipe');
+
+  cy.spy(router, 'push').as('redirectedToRecipeDetails');
+
+  cy.get('[data-test="card-form-recipe-create-name"]').find('input').type(recipe.name);
+  cy.get('[data-test="card-form-recipe-create-image-uri"]')
+    .find('input')
+    .type('https://example.com/');
+  cy.get('[data-test="card-form-recipe-create-description"]')
+    .find('textarea')
+    .type(recipe.description!);
+
+  cy.get('[data-test="card-form-recipe-create-submit-button"]').click();
+  cy.wait('@createRecipe');
+  cy.get('@redirectedToRecipeDetails').should('not.be.called');
+
+  cy.get('[data-test=card-form-recipe-create-error]').should('exist');
+});
