@@ -73,7 +73,7 @@ const image_uri = ref('');
 const loading = ref(false);
 
 function validateURL(url: string) {
-  const zodURL = z.string().url().nullable();
+  const zodURL = z.string().url();
   const { success } = zodURL.safeParse(url.trim());
   return success || 'Invalid URL';
 }
