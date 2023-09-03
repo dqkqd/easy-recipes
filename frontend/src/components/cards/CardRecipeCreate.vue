@@ -6,21 +6,22 @@
         data-test="card-recipe-create-title"
         >Add new recipe</VCardTitle
       >
-      <VForm :disabled="loading" fast-fail @submit.prevent="createRecipe">
+
+      <VForm :disabled="isLoading" fast-fail @submit.prevent="createRecipe">
         <VTextField
           variant="solo-filled"
-          v-model="name"
+          v-model="recipe.name"
           clearable
           label="Name *"
           required
-          :rules="[(v) => !!v || 'Name is required']"
+          :rules="[required('Name')]"
           class="pb-4"
           data-test="card-form-recipe-create-name"
         />
 
         <VTextField
           variant="solo-filled"
-          v-model="image_uri"
+          v-model="recipe.image_uri"
           clearable
           label="Image URL *"
           hint="Please provide the best image to describe your recipe"
@@ -31,7 +32,7 @@
 
         <VTextarea
           variant="underlined"
-          v-model="description"
+          v-model="recipe.description"
           clearable
           label="Description"
           hint="Please provide the best description to describe your recipe"
@@ -42,7 +43,7 @@
 
         <VBtn
           type="submit"
-          :loading="loading"
+          :loading="isLoading"
           block
           color="#4f545c"
           elevation="5"
@@ -65,39 +66,34 @@
 
 <script setup lang="ts">
 import CardError from '@/components/cards/CardError.vue';
-import { useAxios } from '@/composables';
+import { useAxios, useErrorWithTimeout } from '@/composables';
 import { apiUrl } from '@/env';
-import { RecipeCreatedResponseSchema, type RecipeCreatedResponse } from '@/schema/recipe';
-import { ref, watch } from 'vue';
+import {
+  RecipeCreatedResponseSchema,
+  type RecipeCreate,
+  type RecipeCreatedResponse
+} from '@/schema/recipe';
+import { required, validateURL } from '@/validators';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { SubmitEventPromise } from 'vuetify';
-import { z } from 'zod';
 
-const name = ref('');
-const description = ref('');
-const image_uri = ref('');
-
-const loading = ref(false);
-
-function validateURL(url: string) {
-  const zodURL = z.string().url();
-  const { success } = zodURL.safeParse(url.trim());
-  return success || 'Invalid URL';
-}
+const recipe = ref<RecipeCreate>({ name: '', description: null, image_uri: null });
 
 const router = useRouter();
-const { result, error, execute } = useAxios<RecipeCreatedResponse>((r) => {
+const { result, isLoading, error, execute } = useAxios<RecipeCreatedResponse>((r) => {
   return RecipeCreatedResponseSchema.parse(r.data);
 });
 
+const { hasError } = useErrorWithTimeout(error, 3000);
+
 async function createRecipe(event: SubmitEventPromise) {
-  loading.value = true;
   const { valid: formValid } = await event;
   if (formValid) {
     await execute({
       method: 'post',
       url: `${apiUrl}/recipes/`,
-      data: { name: name.value, description: description.value, image_uri: image_uri.value },
+      data: recipe.value,
       headers: {
         authorization: 'bearer create:recipe'
       }
@@ -107,17 +103,7 @@ async function createRecipe(event: SubmitEventPromise) {
       router.push({ name: 'RecipeDetails', params: { id: result.value.id } });
     }
   }
-
-  loading.value = false;
 }
-
-const hasError = ref(false);
-watch(error, () => {
-  if (error.value) {
-    hasError.value = true;
-    setTimeout(() => (hasError.value = false), 3000);
-  }
-});
 </script>
 
 <style scoped></style>

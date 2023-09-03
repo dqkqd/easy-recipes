@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { ref, type Ref } from 'vue';
+import { ref, watch, type Ref } from 'vue';
 
 interface UseAxiosResult<
   T,
@@ -40,4 +40,15 @@ export function useAxios<T>(
     error,
     execute
   };
+}
+
+export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: number = 3000) {
+  const hasError = ref(false);
+  watch(error, () => {
+    if (error.value) {
+      hasError.value = true;
+      setTimeout(() => (hasError.value = false), timeout);
+    }
+  });
+  return { hasError };
 }
