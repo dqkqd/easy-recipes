@@ -1,7 +1,9 @@
 <template>
   <VSheet :width="800">
     <VCard class="px-5 pb-8">
-      <VCardTitle class="text-center my-8 py-1 font-weight-black text-h4"
+      <VCardTitle
+        class="text-center my-8 py-1 font-weight-black text-h4"
+        data-test="card-recipe-create-title"
         >Add new recipe</VCardTitle
       >
       <VForm :disabled="loading" fast-fail @submit.prevent="createRecipe">
@@ -13,9 +15,8 @@
           required
           :rules="[(v) => !!v || 'Name is required']"
           class="pb-4"
-          data-test="form-recipe-create-name"
-        >
-        </VTextField>
+          data-test="card-form-recipe-create-name"
+        />
 
         <VTextField
           variant="solo-filled"
@@ -25,9 +26,8 @@
           hint="Please provide the best image to describe your recipe"
           :rules="[validateURL]"
           class="pb-4"
-          data-test="form-recipe-create-image-uri"
-        >
-        </VTextField>
+          data-test="card-form-recipe-create-image-uri"
+        />
 
         <VTextarea
           variant="underlined"
@@ -37,9 +37,8 @@
           hint="Please provide the best description to describe your recipe"
           density="compact"
           class="pb-4"
-          data-test="form-recipe-create-description"
-        >
-        </VTextarea>
+          data-test="card-form-recipe-create-description"
+        />
 
         <VBtn
           type="submit"
@@ -50,8 +49,9 @@
           class="text-h5 text-center"
           size="x-large"
           prepend-icon="mdi-plus"
-          >ADD</VBtn
-        >
+          data-test="card-form-recipe-create-submit-button"
+          text="ADD"
+        />
       </VForm>
     </VCard>
   </VSheet>
