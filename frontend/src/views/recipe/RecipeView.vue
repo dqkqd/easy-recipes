@@ -11,11 +11,14 @@
           </VSheet>
         </div>
 
-        <VBtn @click="showModal = true" data-test="recipe-view-new-button" text="New Recipe"></VBtn>
-
-        <Teleport to="body">
-          <ModalRecipeCreate v-if="showModal" @close="showModal = false" />
-        </Teleport>
+        <VRow justify="center">
+          <VDialog v-model="dialog" scrollable width="auto">
+            <template v-slot:activator="{ props }">
+              <VBtn v-bind="props">New Recipe</VBtn></template
+            >
+            <CardRecipeCreate />
+          </VDialog>
+        </VRow>
 
         <VPagination
           :length="pageLength"
@@ -33,15 +36,16 @@
 
 <script setup lang="ts">
 import CardRecipe from '@/components/cards/CardRecipe.vue';
-import ModalRecipeCreate from '@/components/modals/ModalRecipeCreate.vue';
+import CardRecipeCreate from '@/components/cards/CardRecipeCreate.vue';
 import MainAppBar from '@/components/navs/MainAppBar.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipesResponseSchema, type RecipesResponse } from '@/schema/recipe';
 import { computed, onMounted, ref, watch } from 'vue';
 
-const showModal = ref(false);
 const currentPage = ref(1);
+
+const dialog = ref(false);
 
 const { result, error, execute } = useAxios<RecipesResponse>((r) => {
   return RecipesResponseSchema.parse(r.data);
