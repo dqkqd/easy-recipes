@@ -52,16 +52,23 @@
           data-test="card-form-recipe-create-submit-button"
           text="ADD"
         />
+
+        <VDialog v-model="hasError" :width="500" transition="fade-transition">
+          <CardError>
+            <template v-slot:error-message>Can't add new recipe. Please try again.</template>
+          </CardError>
+        </VDialog>
       </VForm>
     </VCard>
   </VSheet>
 </template>
 
 <script setup lang="ts">
+import CardError from '@/components/cards/CardError.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipeCreatedResponseSchema, type RecipeCreatedResponse } from '@/schema/recipe';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import type { SubmitEventPromise } from 'vuetify';
 import { z } from 'zod';
@@ -103,6 +110,14 @@ async function createRecipe(event: SubmitEventPromise) {
 
   loading.value = false;
 }
+
+const hasError = ref(false);
+watch(error, () => {
+  if (error.value) {
+    hasError.value = true;
+    setTimeout(() => (hasError.value = false), 3000);
+  }
+});
 </script>
 
 <style scoped></style>
