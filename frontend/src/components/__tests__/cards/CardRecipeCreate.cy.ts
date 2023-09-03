@@ -5,7 +5,7 @@ import { RecipeCreateSchema } from '@/schema/recipe';
 import axios from 'axios';
 
 beforeEach(() => {
-  cy.fixture('recipes/1.json').as('validRecipe');
+  cy.fixture('recipes/create/1.json').as('validRecipeCreate');
 });
 
 it('Render properly', () => {
@@ -32,7 +32,7 @@ it('Render properly', () => {
 });
 
 it('Mock create valid recipe', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.mount(CardRecipeCreate);
   cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
   cy.spy(axios, 'request')
@@ -62,7 +62,7 @@ it('Mock create valid recipe', function () {
 });
 
 it('Mock create recipe with empty name', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.mount(CardRecipeCreate);
   cy.spy(axios, 'request').as('requestToBackEnd');
 
@@ -75,7 +75,7 @@ it('Mock create recipe with empty name', function () {
 });
 
 it('Mock create recipe with empty url', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.mount(CardRecipeCreate);
   cy.spy(axios, 'request').as('requestToBackEnd');
 
@@ -99,7 +99,7 @@ it('Mock create recipe with invalid url', function () {
 });
 
 it('Create valid recipe with loading', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.mount(CardRecipeCreate);
   cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
 
@@ -138,7 +138,7 @@ it('Create valid recipe with loading', function () {
 });
 
 it('Mock create recipe with network error', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.mount(CardRecipeCreate);
   cy.intercept(
     { method: 'POST', url: `${apiUrl}/recipes/`, times: 1 },
