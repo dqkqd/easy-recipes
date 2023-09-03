@@ -1,7 +1,6 @@
 <template>
   <VHover v-slot="hover">
     <VCard
-      :loading="loading"
       @click="toRecipeDetails"
       :elevation="hover && hover.isHovering ? 12 : 2"
       data-test="card-to-recipe-details"
@@ -9,12 +8,11 @@
       :class="{ 'recipe-on-hover': hover && hover.isHovering }"
     >
       <VAvatar class="ma-3" :size="256" :rounded="0">
-        <VImg v-if="image_uri" :src="image_uri" data-test="card-recipe-image"></VImg>
-        <VImg v-else src="/no-image-icon.png" data-test="card-recipe-image"></VImg>
+        <VImg :src="imageUri" data-test="card-recipe-image"></VImg>
       </VAvatar>
-      <VCardTitle class="text-h5 text-center font-weight-bold" data-test="card-recipe-name">{{
-        recipe.name
-      }}</VCardTitle>
+      <VCardTitle class="text-h5 text-center font-weight-bold" data-test="card-recipe-name">
+        {{ recipe.name }}
+      </VCardTitle>
     </VCard>
   </VHover>
 </template>
@@ -31,10 +29,9 @@ const props = defineProps<{
   recipe: Recipe;
 }>();
 
-const loading = computed(() => !props.recipe);
-
-const image_uri = computed(() => {
-  return convertFileServerDev(props.recipe.image_uri);
+const imageUri = computed(() => {
+  const image = convertFileServerDev(props.recipe.image_uri);
+  return image || '/no-image-icon.png';
 });
 
 function toRecipeDetails() {
