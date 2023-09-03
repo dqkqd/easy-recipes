@@ -97,3 +97,42 @@ it('Mock create recipe with invalid url', function () {
 
   cy.get('[class=v-form]').should('contain.text', 'Invalid URL');
 });
+
+it('Create valid recipe with loading', function () {
+  const recipe = RecipeCreateSchema.parse(this.validRecipe);
+  cy.mount(CardRecipeCreate);
+  cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
+
+  cy.get('[data-test="card-form-recipe-create-name"]').find('input').type(recipe.name);
+  cy.get('[data-test="card-form-recipe-create-image-uri"]').find('input').type(recipe.image_uri!);
+  cy.get('[data-test="card-form-recipe-create-description"]')
+    .find('textarea')
+    .type(recipe.description!);
+  cy.get('[data-test="card-form-recipe-create-submit-button"]').click();
+
+  // should be loading and everything is disabled
+  cy.get('.v-progress-circular').should('exist');
+  cy.get('[data-test="card-form-recipe-create-name"]')
+    .find('input')
+    .should('have.attr', 'disabled');
+  cy.get('[data-test="card-form-recipe-create-image-uri"]')
+    .find('input')
+    .should('have.attr', 'disabled');
+  cy.get('[data-test="card-form-recipe-create-description"]')
+    .find('textarea')
+    .should('have.attr', 'disabled');
+
+  cy.wait('@createRecipe');
+
+  // should not be loading
+  cy.get('.v-progress-circular').should('not.exist');
+  cy.get('[data-test="card-form-recipe-create-name"]')
+    .find('input')
+    .should('not.have.attr', 'disabled');
+  cy.get('[data-test="card-form-recipe-create-image-uri"]')
+    .find('input')
+    .should('not.have.attr', 'disabled');
+  cy.get('[data-test="card-form-recipe-create-description"]')
+    .find('textarea')
+    .should('not.have.attr', 'disabled');
+});
