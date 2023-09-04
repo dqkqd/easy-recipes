@@ -6,8 +6,8 @@
         @click="router.push({ name: 'home' })"
         data-test="main-app-bar-home-button"
       >
-        <a class="app-title">Easy Recipes</a></VBtn
-      >
+        <a class="app-title">Easy Recipes</a>
+      </VBtn>
 
       <VBtn
         height="100vh"

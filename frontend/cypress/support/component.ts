@@ -1,3 +1,4 @@
+import { VApp } from 'vuetify/components';
 // ***********************************************************
 import vuetify from '../../src/plugins/vuetify';
 
@@ -22,6 +23,7 @@ import './commands';
 // require('./commands')
 
 import { mount } from 'cypress/vue';
+import { h } from 'vue';
 import router from '../../src/router';
 
 // Augment the Cypress namespace to include type definitions for
@@ -35,6 +37,8 @@ declare global {
     }
   }
 }
+
+// @ts-ignore
 Cypress.Commands.add('mount', (component, options = {}) => {
   // Setup options object
   options.global = options.global || {};
@@ -56,7 +60,7 @@ Cypress.Commands.add('mount', (component, options = {}) => {
       app.use(router);
     }
   });
-  return mount(component, options);
+  return mount(() => h(VApp, {}, component), options);
 });
 
 // Example use:
