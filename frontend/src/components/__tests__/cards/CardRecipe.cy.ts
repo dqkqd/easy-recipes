@@ -8,22 +8,24 @@ beforeEach(() => {
 
 it('Render properly', function () {
   const recipe = RecipeSchema.parse(this.validRecipeDetails);
-  cy.mount(CardRecipe, { props: { recipe: recipe } });
+  cy.mount(CardRecipe, { props: { recipe: recipe } })
 
-  cy.get('[data-test="card-recipe-name"]').should('have.text', recipe.name);
-  cy.get('[data-test="card-recipe-image"]')
-    .find('img')
+    .get('[data-test="card-recipe-name"]')
+    .should('have.text', recipe.name)
+    .get('[data-test="card-recipe-image"] img')
     .should('have.attr', 'src', recipe.image_uri);
 });
 
 it('Mock move to recipe details', function () {
   const recipe = RecipeSchema.parse(this.validRecipeDetails);
-  cy.mount(CardRecipe, { props: { recipe: recipe } });
-
   cy.spy(router, 'push')
     .withArgs({ name: 'RecipeDetails', params: { id: 1 } })
     .as('redirectedToRecipeDetails');
 
-  cy.get('[data-test="card-to-recipe-details"]').click();
-  cy.get('@redirectedToRecipeDetails').should('be.called');
+  cy.mount(CardRecipe, { props: { recipe: recipe } })
+    .get('[data-test="card-to-recipe-details"]')
+    .click()
+
+    .get('@redirectedToRecipeDetails')
+    .should('be.called');
 });
