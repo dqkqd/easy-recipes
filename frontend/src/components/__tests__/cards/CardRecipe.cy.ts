@@ -1,6 +1,7 @@
 import CardRecipe from '@/components/cards/CardRecipe.vue';
 import router from '@/router';
 import { RecipeSchema } from '@/schema/recipe';
+import { h } from 'vue';
 
 beforeEach(() => {
   cy.fixture('recipes/details/1.json').as('validRecipeDetails');
@@ -8,7 +9,7 @@ beforeEach(() => {
 
 it('Render properly', function () {
   const recipe = RecipeSchema.parse(this.validRecipeDetails);
-  cy.mount(CardRecipe, { props: { recipe: recipe } })
+  cy.mount(() => h(CardRecipe, { recipe: recipe }))
 
     .get('[data-test="card-recipe-name"]')
     .should('have.text', recipe.name)
@@ -22,7 +23,7 @@ it('Mock move to recipe details', function () {
     .withArgs({ name: 'RecipeDetails', params: { id: 1 } })
     .as('redirectedToRecipeDetails');
 
-  cy.mount(CardRecipe, { props: { recipe: recipe } })
+  cy.mount(() => h(CardRecipe, { recipe: recipe }))
     .get('[data-test="card-to-recipe-details"]')
     .click()
 

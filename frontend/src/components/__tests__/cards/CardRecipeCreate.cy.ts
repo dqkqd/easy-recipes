@@ -3,13 +3,14 @@ import { apiUrl } from '@/env';
 import router from '@/router';
 import { RecipeCreateSchema } from '@/schema/recipe';
 import axios from 'axios';
+import { h } from 'vue';
 
 beforeEach(() => {
   cy.fixture('recipes/create/1.json').as('validRecipeCreate');
 });
 
 it('Render properly', () => {
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
 
     .get('[data-test="card-recipe-create-title"]')
     .should('have.text', 'Add new recipe')
@@ -46,7 +47,7 @@ it('Mock create valid recipe', function () {
     .withArgs({ name: 'RecipeDetails', params: { id: 1 } })
     .as('redirectedToRecipeDetails');
 
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-name"] input')
     .type(recipe.name)
     .get('[data-test="card-form-recipe-create-image-uri"] input')
@@ -69,7 +70,7 @@ it('Mock create recipe with empty name', function () {
   const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.spy(axios, 'request').as('requestToBackEnd');
 
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-image-uri"] input')
     .type(recipe.image_uri!)
 
@@ -89,7 +90,7 @@ it('Mock create recipe with empty url', function () {
   const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.spy(axios, 'request').as('requestToBackEnd');
 
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-name"] input')
     .type(recipe.name)
 
@@ -108,7 +109,7 @@ it('Mock create recipe with empty url', function () {
 it('Mock create recipe with invalid url', function () {
   cy.spy(axios, 'request').as('requestToBackEnd');
 
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-image-uri"] input')
     .type('this-is-invalid-uri')
 
@@ -120,7 +121,7 @@ it('Create valid recipe with loading', function () {
   const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
   cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
 
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-name"] input')
     .type(recipe.name)
     .get('[data-test="card-form-recipe-create-image-uri"] input')
@@ -141,7 +142,8 @@ it('Create valid recipe with loading', function () {
 
     .wait('@createRecipe')
 
-    .get('.v-progress-circular').should('not.exist')
+    .get('.v-progress-circular')
+    .should('not.exist')
     .get('[data-test="card-form-recipe-create-name"] input')
     .should('not.have.attr', 'disabled')
     .get('[data-test="card-form-recipe-create-image-uri"] input')
@@ -152,11 +154,14 @@ it('Create valid recipe with loading', function () {
 
 it('Mock create recipe with network error', function () {
   const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
-  cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/`, times: 1 }, { forceNetworkError: true }).as('createRecipe');
+  cy.intercept(
+    { method: 'POST', url: `${apiUrl}/recipes/`, times: 1 },
+    { forceNetworkError: true }
+  ).as('createRecipe');
 
   cy.spy(router, 'push').as('redirectedToRecipeDetails');
 
-  cy.mount(CardRecipeCreate)
+  cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-name"] input')
     .type(recipe.name)
     .get('[data-test="card-form-recipe-create-image-uri"] input')
