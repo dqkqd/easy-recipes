@@ -4,11 +4,11 @@ import { RecipeSchema } from '@/schema/recipe';
 import { h } from 'vue';
 
 beforeEach(() => {
-  cy.fixture('recipes/details/1.json').as('validRecipeDetails');
+  cy.fixture('recipes/details/1.json').as('validRecipe');
 });
 
 it('Render properly', function () {
-  const recipe = RecipeSchema.parse(this.validRecipeDetails);
+  const recipe = RecipeSchema.parse(this.validRecipe);
   cy.mount(() => h(CardRecipe, { recipe: recipe }))
 
     .get('[data-test="card-recipe-name"]')
@@ -17,16 +17,16 @@ it('Render properly', function () {
     .should('have.attr', 'src', recipe.image_uri);
 });
 
-it('Mock move to recipe details', function () {
-  const recipe = RecipeSchema.parse(this.validRecipeDetails);
+it('Mock move to recipe info', function () {
+  const recipe = RecipeSchema.parse(this.validRecipe);
   cy.spy(router, 'push')
-    .withArgs({ name: 'RecipeDetails', params: { id: 1 } })
-    .as('redirectedToRecipeDetails');
+    .withArgs({ name: 'RecipeInfo', params: { id: 1 } })
+    .as('redirectedToRecipeInfo');
 
   cy.mount(() => h(CardRecipe, { recipe: recipe }))
     .get('[data-test="card-to-recipe-details"]')
     .click()
 
-    .get('@redirectedToRecipeDetails')
+    .get('@redirectedToRecipeInfo')
     .should('be.called');
 });

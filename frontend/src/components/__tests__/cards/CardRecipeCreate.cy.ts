@@ -44,8 +44,8 @@ it('Mock create valid recipe', function () {
     .as('requestToBackEnd');
 
   cy.spy(router, 'push')
-    .withArgs({ name: 'RecipeDetails', params: { id: 1 } })
-    .as('redirectedToRecipeDetails');
+    .withArgs({ name: 'RecipeInfo', params: { id: 1 } })
+    .as('redirectedToRecipeInfo');
 
   cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-name"] input')
@@ -62,7 +62,7 @@ it('Mock create valid recipe', function () {
 
     .wait('@createRecipe')
 
-    .get('@redirectedToRecipeDetails')
+    .get('@redirectedToRecipeInfo')
     .should('be.called');
 });
 
@@ -159,7 +159,7 @@ it('Mock create recipe with network error', function () {
     { forceNetworkError: true }
   ).as('createRecipe');
 
-  cy.spy(router, 'push').as('redirectedToRecipeDetails');
+  cy.spy(router, 'push').as('redirectedToRecipeInfo');
 
   cy.mount(() => h(CardRecipeCreate))
     .get('[data-test="card-form-recipe-create-name"] input')
@@ -172,7 +172,7 @@ it('Mock create recipe with network error', function () {
     .click()
     .wait('@createRecipe')
 
-    .get('@redirectedToRecipeDetails')
+    .get('@redirectedToRecipeInfo')
     .should('not.be.called')
     .get('[data-test=card-form-recipe-create-error]')
     .should('exist');

@@ -3,7 +3,7 @@
     <MainAppBar />
     <VMain class="d-flex align-center justify-center">
       <VSheet :width="800" class="my-8 text-center">
-        <RecipeInfo v-if="result" :recipe="result" />
+        <RecipeDetails v-if="result" :recipe="result" />
 
         <VContainer v-else-if="isLoading">
           <VProgressCircular :size="50" indeterminate></VProgressCircular>
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import MainAppBar from '@/components/navs/MainAppBar.vue';
-import RecipeInfo from '@/components/recipes/RecipeInfo.vue';
+import RecipeDetails from '@/components/recipes/RecipeDetails.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import {

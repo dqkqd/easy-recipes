@@ -1,7 +1,7 @@
 <template>
   <VHover v-slot="hover">
     <VCard
-      @click="router.push({ name: 'RecipeDetails', params: { id: recipe.id } })"
+      @click="router.push({ name: 'RecipeInfo', params: { id: recipe.id } })"
       :elevation="hover && hover.isHovering ? 12 : 2"
       data-test="card-to-recipe-details"
       v-bind="hover && hover.props"

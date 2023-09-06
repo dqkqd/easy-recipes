@@ -100,7 +100,7 @@ async function createRecipe(event: SubmitEventPromise) {
     });
 
     if (!error.value && result.value) {
-      router.push({ name: 'RecipeDetails', params: { id: result.value.id } });
+      router.push({ name: 'RecipeInfo', params: { id: result.value.id } });
     }
   }
 }

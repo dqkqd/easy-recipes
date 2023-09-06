@@ -1,6 +1,6 @@
 import HomeView from '@/views/HomeView.vue';
 import IngredientView from '@/views/ingredient/IngredientView.vue';
-import RecipeDetails from '@/views/recipe/RecipeDetails.vue';
+import RecipeInfo from '@/views/recipe/RecipeInfo.vue';
 import RecipeView from '@/views/recipe/RecipeView.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 
@@ -24,8 +24,8 @@ const router = createRouter({
     },
     {
       path: '/recipes/:id(\\d+)',
-      name: 'RecipeDetails',
-      component: RecipeDetails,
+      name: 'RecipeInfo',
+      component: RecipeInfo,
       props: true
     }
   ]
