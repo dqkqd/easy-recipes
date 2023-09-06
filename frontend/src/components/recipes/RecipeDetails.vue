@@ -15,19 +15,22 @@
 
       <VCol class="mx-3">
         <VSheet :height="460">
-          <div class="font-weight-bold text-h4 text-wrap text-center">
+          <div
+            class="font-weight-bold text-h4 text-wrap text-center"
+            data-test="recipe-details-name"
+          >
             {{ recipe.name }}
           </div>
 
           <VDivider />
 
-          <div class="text-h6 ma-3">
+          <div class="text-h6 ma-3" data-test="recipe-details-description">
             {{ recipe.description }}
           </div>
         </VSheet>
 
         <VRow align="center">
-          <VCol cols="8">
+          <VCol cols="8" data-test="recipe-details-like">
             <VHover v-slot="{ isHovering, props }" close-delay="200">
               <VIcon
                 icon="mdi-heart"
@@ -40,10 +43,10 @@
           </VCol>
 
           <VCol cols="2">
-            <VBtn icon="mdi-pencil" />
+            <VBtn icon="mdi-pencil" data-test="recipe-details-edit-button" />
           </VCol>
           <VCol cols="2">
-            <VBtn icon="mdi-delete" />
+            <VBtn icon="mdi-delete" data-test="recipe-details-delete-button" />
           </VCol>
         </VRow>
       </VCol>
