@@ -4,7 +4,14 @@
       <template v-slot:activator="{ props }">
         <VBtn :icon="icon" v-bind="props" data-test="delete-button" />
       </template>
-      <CardWarning :title="title" @accept="$emit('accept')" @cancel="dialog = false" />
+      <CardWarning
+        :title="title"
+        accept-label="Delete"
+        cancel-label="Cancel"
+        @accept="accept"
+        @cancel="cancel"
+        data-test="delete-button-dialog"
+      />
     </VDialog>
   </VRow>
 </template>
@@ -22,7 +29,20 @@ withDefaults(
   }
 );
 
+const emit = defineEmits<{
+  (e: 'accept'): void;
+}>();
+
 const dialog = ref(false);
+
+function cancel() {
+  dialog.value = false;
+}
+
+function accept() {
+  emit('accept');
+  dialog.value = false;
+}
 </script>
 
 <style scoped></style>
