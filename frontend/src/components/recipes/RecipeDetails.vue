@@ -1,5 +1,23 @@
 <template>
+  <VDialog width="auto" v-model="hasError" data-test="recipe-details-delete-error-dialog">
+    <VAlert prominent :rounded="0" justify="center" type="error" class="px-16 py-5 text-center">
+      <VAlertTitle class="text-h5">Can not delete recipe</VAlertTitle>
+      <div>Please try again later</div>
+    </VAlert>
+  </VDialog>
+
+  <VDialog persistent width="auto" v-model="deleted" data-test="recipe-details-deleted-dialog">
+    <VAlert prominent :rounded="0" justify="center" type="success" class="px-16 py-5 text-center">
+      <VAlertTitle class="text-h5">Recipe deleted</VAlertTitle>
+      <div>You will be redirected shortly...</div>
+    </VAlert>
+  </VDialog>
+
   <VSheet border>
+    <VDialog persistent width="auto" v-model="deleting" data-test="recipe-details-deleting-dialog">
+      <VProgressCircular color="red" :size="80" indeterminate />
+    </VDialog>
+
     <VRow class="my-6 mx-3" justify="center" no-gutters>
       <VCol>
         <VImg
@@ -49,6 +67,7 @@
             <DeleteButton
               title="Are you sure you want to delete your recipe?"
               data-test="recipe-details-delete-button"
+              @accept="deleteRecipe"
             />
           </VCol>
         </VRow>
@@ -58,9 +77,15 @@
 </template>
 
 <script setup lang="ts">
-import { convertFileServerDev } from '@/env';
-import { type Recipe } from '@/schema/recipe';
-import { computed } from 'vue';
+import { useAxios } from '@/composables';
+import { apiUrl, convertFileServerDev } from '@/env';
+import {
+  RecipeDeletedResponseSchema,
+  type Recipe,
+  type RecipeDeletedResponse
+} from '@/schema/recipe';
+import { computed, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import DeleteButton from '../buttons/DeleteButton.vue';
 
 const props = defineProps<{ recipe: Recipe }>();
@@ -68,6 +93,39 @@ const props = defineProps<{ recipe: Recipe }>();
 const image_uri = computed(() => {
   return convertFileServerDev(props.recipe.image_uri);
 });
+
+const router = useRouter();
+
+const deleted = ref(false);
+const hasError = ref(false);
+
+const {
+  result,
+  error,
+  isLoading: deleting,
+  execute
+} = useAxios<RecipeDeletedResponse>((r) => {
+  return RecipeDeletedResponseSchema.parse(r.data);
+});
+
+async function deleteRecipe() {
+  await execute({
+    method: 'delete',
+    url: `${apiUrl}/recipes/${props.recipe.id}`,
+    headers: {
+      authorization: 'bearer delete:recipe'
+    }
+  });
+
+  if (!error.value && result.value) {
+    deleted.value = true;
+    setTimeout(() => {
+      router.push({ name: 'RecipeView' });
+    }, 1500);
+  } else {
+    hasError.value = true;
+  }
+}
 </script>
 
 <style scoped></style>
