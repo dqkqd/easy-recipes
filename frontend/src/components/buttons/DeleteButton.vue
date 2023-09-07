@@ -1,13 +1,28 @@
 <template>
-  <div>
-    <button @click="$emit('close')" data-test="delete-button">{{ props.label }}</button>
-  </div>
+  <VRow justify="center">
+    <VDialog v-model="dialog" width="auto">
+      <template v-slot:activator="{ props }">
+        <VBtn :icon="icon" v-bind="props" data-test="delete-button" />
+      </template>
+      <CardWarning :title="title" @accept="$emit('accept')" @cancel="dialog = false" />
+    </VDialog>
+  </VRow>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{
-  label: string;
-}>();
+import CardWarning from '@/components/cards/CardWarning.vue';
+import { ref } from 'vue';
+withDefaults(
+  defineProps<{
+    icon?: string;
+    title?: string;
+  }>(),
+  {
+    icon: 'mdi-delete'
+  }
+);
+
+const dialog = ref(false);
 </script>
 
 <style scoped></style>

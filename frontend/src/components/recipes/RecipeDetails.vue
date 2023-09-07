@@ -46,7 +46,10 @@
             <VBtn icon="mdi-pencil" data-test="recipe-details-edit-button" />
           </VCol>
           <VCol cols="2">
-            <VBtn icon="mdi-delete" data-test="recipe-details-delete-button" />
+            <DeleteButton
+              title="Are you sure you want to delete your recipe?"
+              data-test="recipe-details-delete-button"
+            />
           </VCol>
         </VRow>
       </VCol>
@@ -58,6 +61,7 @@
 import { convertFileServerDev } from '@/env';
 import { type Recipe } from '@/schema/recipe';
 import { computed } from 'vue';
+import DeleteButton from '../buttons/DeleteButton.vue';
 
 const props = defineProps<{ recipe: Recipe }>();
 
