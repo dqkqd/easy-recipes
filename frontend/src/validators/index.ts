@@ -2,6 +2,9 @@ import { z } from 'zod';
 
 export function validateURL(url: string | null) {
   const trimmedUrl = url ? url.trim() : null;
+  if (!trimmedUrl) {
+    return true;
+  }
   const zodURL = z.string().url();
   const { success } = zodURL.safeParse(trimmedUrl);
   return success || 'Invalid URL';
