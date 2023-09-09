@@ -10,12 +10,25 @@ from tests.mocks import MockImage
 
 
 @pytest.mark.usefixtures("app_context")
-def test_add_from_bytes() -> None:
+def test_add_from_bytes_io() -> None:
     img = MockImage.random(256, 256)
     image_bytes = io.BytesIO()
     img.save(image_bytes, format="PNG")
 
     with FileOnServer.from_source(image_bytes) as image_on_server:
+        assert image_bytes.getvalue() == image_on_server.data.getvalue()
+
+
+@pytest.mark.usefixtures("app_context")
+def test_add_from_bytes() -> None:
+    img = MockImage.random(256, 256)
+
+    image_bytes = io.BytesIO()
+    img.save(image_bytes, format="PNG")
+
+    raw_bytes = image_bytes.getvalue()
+
+    with FileOnServer.from_source(raw_bytes) as image_on_server:
         assert image_bytes.getvalue() == image_on_server.data.getvalue()
 
 

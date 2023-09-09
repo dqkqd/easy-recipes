@@ -64,6 +64,11 @@ class FileOnServer:
         identifier = fs.add(stream)
         return cls(identifier)
 
+    @_from_source.register
+    @classmethod
+    def _(cls, b: bytes) -> Self:
+        return cls._from_source(io.BytesIO(b))
+
     @_from_source.register(Path)
     @classmethod
     def _(cls, file: Path) -> Self:

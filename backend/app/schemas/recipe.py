@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Annotated
 
 from pydantic import (
     AfterValidator,
+    Base64Bytes,
     ConfigDict,
     Field,
     HttpUrl,
@@ -19,7 +20,7 @@ if TYPE_CHECKING:
 class RecipeBase(BaseSchema):
     name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
     description: str | None = None
-    image_uri: HttpUrl | None = None
+    image_uri: HttpUrl | Base64Bytes | None = None
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl) -> str:
