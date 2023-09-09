@@ -1,3 +1,4 @@
+import { defaultImage } from '@/env';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { ref, watch, type Ref } from 'vue';
@@ -55,4 +56,35 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
     }
   });
   return { hasError };
+}
+
+export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>) {
+  const imageSrc = ref(defaultImage);
+
+  watch(fromSrc, () => {
+    imageSrc.value = fromSrc.value;
+  });
+
+  if (fromFiles) {
+    const reader = new FileReader();
+    reader.onload = function () {
+      if (reader.result) {
+        imageSrc.value = reader.result.toString();
+      }
+    };
+
+    watch(fromFiles, () => {
+      if (fromFiles.value && fromFiles.value.length) {
+        reader.readAsDataURL(fromFiles.value[0]);
+      } else {
+        imageSrc.value = defaultImage;
+      }
+    });
+  }
+
+  function onError() {
+    imageSrc.value = defaultImage;
+  }
+
+  return { imageSrc, onError };
 }
