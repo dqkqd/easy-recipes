@@ -1,179 +1,98 @@
 import CardRecipeCreate from '@/components/cards/CardRecipeCreate.vue';
 import { apiUrl } from '@/env';
 import router from '@/router';
-import { RecipeCreateSchema } from '@/schema/recipe';
 import axios from 'axios';
 import { h } from 'vue';
 
-beforeEach(() => {
-  cy.fixture('recipes/create/1.json').as('validRecipeCreate');
+describe('Render', () => {
+  it('Render properly', () => {
+    cy.mount(() => h(CardRecipeCreate))
+      .get('[data-test=card-recipe-create-title]')
+      .should('have.text', 'Add new recipe')
+      .get('[data-test=card-recipe-create-form-recipe]')
+      .should('be.visible')
+      .get('[data-test=card-recipe-error-dialog]')
+      .should('not.exist');
+  });
 });
 
-it('Render properly', () => {
-  cy.mount(() => h(CardRecipeCreate))
+describe('Add recipe', () => {
+  beforeEach(function () {
+    cy.spy(router, 'push')
+      .withArgs({ name: 'RecipeInfo', params: { id: 1 } })
+      .as('redirectedToRecipeInfo');
 
-    .get('[data-test="card-recipe-create-title"]')
-    .should('have.text', 'Add new recipe')
-    .get('[data-test="card-form-recipe-create-name"] label')
-    .first()
-    .should('have.text', 'Name *')
-    .get('[data-test="card-form-recipe-create-image-uri"] label')
-    .first()
-    .should('have.text', 'Image URL *')
-    .get('[data-test="card-form-recipe-create-description"] label')
-    .first()
-    .should('have.text', 'Description')
-    .get('[data-test="card-form-recipe-create-submit-button"]')
-    .should('have.text', 'ADD');
-});
+    cy.fixture('recipes/create/1.json').then((validRecipeCreate) => {
+      cy.spy(axios, 'request')
+        .withArgs({
+          method: 'post',
+          url: `${apiUrl}/recipes/`,
+          data: validRecipeCreate,
+          headers: {
+            authorization: 'bearer create:recipe'
+          }
+        })
+        .as('requestToBackEnd');
 
-it('Mock create valid recipe', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
+      cy.mount(() => h(CardRecipeCreate))
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=form-recipe-name] input')
+        .type(validRecipeCreate.name)
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=form-recipe-image-uri] input')
+        .type(validRecipeCreate.image_uri)
+        .get(
+          '[data-test=card-recipe-create-form-recipe] [data-test=form-recipe-description] textarea'
+        )
+        .type(validRecipeCreate.description);
+    });
+  });
 
-  cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
+  it('Add valid recipe', function () {
+    cy.intercept({ method: 'post', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
 
-  cy.spy(axios, 'request')
-    .withArgs({
-      method: 'post',
-      url: `${apiUrl}/recipes/`,
-      data: recipe,
-      headers: {
-        authorization: 'bearer create:recipe'
-      }
-    })
-    .as('requestToBackEnd');
+    cy.get('[data-test=card-recipe-create-form-recipe] [data-test=form-recipe-submit-button]')
+      .click()
 
-  cy.spy(router, 'push')
-    .withArgs({ name: 'RecipeInfo', params: { id: 1 } })
-    .as('redirectedToRecipeInfo');
+      .get('@requestToBackEnd')
+      .should('be.called')
 
-  cy.mount(() => h(CardRecipeCreate))
-    .get('[data-test="card-form-recipe-create-name"] input')
-    .type(recipe.name)
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .type(recipe.image_uri!)
-    .get('[data-test="card-form-recipe-create-description"] textarea')
-    .type(recipe.description!)
-    .get('[data-test="card-form-recipe-create-submit-button"]')
-    .click()
+      .wait('@createRecipe')
 
-    .get('@requestToBackEnd')
-    .should('be.called')
+      .get('@redirectedToRecipeInfo')
+      .should('be.called');
+  });
 
-    .wait('@createRecipe')
+  it('Add recipe with loading', function () {
+    cy.intercept({ method: 'post', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
 
-    .get('@redirectedToRecipeInfo')
-    .should('be.called');
-});
+    cy.get('.v-progress-circular')
+      .should('not.exist')
 
-it('Mock create recipe with empty name', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
-  cy.spy(axios, 'request').as('requestToBackEnd');
+      .get('[data-test=card-recipe-create-form-recipe] [data-test=form-recipe-submit-button]')
+      .click()
 
-  cy.mount(() => h(CardRecipeCreate))
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .type(recipe.image_uri!)
+      .should('exist');
+  });
 
-    .get('[class=v-form]')
-    .should('not.contain.text', 'Name is required')
+  it('Add recipe with network error', function () {
+    cy.intercept({ method: 'post', url: `${apiUrl}/recipes/` }, { forceNetworkError: true }).as(
+      'createRecipe'
+    );
 
-    .get('[data-test="card-form-recipe-create-submit-button"]')
-    .click()
+    cy.get('[data-test=card-recipe-create-form-recipe] [data-test=form-recipe-submit-button]')
+      .click()
 
-    .get('@requestToBackEnd')
-    .should('not.be.called')
-    .get('[class=v-form]')
-    .should('contain.text', 'Name is required');
-});
+      .get('@requestToBackEnd')
+      .should('be.called')
 
-it('Mock create recipe with empty url', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
-  cy.spy(axios, 'request').as('requestToBackEnd');
+      .wait('@createRecipe')
 
-  cy.mount(() => h(CardRecipeCreate))
-    .get('[data-test="card-form-recipe-create-name"] input')
-    .type(recipe.name)
+      .get('@redirectedToRecipeInfo')
+      .should('not.be.called')
 
-    .get('[class=v-form]')
-    .should('not.contain.text', 'Invalid URL')
-
-    .get('[data-test="card-form-recipe-create-submit-button"]')
-    .click()
-
-    .get('@requestToBackEnd')
-    .should('not.be.called')
-    .get('[class=v-form]')
-    .should('contain.text', 'Invalid URL');
-});
-
-it('Mock create recipe with invalid url', function () {
-  cy.spy(axios, 'request').as('requestToBackEnd');
-
-  cy.mount(() => h(CardRecipeCreate))
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .type('this-is-invalid-uri')
-
-    .get('[class=v-form]')
-    .should('contain.text', 'Invalid URL');
-});
-
-it('Create valid recipe with loading', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
-  cy.intercept({ method: 'POST', url: `${apiUrl}/recipes/` }, { id: 1 }).as('createRecipe');
-
-  cy.mount(() => h(CardRecipeCreate))
-    .get('[data-test="card-form-recipe-create-name"] input')
-    .type(recipe.name)
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .type(recipe.image_uri!)
-    .get('[data-test="card-form-recipe-create-description"] textarea')
-    .type(recipe.description!)
-    .get('[data-test="card-form-recipe-create-submit-button"]')
-    .click()
-
-    .get('.v-progress-circular')
-    .should('exist')
-    .get('[data-test="card-form-recipe-create-name"] input')
-    .should('have.attr', 'disabled')
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .should('have.attr', 'disabled')
-    .get('[data-test="card-form-recipe-create-description"] textarea')
-    .should('have.attr', 'disabled')
-
-    .wait('@createRecipe')
-
-    .get('.v-progress-circular')
-    .should('not.exist')
-    .get('[data-test="card-form-recipe-create-name"] input')
-    .should('not.have.attr', 'disabled')
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .should('not.have.attr', 'disabled')
-    .get('[data-test="card-form-recipe-create-description"] textarea')
-    .should('not.have.attr', 'disabled');
-});
-
-it('Mock create recipe with network error', function () {
-  const recipe = RecipeCreateSchema.parse(this.validRecipeCreate);
-  cy.intercept(
-    { method: 'POST', url: `${apiUrl}/recipes/`, times: 1 },
-    { forceNetworkError: true }
-  ).as('createRecipe');
-
-  cy.spy(router, 'push').as('redirectedToRecipeInfo');
-
-  cy.mount(() => h(CardRecipeCreate))
-    .get('[data-test="card-form-recipe-create-name"] input')
-    .type(recipe.name)
-    .get('[data-test="card-form-recipe-create-image-uri"] input')
-    .type('https://example.com/')
-    .get('[data-test="card-form-recipe-create-description"] textarea')
-    .type(recipe.description!)
-    .get('[data-test="card-form-recipe-create-submit-button"]')
-    .click()
-    .wait('@createRecipe')
-
-    .get('@redirectedToRecipeInfo')
-    .should('not.be.called')
-    .get('[data-test=card-form-recipe-create-error]')
-    .should('exist');
+      .get('[data-test=card-recipe-error-dialog]')
+      .should('be.visible')
+      .wait(2000)
+      .get('[data-test=card-recipe-error-dialog]')
+      .should('not.exist');
+  });
 });
