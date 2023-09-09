@@ -20,45 +20,14 @@ import MainAppBar from '@/components/navs/MainAppBar.vue';
 import RecipeDetails from '@/components/recipes/RecipeDetails.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
-import {
-  RecipeDeletedResponseSchema,
-  RecipeSchema,
-  type Recipe,
-  type RecipeDeletedResponse
-} from '@/schema/recipe';
+import { RecipeSchema, type Recipe } from '@/schema/recipe';
 import { onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-
-const router = useRouter();
 
 const props = defineProps<{ id: number | string }>();
 
 const { result, isLoading, execute } = useAxios<Recipe>((r) => {
   return RecipeSchema.parse(r.data);
 });
-
-const {
-  result: deletedResult,
-  error: deletedError,
-  isLoading: isDeleteing,
-  execute: deleteExec
-} = useAxios<RecipeDeletedResponse>((r) => {
-  return RecipeDeletedResponseSchema.parse(r.data);
-});
-
-async function deleteRecipe() {
-  await deleteExec({
-    method: 'delete',
-    url: `${apiUrl}/recipes/${props.id}`,
-    headers: {
-      authorization: 'bearer delete:recipe'
-    }
-  });
-
-  if (!deletedError.value && deletedResult.value) {
-    router.push({ name: 'home' });
-  }
-}
 
 onMounted(async () => {
   await execute({
@@ -68,11 +37,4 @@ onMounted(async () => {
 });
 </script>
 
-<style scoped>
-.v-icon {
-  transition: opacity 0.4s ease-in-out;
-}
-.v-icon:not(.on-hover) {
-  opacity: 0.8;
-}
-</style>
+<style scoped></style>
