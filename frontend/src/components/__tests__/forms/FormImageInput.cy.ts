@@ -5,12 +5,15 @@ import { h } from 'vue';
 describe('Render', () => {
   it('Render properly', () => {
     cy.mount(() => h(FormImageInput))
-      .get('[data-test=form-image-input-file]')
-      .should('be.visible')
-      .get('[data-test=form-image-input-url]')
-      .should('be.visible')
-      .get('[data-test=form-image-input-image]')
-      .should('be.visible');
+      .get('[data-test=form-image-input-file] label')
+      .should('have.text', 'Upload your image here, or use urlUpload your image here, or use url')
+
+      .get('[data-test=form-image-input-url] label')
+      .first()
+      .should('have.text', 'Image URL')
+
+      .get('[data-test=form-image-input-image] img')
+      .should('have.attr', 'src', defaultImage);
   });
 
   describe('Hint', () => {
