@@ -15,6 +15,9 @@
 
           <FormRecipe
             :loading="isLoading"
+            :recipe-name="recipe.name"
+            :recipe-image-uri="recipe.image_uri"
+            :recipe-description="recipe.description"
             @submit="editRecipe"
             @cancel="dialog = false"
             data-test="card-recipe-edit-form-recipe"
@@ -39,13 +42,14 @@ import { apiUrl } from '@/env';
 import {
   RecipeUpdateSchema,
   RecipeUpdatedResponseSchema,
+  type Recipe,
   type RecipeUpdatedResponse
 } from '@/schema/recipe';
 import { ref } from 'vue';
 import FormRecipe from '../forms/FormRecipe.vue';
 
 const props = defineProps<{
-  id: number;
+  recipe: Recipe;
 }>();
 
 const emit = defineEmits<{
@@ -68,7 +72,7 @@ const { hasError } = useErrorWithTimeout(error, 2000);
 async function editRecipe(name: string, imageUri: string, description: string) {
   await execute({
     method: 'post',
-    url: `${apiUrl}/recipes/${props.id}`,
+    url: `${apiUrl}/recipes/${props.recipe.id}`,
     data: {
       name: name,
       image_uri: imageUri,

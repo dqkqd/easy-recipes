@@ -61,7 +61,7 @@
           </VCol>
 
           <VCol cols="2">
-            <CardRecipeUpdate :id="recipe.id" />
+            <CardRecipeUpdate :recipe="recipe" />
           </VCol>
           <VCol cols="2">
             <DeleteButton
