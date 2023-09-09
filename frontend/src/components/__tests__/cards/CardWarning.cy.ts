@@ -35,8 +35,7 @@ it('Emit accept and cancel when clicking', () => {
   cy.mount(() =>
     h(CardWarning, {
       onAccept: cy.spy().as('onAccept'),
-      onCancel: cy.spy().as('onCancel'),
-      onA: cy.spy().as('x')
+      onCancel: cy.spy().as('onCancel')
     })
   )
 
