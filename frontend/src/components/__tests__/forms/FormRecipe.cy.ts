@@ -153,6 +153,10 @@ describe('Loading', () => {
         loading: true
       })
     )
+
+      .get('.v-progress-circular')
+      .should('exist')
+
       .get('[data-test=form-recipe-name] input')
       .should('be.disabled')
 
