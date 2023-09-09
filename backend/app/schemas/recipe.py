@@ -17,22 +17,35 @@ if TYPE_CHECKING:
     from app.schemas.ingredient import IngredientInDBBase
 
 
-class RecipeBase(BaseSchema):
+class RecipeBaseAbstract(BaseSchema):
     name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
     description: str | None = None
-    image_uri: HttpUrl | Base64Bytes | None = None
+
+
+class RecipeBase(RecipeBaseAbstract):
+    image_uri: HttpUrl | None = None
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl) -> str:
         return str(image_uri)
 
 
-class RecipeCreate(RecipeBase):
+class RecipeCreate(RecipeBaseAbstract):
+    image_uri: HttpUrl | Base64Bytes | None = None
     ingredients: set[int] = Field(default_factory=set)
 
+    @field_serializer("image_uri", when_used="unless-none")
+    def serialize_image_uri(self, image_uri: HttpUrl | Base64Bytes) -> str:
+        return str(image_uri)
 
-class RecipeUpdate(RecipeBase):
-    pass
+
+class RecipeUpdate(RecipeBaseAbstract):
+    image_uri: HttpUrl | Base64Bytes | None = None
+    ingredients: set[int] = Field(default_factory=set)
+
+    @field_serializer("image_uri", when_used="unless-none")
+    def serialize_image_uri(self, image_uri: HttpUrl | Base64Bytes) -> str:
+        return str(image_uri)
 
 
 class RecipeInDBBase(IDModelMixin, RecipeBase):
