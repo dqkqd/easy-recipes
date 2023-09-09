@@ -478,6 +478,5 @@ def test_200_ingredient_update(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert response.status_code == 200
     assert data.pop("id") == 1
-    assert data.pop("recipes") == []
     compare_image_data_from_uri(ingredient_update.image_uri, Url(data.pop("image_uri")))
     assert data == ingredient_update.model_dump(mode="json", exclude={"image_uri"})
