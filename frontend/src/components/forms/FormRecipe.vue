@@ -6,7 +6,6 @@
           variant="solo-filled"
           v-model="name"
           clearable
-          validate-on="submit"
           label="Name *"
           required
           :rules="[required('Name')]"
@@ -26,31 +25,10 @@
       </VCol>
 
       <VCol>
-        <VFileInput
-          variant="solo-filled"
-          v-model="imageFiles"
-          clearable
-          :disabled="!!imageUri"
-          :accept="supportedImages.join(',')"
-          label="Upload your image here, or use url"
+        <FormImageInput
+          v-model="image"
           hint="Please provide the best image to describe your recipe"
-          show-size
-          prepend-icon=""
-          append-inner-icon="mdi-camera"
         />
-
-        <VTextField
-          variant="solo-filled"
-          v-model="imageUri"
-          clearable
-          :disabled="!!imageFiles.length"
-          label="Image URL"
-          hint="Please provide the best image to describe your recipe"
-          validate-on="submit"
-          :rules="[validateURL]"
-          data-test="form-recipe-image-uri"
-        />
-        <VImg :src="imageSrc" @error="onError" :height="400" />
       </VCol>
     </VRow>
 
@@ -95,25 +73,23 @@
 </template>
 
 <script setup lang="ts">
-import { useAxios, useErrorWithTimeout, useImage } from '@/composables';
-import { apiUrl, defaultImage } from '@/env';
+import FormImageInput from '@/components/forms/FormImageInput.vue';
+import { useAxios, useErrorWithTimeout } from '@/composables';
+import { apiUrl } from '@/env';
 import {
   RecipeCreateSchema,
   RecipeCreatedResponseSchema,
   type RecipeCreatedResponse
 } from '@/schema/recipe';
-import { replaceBase64Prefix, supportedImages } from '@/utils';
-import { required, validateURL } from '@/validators';
+import { replaceBase64Prefix } from '@/utils';
+import { required } from '@/validators';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import type { SubmitEventPromise } from 'vuetify';
 
 const name = ref('');
+const image = ref(null);
 const description = ref('');
-const imageUri = ref('');
-
-const imageFiles = ref<File[]>([]);
-const { imageSrc, onError } = useImage(imageUri, imageFiles);
 
 const { result, isLoading, error, execute } = useAxios<RecipeCreatedResponse>(
   (r) => {
@@ -147,7 +123,7 @@ async function submit(event: SubmitEventPromise) {
     url: `${apiUrl}/recipes/`,
     data: {
       name: name.value,
-      image_uri: imageSrc.value === defaultImage ? null : imageSrc.value,
+      image_uri: image.value,
       description: description.value
     },
     headers: {
