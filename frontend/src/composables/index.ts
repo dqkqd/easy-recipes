@@ -13,7 +13,8 @@ interface UseAxiosResult<
 }
 
 export function useAxios<T>(
-  handleResponse: (response: AxiosResponse<T>) => T
+  handleResponse: (response: AxiosResponse<T>) => T,
+  parseConfigData: (data?: any) => any = (data) => data
 ): UseAxiosResult<T, (config: AxiosRequestConfig<any>) => Promise<T | undefined>> {
   const isLoading = ref(false);
   const result = ref<T>();
@@ -23,6 +24,9 @@ export function useAxios<T>(
     isLoading.value = true;
     error.value = undefined;
     try {
+      if (config.data) {
+        config.data = parseConfigData(config.data);
+      }
       const response = await axios.request(config).then(handleResponse);
       result.value = response;
       return response;
