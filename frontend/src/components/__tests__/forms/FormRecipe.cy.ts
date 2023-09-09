@@ -1,10 +1,10 @@
-import FormRecipe from '@/components/forms/FormRecipe.vue';
+import FormRecipeCreate from '@/components/forms/FormRecipeCreate.vue';
 import type { Recipe } from '@/schema/recipe';
 import { h } from 'vue';
 
 describe('Render', () => {
   it('Render properly', () => {
-    cy.mount(() => h(FormRecipe, { loading: false }))
+    cy.mount(() => h(FormRecipeCreate, { loading: false }))
 
       .get('[data-test="form-recipe-name"] label')
       .first()
@@ -28,7 +28,7 @@ describe('Render', () => {
   it('Render passed form value', () => {
     cy.fixture('recipes/details/1.json').then((recipe: Recipe) => {
       cy.mount(() =>
-        h(FormRecipe, {
+        h(FormRecipeCreate, {
           loading: false,
           recipeName: recipe.name,
           recipeImageUri: recipe.image_uri,
@@ -49,7 +49,7 @@ describe('Render', () => {
 
   it('Render form default value', () => {
     cy.mount(() =>
-      h(FormRecipe, {
+      h(FormRecipeCreate, {
         loading: false
       })
     )
@@ -77,7 +77,7 @@ describe('Submission', () => {
   describe('Failed submission', () => {
     beforeEach(() => {
       cy.mount(() =>
-        h(FormRecipe, {
+        h(FormRecipeCreate, {
           loading: false,
           onSubmit: cy.spy().as('onSubmit')
         })
@@ -144,7 +144,7 @@ describe('Submission', () => {
   describe('Successful submission', () => {
     it('Submit without error', function () {
       cy.mount(() =>
-        h(FormRecipe, {
+        h(FormRecipeCreate, {
           loading: false,
           onSubmit: cy.spy().as('onSubmit')
         })
@@ -173,7 +173,7 @@ describe('Submission', () => {
 describe('Successfully cancel', () => {
   it('Cancel without error', function () {
     cy.mount(() =>
-      h(FormRecipe, {
+      h(FormRecipeCreate, {
         loading: false,
         onCancel: cy.spy().as('onCancel')
       })
@@ -189,7 +189,7 @@ describe('Successfully cancel', () => {
 describe('Loading', () => {
   it('Form disabled while loading', function () {
     cy.mount(() =>
-      h(FormRecipe, {
+      h(FormRecipeCreate, {
         loading: true
       })
     )
@@ -217,7 +217,7 @@ describe('Loading', () => {
   });
 
   it('Form available with no loading passed', () => {
-    cy.mount(() => h(FormRecipe))
+    cy.mount(() => h(FormRecipeCreate))
 
       .get('[data-test=form-recipe-name] input')
       .should('not.be.disabled')

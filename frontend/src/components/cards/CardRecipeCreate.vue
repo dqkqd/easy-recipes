@@ -7,13 +7,13 @@
         >Add new recipe</VCardTitle
       >
 
-      <FormRecipe data-test="card-recipe-create-form-recipe" />
+      <FormRecipeCreate data-test="card-recipe-create-form-recipe" />
     </VCard>
   </VSheet>
 </template>
 
 <script setup lang="ts">
-import FormRecipe from '../forms/FormRecipe.vue';
+import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
 </script>
 
 <style scoped></style>
