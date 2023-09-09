@@ -13,7 +13,11 @@
         data-test="card-recipe-create-form-recipe"
       />
 
-      <VDialog v-model="hasError" transition="fade-transition" data-test="card-recipe-error-dialog">
+      <VDialog
+        v-model="hasError"
+        transition="fade-transition"
+        data-test="card-recipe-create-error-dialog"
+      >
         <VAlert prominent :rounded="0" type="error" title="Error adding recipe" />
       </VDialog>
     </VCard>

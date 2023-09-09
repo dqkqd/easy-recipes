@@ -11,7 +11,7 @@ describe('Render', () => {
       .should('have.text', 'Add new recipe')
       .get('[data-test=card-recipe-create-form-recipe]')
       .should('be.visible')
-      .get('[data-test=card-recipe-error-dialog]')
+      .get('[data-test=card-recipe-create-error-dialog]')
       .should('not.exist');
   });
 });
@@ -89,10 +89,10 @@ describe('Add recipe', () => {
       .get('@redirectedToRecipeInfo')
       .should('not.be.called')
 
-      .get('[data-test=card-recipe-error-dialog]')
+      .get('[data-test=card-recipe-create-error-dialog]')
       .should('be.visible')
       .wait(2000)
-      .get('[data-test=card-recipe-error-dialog]')
+      .get('[data-test=card-recipe-create-error-dialog]')
       .should('not.exist');
   });
 });
