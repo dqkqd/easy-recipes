@@ -1,4 +1,5 @@
 import FormRecipe from '@/components/forms/FormRecipe.vue';
+import type { Recipe } from '@/schema/recipe';
 import { h } from 'vue';
 
 describe('Render', () => {
@@ -22,6 +23,45 @@ describe('Render', () => {
 
       .get('[data-test="form-recipe-cancel-button"]')
       .should('have.text', 'Cancel');
+  });
+
+  it('Render passed form value', () => {
+    cy.fixture('recipes/details/1.json').then((recipe: Recipe) => {
+      cy.mount(() =>
+        h(FormRecipe, {
+          loading: false,
+          recipeName: recipe.name,
+          recipeImageUri: recipe.image_uri,
+          recipeDescription: recipe.description
+        })
+      )
+
+        .get('[data-test="form-recipe-name"] input')
+        .should('have.value', recipe.name)
+
+        .get('[data-test="form-recipe-image-uri"] input')
+        .should('have.value', recipe.image_uri)
+
+        .get('[data-test="form-recipe-description"] textarea')
+        .should('have.value', recipe.description);
+    });
+  });
+
+  it('Render form default value', () => {
+    cy.mount(() =>
+      h(FormRecipe, {
+        loading: false
+      })
+    )
+
+      .get('[data-test="form-recipe-name"] input')
+      .should('have.value', '')
+
+      .get('[data-test="form-recipe-image-uri"] input')
+      .should('have.value', '')
+
+      .get('[data-test="form-recipe-description"] textarea')
+      .should('have.value', '');
   });
 });
 

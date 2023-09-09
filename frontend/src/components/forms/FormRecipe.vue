@@ -69,16 +69,18 @@ import { required, validateURL } from '@/validators';
 import { computed, ref } from 'vue';
 import type { SubmitEventPromise } from 'vuetify';
 
-const imageUri = ref('');
-const name = ref('');
-const description = ref('');
-
 const props = withDefaults(
   defineProps<{
     loading?: boolean;
+    recipeName?: string;
+    recipeImageUri?: string | null;
+    recipeDescription?: string | null;
   }>(),
   {
-    loading: false
+    loading: false,
+    recipeName: '',
+    recipeImageUri: '',
+    recipeDescription: ''
   }
 );
 
@@ -86,6 +88,10 @@ const emit = defineEmits<{
   (e: 'submit', name: string, imageUri: string, description: string): void;
   (e: 'cancel'): void;
 }>();
+
+const name = ref(props.recipeName);
+const imageUri = ref(props.recipeImageUri ?? '');
+const description = ref(props.recipeDescription ?? '');
 
 const validating = ref(false);
 async function submit(event: SubmitEventPromise) {
