@@ -35,6 +35,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert recipe.name == recipe_create.name
 
     # same image but different url
+    assert isinstance(recipe_create.image_uri, Url)
     assert Url(recipe.image_uri) != recipe_create.image_uri
     assert compare_image_data_from_uri(
         Url(recipe.image_uri),
@@ -198,6 +199,7 @@ def test_200_get_recipe_basic(client: FlaskClient) -> None:
         exclude={"image_uri"},
     ) == recipe.model_dump(exclude={"id", "image_uri"})
 
+    assert isinstance(recipe_create.image_uri, Url)
     assert recipe_create.image_uri != recipe.image_uri
     assert compare_image_data_from_uri(
         recipe_create.image_uri,

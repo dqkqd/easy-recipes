@@ -35,6 +35,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
     assert ingredient.name == ingredient_create.name
 
     # same image but different url
+    assert isinstance(ingredient_create.image_uri, Url)
     assert Url(ingredient.image_uri) != ingredient_create.image_uri
     assert compare_image_data_from_uri(
         Url(ingredient.image_uri),
@@ -198,6 +199,7 @@ def test_200_get_ingredient_basic(client: FlaskClient) -> None:
         exclude={"image_uri"},
     ) == ingredient.model_dump(exclude={"id", "image_uri"})
 
+    assert isinstance(ingredient_create.image_uri, Url)
     assert ingredient_create.image_uri != ingredient.image_uri
     assert compare_image_data_from_uri(
         ingredient_create.image_uri,
@@ -478,5 +480,6 @@ def test_200_ingredient_update(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert response.status_code == 200
     assert data.pop("id") == 1
+    assert isinstance(ingredient_update.image_uri, Url)
     compare_image_data_from_uri(ingredient_update.image_uri, Url(data.pop("image_uri")))
     assert data == ingredient_update.model_dump(mode="json", exclude={"image_uri"})
