@@ -61,7 +61,7 @@
           </VCol>
 
           <VCol cols="2">
-            <VBtn icon="mdi-pencil" data-test="recipe-details-edit-button" />
+            <CardRecipeUpdate :id="recipe.id" />
           </VCol>
           <VCol cols="2">
             <DeleteButton
@@ -87,6 +87,7 @@ import {
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import DeleteButton from '../buttons/DeleteButton.vue';
+import CardRecipeUpdate from '../cards/CardRecipeUpdate.vue';
 
 const props = defineProps<{ recipe: Recipe }>();
 
