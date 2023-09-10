@@ -27,8 +27,8 @@
       <VCol>
         <FormImageInput
           v-model="image"
+          :loading="loading"
           hint="Please provide the best image to describe your recipe"
-          data-test="form-recipe-create-form-image-input"
         />
       </VCol>
     </VRow>
@@ -67,7 +67,7 @@
     :width="500"
     v-model="hasError"
     transition="fade-transition"
-    data-test="card-recipe-create-error-dialog"
+    data-test="form-recipe-create-error-dialog"
   >
     <VAlert color="red-darken-2" prominent :rounded="0" type="error" title="Error adding recipe" />
   </VDialog>
