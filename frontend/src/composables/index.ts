@@ -1,7 +1,7 @@
-import { convertFileServerDev } from '@/env';
+import { convertFileServerDev, defaultImage } from '@/env';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { ref, watch, type Ref } from 'vue';
+import { computed, ref, watch, type Ref } from 'vue';
 
 interface UseAxiosResult<
   T,
@@ -88,5 +88,6 @@ export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImag
     imageSrc.value = image;
   }
 
-  return { imageSrc, onError };
+  const getImage = computed(() => (imageSrc.value === defaultImage ? null : imageSrc.value));
+  return { imageSrc, onError, getImage };
 }
