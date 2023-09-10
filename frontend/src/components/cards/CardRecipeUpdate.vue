@@ -8,12 +8,10 @@
       >
 
       <FormRecipe
-        :loading="!!isLoading"
-        :recipe-name="recipe.name"
-        :recipe-image-uri="recipe.image_uri"
-        :recipe-description="recipe.description ?? ''"
+        :loading="isLoading"
+        :recipe="recipe"
         @submit="updateRecipe"
-        @cancel="dialog = false"
+        @cancel="$emit('cancel')"
         data-test="card-recipe-update-form-recipe"
       />
 
@@ -37,7 +35,7 @@ import {
   type Recipe,
   type RecipeUpdatedResponse
 } from '@/schema/recipe';
-import { ref } from 'vue';
+import { replaceBase64Prefix } from '@/utils';
 import FormRecipe from '../forms/FormRecipe.vue';
 
 const props = defineProps<{
@@ -45,17 +43,17 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  (e: 'updated'): void;
+  (e: 'updated', name: string, image_uri: string | null, description: string): void;
 }>();
-
-const dialog = ref(false);
 
 const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>(
   (r) => {
     return RecipeUpdatedResponseSchema.parse(r.data);
   },
   (data) => {
-    return RecipeUpdateSchema.parse(data);
+    const parsedData = RecipeUpdateSchema.parse(data);
+    parsedData.image_uri = replaceBase64Prefix(parsedData.image_uri);
+    return parsedData;
   }
 );
 
@@ -63,7 +61,7 @@ const { hasError } = useErrorWithTimeout(error, 2000);
 
 async function updateRecipe(name: string, image: string | null, description: string) {
   await execute({
-    method: 'post',
+    method: 'patch',
     url: `${apiUrl}/recipes/${props.recipe.id}`,
     data: {
       name: name,
@@ -76,7 +74,7 @@ async function updateRecipe(name: string, image: string | null, description: str
   });
 
   if (!error.value && result.value) {
-    emit('updated');
+    emit('updated', result.value.name, result.value.image_uri, result.value.description ?? '');
   }
 }
 </script>
