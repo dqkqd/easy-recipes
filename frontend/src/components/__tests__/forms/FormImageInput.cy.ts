@@ -23,27 +23,27 @@ describe('Render', () => {
           modelValue: null,
           hint: 'This is a hint'
         })
-      );
+      )
+        .root()
+        .should('not.contain.text', 'This is a hint');
+    });
+
+    afterEach(() => {
+      cy.root().should('contain.text', 'This is a hint');
     });
 
     it('Hint should be shown on file input click', () => {
-      cy.get('[data-test=form-image-input-file] input')
-        .click()
-        .root()
-        .should('contain.text', 'This is a hint');
+      cy.get('[data-test=form-image-input-file] input').click();
     });
 
     it('Hint should be shown on url input click', () => {
-      cy.get('[data-test=form-image-input-url] input')
-        .click()
-        .root()
-        .should('contain.text', 'This is a hint');
+      cy.get('[data-test=form-image-input-url] input').click();
     });
   });
 });
 
 describe('Input image', () => {
-  it('Select file should display image', () => {
+  beforeEach(() => {
     cy.mount(() =>
       h(FormImageInput, {
         modelValue: null,
@@ -51,38 +51,25 @@ describe('Input image', () => {
       })
     )
       .get('[data-test=form-image-input-image] img')
-      .should('have.attr', 'src', defaultImage)
+      .should('have.attr', 'src', defaultImage);
+  });
 
-      .get('[data-test=form-image-input-file] input')
-      .selectFile('cypress/fixtures/images/recipe.png')
-
-      .get('[data-test=form-image-input-image] img')
+  afterEach(() => {
+    cy.get('[data-test=form-image-input-image] img')
       .should('not.have.attr', 'src', defaultImage)
-
       .get('@onUpdate')
       .should('have.been.called');
   });
 
+  it('Select file should display image', () => {
+    cy.get('[data-test=form-image-input-file] input').selectFile(
+      'cypress/fixtures/images/recipe.png'
+    );
+  });
+
   it('Input image url should display image', () => {
     cy.fixture('recipes/details/1.json').then((validRecipe) => {
-      cy.mount(() =>
-        h(FormImageInput, {
-          modelValue: null,
-          'onUpdate:modelValue': cy.spy().as('onUpdate')
-        })
-      )
-
-        .get('[data-test=form-image-input-image] img')
-        .should('have.attr', 'src', defaultImage)
-
-        .get('[data-test=form-image-input-url] input')
-        .type(validRecipe.image_uri)
-
-        .get('[data-test=form-image-input-image] img')
-        .should('not.have.attr', 'src', defaultImage)
-
-        .get('@onUpdate')
-        .should('have.been.called');
+      cy.get('[data-test=form-image-input-url] input').type(validRecipe.image_uri);
     });
   });
 });
@@ -99,7 +86,7 @@ describe('Disable input', () => {
   it('URL input is disabled when file is selected', () => {
     cy.mount(() => h(FormImageInput))
       .get('[data-test=form-image-input-file] input')
-      .selectFile('public/no-image-icon.png')
+      .selectFile('cypress/fixtures/images/recipe.png')
       .get('[data-test=form-image-input-url] input')
       .should('be.disabled');
   });
@@ -114,7 +101,7 @@ describe('Disable input', () => {
     });
   });
 
-  it('Both input are disabled when loading = true', () => {
+  it('Both input are disabled while loading', () => {
     cy.mount(() =>
       h(FormImageInput, {
         modelValue: null,
