@@ -35,7 +35,7 @@
 <script setup lang="ts">
 import FormRecipe from '@/components/FormRecipe.vue';
 import { useAxios, useErrorWithTimeout } from '@/composables';
-import { apiUrl } from '@/env';
+import { apiUrl, convertFileServerDev } from '@/env';
 import {
   RecipeCreateSchema,
   RecipeCreatedResponseSchema,
@@ -65,7 +65,7 @@ async function createRecipe(name: string, image: string | null, description: str
     url: `${apiUrl}/recipes/`,
     data: {
       name: name,
-      image_uri: image,
+      image_uri: convertFileServerDev(image),
       description: description
     },
     headers: {

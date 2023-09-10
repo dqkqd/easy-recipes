@@ -61,17 +61,17 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
 export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImage?: string | null) {
   const image = convertFileServerDev(initImage);
 
-  const imageSrc = ref(image);
+  const imageSrc = ref(image ?? defaultImage);
 
   watch(fromSrc, () => {
-    imageSrc.value = fromSrc.value || image;
+    imageSrc.value = fromSrc.value || image || defaultImage;
   });
 
   if (fromFiles) {
     const reader = new FileReader();
     reader.onload = function () {
       if (reader.result) {
-        imageSrc.value = reader.result.toString() || image;
+        imageSrc.value = reader.result.toString() || image || defaultImage;
       }
     };
 
@@ -79,13 +79,13 @@ export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImag
       if (fromFiles.value && fromFiles.value.length) {
         reader.readAsDataURL(fromFiles.value[0]);
       } else {
-        imageSrc.value = image;
+        imageSrc.value = image || defaultImage;
       }
     });
   }
 
   function onError() {
-    imageSrc.value = image;
+    imageSrc.value = image || defaultImage;
   }
 
   const getImage = computed(() => (imageSrc.value === defaultImage ? null : imageSrc.value));

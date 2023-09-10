@@ -71,7 +71,7 @@ async function updateRecipe(name: string, image: string | null, description: str
       url: `${apiUrl}/recipes/${props.recipe.id}`,
       data: {
         name: name,
-        image_uri: image,
+        image_uri: convertFileServerDev(image),
         description: description
       },
       headers: {

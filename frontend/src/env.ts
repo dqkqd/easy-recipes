@@ -10,19 +10,21 @@ if (env.MODE == 'development') {
 }
 
 export function convertFileServerDev(url: string | null | undefined) {
-  if (!url) {
-    return defaultImage;
-  }
-
-  if (env.MODE != 'development') {
-    return url;
-  }
-  if (!url.startsWith(_fileServerURL)) {
+  if (!url || env.MODE != 'development') {
     return url;
   }
 
   const fileServerDevURL = `http://${env.VITE_FILE_SERVER_HOST_DEV}`;
-  return url.replace(_fileServerURL, fileServerDevURL);
+
+  if (url.startsWith(_fileServerURL)) {
+    return url.replace(_fileServerURL, fileServerDevURL);
+  }
+
+  if (url.startsWith(fileServerDevURL)) {
+    return url.replace(fileServerDevURL, _fileServerURL);
+  }
+
+  return url;
 }
 
 export const apiUrl = _apiUrl;
