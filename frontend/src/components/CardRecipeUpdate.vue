@@ -29,7 +29,7 @@
 <script setup lang="ts">
 import FormRecipe from '@/components/FormRecipe.vue';
 import { useAxios, useErrorWithTimeout } from '@/composables';
-import { apiUrl, urlFromDev, urlToDev } from '@/env';
+import { apiUrl } from '@/env';
 import {
   RecipeUpdateSchema,
   RecipeUpdatedResponseSchema,
@@ -63,7 +63,7 @@ const { hasError } = useErrorWithTimeout(error, 2000);
 async function updateRecipe(name: string, image: string | null, description: string) {
   if (
     props.recipe.name !== name ||
-    urlToDev(props.recipe.image_uri) !== image ||
+    props.recipe.image_uri !== image ||
     props.recipe.description !== description
   ) {
     await execute({
@@ -71,7 +71,7 @@ async function updateRecipe(name: string, image: string | null, description: str
       url: `${apiUrl}/recipes/${props.recipe.id}`,
       data: {
         name: name,
-        image_uri: urlFromDev(image),
+        image_uri: image,
         description: description
       },
       headers: {
