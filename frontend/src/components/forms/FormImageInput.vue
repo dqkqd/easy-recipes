@@ -31,17 +31,19 @@ import { useImage } from '@/composables';
 import { defaultImage } from '@/env';
 import { supportedImages } from '@/utils';
 import { validateURL } from '@/validators';
-import { computed, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 const props = withDefaults(
   defineProps<{
     modelValue: string | null;
     hint?: string;
     loading: boolean;
+    image?: string;
   }>(),
   {
     hint: '',
-    loading: false
+    loading: false,
+    image: defaultImage
   }
 );
 
@@ -68,6 +70,10 @@ watch(imageSrc, () => {
   } else {
     image.value = imageSrc.value;
   }
+});
+
+onMounted(() => {
+  imageSrc.value = props.image;
 });
 </script>
 

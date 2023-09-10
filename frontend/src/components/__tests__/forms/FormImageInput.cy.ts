@@ -16,6 +16,19 @@ describe('Render', () => {
       .should('have.attr', 'src', defaultImage);
   });
 
+  it('Render passed in image url', () => {
+    cy.fixture('recipes/details/1.json').then((recipe) => {
+      cy.mount(() =>
+        h(FormImageInput, {
+          modelValue: null,
+          image: recipe.image_uri
+        })
+      )
+        .get('[data-test=form-image-input-image] img')
+        .should('have.attr', 'src', recipe.image_uri);
+    });
+  });
+
   describe('Hint', () => {
     beforeEach(() => {
       cy.mount(() =>
