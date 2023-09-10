@@ -3,7 +3,7 @@
     variant="solo-filled"
     v-model="imageFiles"
     clearable
-    :disabled="!!imageUri"
+    :disabled="!!imageUri || loading"
     :accept="supportedImages.join(',')"
     label="Upload your image here, or use url"
     :hint="hint"
@@ -17,7 +17,7 @@
     variant="solo-filled"
     v-model="imageUri"
     clearable
-    :disabled="!!imageFiles.length"
+    :disabled="!!imageFiles.length || loading"
     :hint="hint"
     label="Image URL"
     :rules="[validateURL]"
@@ -37,9 +37,11 @@ const props = withDefaults(
   defineProps<{
     modelValue: string | null;
     hint?: string;
+    loading: boolean;
   }>(),
   {
-    hint: ''
+    hint: '',
+    loading: false
   }
 );
 

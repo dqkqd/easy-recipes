@@ -113,4 +113,17 @@ describe('Disable input', () => {
         .should('be.disabled');
     });
   });
+
+  it('Both input are disabled when loading = true', () => {
+    cy.mount(() =>
+      h(FormImageInput, {
+        modelValue: null,
+        loading: true
+      })
+    )
+      .get('[data-test=form-image-input-url] input')
+      .should('be.disabled')
+      .get('[data-test=form-image-input-file] input')
+      .should('be.disabled');
+  });
 });
