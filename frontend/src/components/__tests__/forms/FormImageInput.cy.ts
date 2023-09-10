@@ -54,7 +54,7 @@ describe('Input image', () => {
       .should('have.attr', 'src', defaultImage)
 
       .get('[data-test=form-image-input-file] input')
-      .selectFile('public/no-image-icon.png')
+      .selectFile('cypress/fixtures/images/recipe.png')
 
       .get('[data-test=form-image-input-image] img')
       .should('not.have.attr', 'src', defaultImage)
