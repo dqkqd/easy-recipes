@@ -38,12 +38,12 @@ const props = withDefaults(
     modelValue: string | null;
     hint?: string;
     loading: boolean;
-    image?: string;
+    image?: string | null;
   }>(),
   {
     hint: '',
     loading: false,
-    image: defaultImage
+    image: null
   }
 );
 
@@ -73,7 +73,7 @@ watch(imageSrc, () => {
 });
 
 onMounted(() => {
-  imageSrc.value = props.image;
+  imageSrc.value = props.image ?? defaultImage;
 });
 </script>
 

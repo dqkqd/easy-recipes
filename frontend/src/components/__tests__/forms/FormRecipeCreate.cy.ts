@@ -19,6 +19,27 @@ describe('Render', () => {
       .get('[data-test=form-recipe-create-cancel-button]')
       .should('have.text', 'Cancel');
   });
+
+  it('Render passed recipe', () => {
+    cy.fixture('recipes/details/1.json').then((recipe) => {
+      cy.mount(() =>
+        h(FormRecipeCreate, {
+          recipeName: recipe.name,
+          recipeImageUri: recipe.image_uri,
+          recipeDescription: recipe.description
+        })
+      )
+
+        .get('[data-test=form-recipe-create-name] input')
+        .should('have.value', recipe.name)
+
+        .get('[data-test=form-recipe-create-description] textarea')
+        .should('have.value', recipe.description)
+
+        .get('[data-test=form-image-input-image] img')
+        .should('have.attr', 'src', recipe.image_uri);
+    });
+  });
 });
 
 describe('Submit', () => {
