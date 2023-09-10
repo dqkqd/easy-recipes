@@ -61,8 +61,16 @@
           </VCol>
 
           <VCol cols="2">
-            <CardRecipeUpdate :recipe="recipe" />
+            <VRow justify="center">
+              <VDialog v-model="updateDialog" width="auto">
+                <template v-slot:activator="{ props }">
+                  <VBtn icon="mdi-pencil" v-bind="props" data-test="recipe-details-update-button" />
+                </template>
+                <CardRecipeUpdate :recipe="recipe" />
+              </VDialog>
+            </VRow>
           </VCol>
+
           <VCol cols="2">
             <DeleteButton
               title="Are you sure you want to delete your recipe?"
@@ -91,6 +99,7 @@ import CardRecipeUpdate from '../cards/CardRecipeUpdate.vue';
 
 const props = defineProps<{ recipe: Recipe }>();
 
+const updateDialog = ref(false);
 const image_uri = computed(() => {
   return convertFileServerDev(props.recipe.image_uri);
 });

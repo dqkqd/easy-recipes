@@ -1,39 +1,31 @@
 <template>
-  <VRow justify="center">
-    <VDialog v-model="dialog" width="auto">
-      <template v-slot:activator="{ props }">
-        <VBtn icon="mdi-pencil" v-bind="props" data-test="recipe-details-update-button" />
-      </template>
+  <VSheet :width="800">
+    <VCard class="px-5 pb-8">
+      <VCardTitle
+        class="text-center my-8 py-1 font-weight-black text-h4"
+        data-test="card-recipe-update-title"
+        >Update your recipe</VCardTitle
+      >
 
-      <VSheet :width="800">
-        <VCard class="px-5 pb-8">
-          <VCardTitle
-            class="text-center my-8 py-1 font-weight-black text-h4"
-            data-test="card-recipe-update-title"
-            >Update your recipe</VCardTitle
-          >
+      <FormRecipe
+        :loading="!!isLoading"
+        :recipe-name="recipe.name"
+        :recipe-image-uri="recipe.image_uri"
+        :recipe-description="recipe.description ?? ''"
+        @submit="updateRecipe"
+        @cancel="dialog = false"
+        data-test="card-recipe-update-form-recipe"
+      />
 
-          <FormRecipe
-            :loading="isLoading"
-            :recipe-name="recipe.name"
-            :recipe-image-uri="recipe.image_uri"
-            :recipe-description="recipe.description"
-            @submit="updateRecipe"
-            @cancel="dialog = false"
-            data-test="card-recipe-update-form-recipe"
-          />
-
-          <VDialog
-            v-model="hasError"
-            transition="fade-transition"
-            data-test="card-recipe-update-error-dialog"
-          >
-            <VAlert prominent :rounded="0" type="error" title="Error updating recipe" />
-          </VDialog>
-        </VCard>
-      </VSheet>
-    </VDialog>
-  </VRow>
+      <VDialog
+        v-model="hasError"
+        transition="fade-transition"
+        data-test="card-recipe-update-error-dialog"
+      >
+        <VAlert prominent :rounded="0" type="error" title="Error updating recipe" />
+      </VDialog>
+    </VCard>
+  </VSheet>
 </template>
 
 <script setup lang="ts">
@@ -69,13 +61,13 @@ const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>(
 
 const { hasError } = useErrorWithTimeout(error, 2000);
 
-async function updateRecipe(name: string, imageUri: string, description: string) {
+async function updateRecipe(name: string, image: string | null, description: string) {
   await execute({
     method: 'post',
     url: `${apiUrl}/recipes/${props.recipe.id}`,
     data: {
       name: name,
-      image_uri: imageUri,
+      image_uri: image,
       description: description
     },
     headers: {
