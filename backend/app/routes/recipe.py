@@ -8,7 +8,7 @@ from app import auth, config
 from app.crud import crud_recipe
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.recipe import Recipe, RecipeCreate
+from app.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -82,3 +82,19 @@ def create_recipe() -> Response:
 def delete_recipe(id: int) -> Response:  # noqa: A002
     crud_recipe.delete(id)
     return jsonify({"id": id})
+
+
+@api.route("/<int:id>", methods=["PATCH"])
+@to_handleable_error
+@auth.require(auth.UPDATE_RECIPE_PERMISSION)
+def update_recipe(id: int) -> Response:  # noqa: A002
+    body = request.get_json()
+    recipe_update = RecipeUpdate(**body)
+
+    if recipe_update.image_uri is not None:
+        with ImageOnServer.from_source(recipe_update.image_uri) as image_on_server:
+            recipe_update.image_uri = image_on_server.uri
+
+    recipe_db = crud_recipe.get(id=id)
+    recipe = crud_recipe.update(recipe_db, recipe_update)
+    return jsonify(Recipe.model_validate(recipe).model_dump(mode="json"))

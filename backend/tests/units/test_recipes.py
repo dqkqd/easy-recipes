@@ -8,7 +8,7 @@ from pydantic_core import Url
 
 from app import auth, config
 from app.crud import crud_recipe
-from app.schemas.recipe import Recipe
+from app.schemas.recipe import Recipe, RecipeUpdate
 from tests.mocks import MockAuth, MockRecipe
 from tests.utils import compare_image_data_from_uri
 
@@ -460,3 +460,26 @@ def test_200_404_pagination_render_enough(client: FlaskClient) -> None:
 
     response = client.get("/recipes/?page=3")
     assert response.status_code == 404
+
+
+def test_200_recipe_update(client: FlaskClient) -> None:
+    recipe_create = MockRecipe.random()
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=recipe_create.model_dump(mode="json"),
+    )
+
+    recipe_update = RecipeUpdate(**MockRecipe.random_data())
+    response = client.patch(
+        "/recipes/1",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json=recipe_update.model_dump(mode="json"),
+    )
+
+    data = json.loads(response.data)
+    assert response.status_code == 200
+    assert data.pop("id") == 1
+    assert isinstance(recipe_update.image_uri, Url)
+    compare_image_data_from_uri(recipe_update.image_uri, Url(data.pop("image_uri")))
+    assert data == recipe_update.model_dump(mode="json", exclude={"image_uri"})

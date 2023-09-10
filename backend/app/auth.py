@@ -17,6 +17,7 @@ CREATE_INGREDIENT_PERMISSION = "create:ingredient"
 UPDATE_INGREDIENT_PERMISSION = "update:ingredient"
 DELETE_INGREDIENT_PERMISSION = "delete:ingredient"
 CREATE_RECIPE_PERMISSION = "create:recipe"
+UPDATE_RECIPE_PERMISSION = "update:recipe"
 DELETE_RECIPE_PERMISSION = "delete:recipe"
 
 
@@ -48,6 +49,7 @@ def verify_decode_jwt(_token: str) -> Permissions:
             UPDATE_INGREDIENT_PERMISSION,
             DELETE_INGREDIENT_PERMISSION,
             CREATE_RECIPE_PERMISSION,
+            UPDATE_RECIPE_PERMISSION,
             DELETE_RECIPE_PERMISSION,
         ],
     )
