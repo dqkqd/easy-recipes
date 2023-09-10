@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useAxios, useErrorWithTimeout } from '@/composables';
-import { apiUrl } from '@/env';
+import { apiUrl, convertFileServerDev } from '@/env';
 import {
   RecipeUpdateSchema,
   RecipeUpdatedResponseSchema,
@@ -44,6 +44,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'updated', name: string, image_uri: string | null, description: string): void;
+  (e: 'cancel'): void;
 }>();
 
 const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>(
@@ -60,18 +61,24 @@ const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>(
 const { hasError } = useErrorWithTimeout(error, 2000);
 
 async function updateRecipe(name: string, image: string | null, description: string) {
-  await execute({
-    method: 'patch',
-    url: `${apiUrl}/recipes/${props.recipe.id}`,
-    data: {
-      name: name,
-      image_uri: image,
-      description: description
-    },
-    headers: {
-      authorization: 'bearer update:recipe'
-    }
-  });
+  if (
+    props.recipe.name !== name ||
+    convertFileServerDev(props.recipe.image_uri) !== image ||
+    props.recipe.description !== description
+  ) {
+    await execute({
+      method: 'patch',
+      url: `${apiUrl}/recipes/${props.recipe.id}`,
+      data: {
+        name: name,
+        image_uri: image,
+        description: description
+      },
+      headers: {
+        authorization: 'bearer update:recipe'
+      }
+    });
+  }
 
   if (!error.value && result.value) {
     emit('updated', result.value.name, result.value.image_uri, result.value.description ?? '');
