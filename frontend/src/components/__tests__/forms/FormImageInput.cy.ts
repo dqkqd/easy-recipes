@@ -16,19 +16,6 @@ describe('Render', () => {
       .should('have.attr', 'src', defaultImage);
   });
 
-  it('Render passed in image url', () => {
-    cy.fixture('recipes/details/1.json').then((recipe) => {
-      cy.mount(() =>
-        h(FormImageInput, {
-          modelValue: null,
-          image: recipe.image_uri
-        })
-      )
-        .get('[data-test=form-image-input-image] img')
-        .should('have.attr', 'src', recipe.image_uri);
-    });
-  });
-
   describe('Hint', () => {
     beforeEach(() => {
       cy.mount(() =>
@@ -125,5 +112,61 @@ describe('Disable input', () => {
       .should('be.disabled')
       .get('[data-test=form-image-input-file] input')
       .should('be.disabled');
+  });
+});
+
+describe('Props image', () => {
+  beforeEach(() => {
+    cy.fixture('recipes/details/1.json')
+      .as('recipe')
+      .then((recipe) => {
+        cy.mount(() =>
+          h(FormImageInput, {
+            modelValue: null,
+            image: recipe.image_uri
+          })
+        );
+      });
+  });
+
+  afterEach(function () {
+    cy.get('[data-test=form-image-input-image] img').should(
+      'have.attr',
+      'src',
+      this.recipe.image_uri
+    );
+  });
+
+  it('Render props image when image url is invalid', function () {
+    cy.get('[data-test=form-image-input-url] input').type('abc');
+  });
+
+  it('Render props image when image file is invalid', function () {
+    cy.get('[data-test=form-image-input-file] input').selectFile(
+      'cypress/fixtures/recipes/details/1.json'
+    );
+  });
+
+  it('Render props image after clearing image url input', function () {
+    const image = 'https://picsum.photos/200';
+    cy.get('[data-test=form-image-input-url] input')
+      .type(image)
+
+      .get('[data-test=form-image-input-image] img')
+      .should('have.attr', 'src', image)
+
+      .get('[data-test=form-image-input-url] input')
+      .clear();
+  });
+
+  it('Render props image after clearing image file input', function () {
+    cy.get('[data-test=form-image-input-file] input')
+      .selectFile('cypress/fixtures/images/recipe.png')
+
+      .get('[data-test=form-image-input-image] img')
+      .should('not.have.attr', 'src', this.recipe.image_uri)
+
+      .get('[data-test=form-image-input-file] i[role=button]')
+      .click();
   });
 });

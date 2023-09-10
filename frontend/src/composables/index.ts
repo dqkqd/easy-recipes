@@ -1,4 +1,4 @@
-import { defaultImage } from '@/env';
+import { convertFileServerDev } from '@/env';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { ref, watch, type Ref } from 'vue';
@@ -58,18 +58,20 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
   return { hasError };
 }
 
-export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>) {
-  const imageSrc = ref(defaultImage);
+export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImage?: string | null) {
+  const image = convertFileServerDev(initImage);
+
+  const imageSrc = ref(image);
 
   watch(fromSrc, () => {
-    imageSrc.value = fromSrc.value;
+    imageSrc.value = fromSrc.value || image;
   });
 
   if (fromFiles) {
     const reader = new FileReader();
     reader.onload = function () {
       if (reader.result) {
-        imageSrc.value = reader.result.toString();
+        imageSrc.value = reader.result.toString() || image;
       }
     };
 
@@ -77,13 +79,13 @@ export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>) {
       if (fromFiles.value && fromFiles.value.length) {
         reader.readAsDataURL(fromFiles.value[0]);
       } else {
-        imageSrc.value = defaultImage;
+        imageSrc.value = image;
       }
     });
   }
 
   function onError() {
-    imageSrc.value = defaultImage;
+    imageSrc.value = image;
   }
 
   return { imageSrc, onError };
