@@ -19,7 +19,7 @@
       :width="500"
       v-model="hasError"
       transition="fade-transition"
-      data-test="form-recipe-create-error-dialog"
+      data-test="card-recipe-create-error-dialog"
     >
       <VAlert
         color="red-darken-2"

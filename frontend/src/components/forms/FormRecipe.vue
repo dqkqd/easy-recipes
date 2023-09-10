@@ -9,7 +9,7 @@
           label="Name *"
           required
           :rules="[required('Name')]"
-          data-test="form-recipe-create-name"
+          data-test="form-recipe-name"
         />
 
         <VTextarea
@@ -20,7 +20,7 @@
           label="Description"
           hint="Please provide the best description to describe your recipe"
           density="compact"
-          data-test="form-recipe-create-description"
+          data-test="form-recipe-description"
         />
       </VCol>
 
@@ -44,7 +44,7 @@
           elevation="5"
           class="text-h5 text-center"
           size="x-large"
-          data-test="form-recipe-create-submit-button"
+          data-test="form-recipe-submit-button"
           text="Submit"
         />
       </VCol>
@@ -56,7 +56,7 @@
           elevation="5"
           class="text-h5 text-center"
           size="x-large"
-          data-test="form-recipe-create-cancel-button"
+          data-test="form-recipe-cancel-button"
           text="Cancel"
           @click="$emit('cancel')"
         />
