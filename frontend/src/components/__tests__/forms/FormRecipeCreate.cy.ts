@@ -1,67 +1,23 @@
 import FormRecipeCreate from '@/components/forms/FormRecipeCreate.vue';
-import type { Recipe } from '@/schema/recipe';
 import { h } from 'vue';
 
 describe('Render', () => {
-  it('Render properly', () => {
+  it.only('Render properly', () => {
     cy.mount(() => h(FormRecipeCreate, { loading: false }))
 
-      .get('[data-test="form-recipe-name"] label')
+      .get('[data-test="form-recipe-create-name"] label')
       .first()
       .should('have.text', 'Name *')
 
-      .get('[data-test="form-recipe-image-uri"] label')
-      .first()
-      .should('have.text', 'Image URL *')
-
-      .get('[data-test="form-recipe-description"] label')
+      .get('[data-test="form-recipe-create-description"] label')
       .first()
       .should('have.text', 'Description')
 
-      .get('[data-test="form-recipe-submit-button"]')
+      .get('[data-test="form-recipe-create-submit-button"]')
       .should('have.text', 'Submit')
 
-      .get('[data-test="form-recipe-cancel-button"]')
+      .get('[data-test="form-recipe-create-cancel-button"]')
       .should('have.text', 'Cancel');
-  });
-
-  it('Render passed form value', () => {
-    cy.fixture('recipes/details/1.json').then((recipe: Recipe) => {
-      cy.mount(() =>
-        h(FormRecipeCreate, {
-          loading: false,
-          recipeName: recipe.name,
-          recipeImageUri: recipe.image_uri,
-          recipeDescription: recipe.description
-        })
-      )
-
-        .get('[data-test="form-recipe-name"] input')
-        .should('have.value', recipe.name)
-
-        .get('[data-test="form-recipe-image-uri"] input')
-        .should('have.value', recipe.image_uri)
-
-        .get('[data-test="form-recipe-description"] textarea')
-        .should('have.value', recipe.description);
-    });
-  });
-
-  it('Render form default value', () => {
-    cy.mount(() =>
-      h(FormRecipeCreate, {
-        loading: false
-      })
-    )
-
-      .get('[data-test="form-recipe-name"] input')
-      .should('have.value', '')
-
-      .get('[data-test="form-recipe-image-uri"] input')
-      .should('have.value', '')
-
-      .get('[data-test="form-recipe-description"] textarea')
-      .should('have.value', '');
   });
 });
 

@@ -9,7 +9,7 @@
           label="Name *"
           required
           :rules="[required('Name')]"
-          data-test="form-recipe-name"
+          data-test="form-recipe-create-name"
         />
 
         <VTextarea
@@ -20,7 +20,7 @@
           label="Description"
           hint="Please provide the best description to describe your recipe"
           density="compact"
-          data-test="form-recipe-description"
+          data-test="form-recipe-create-description"
         />
       </VCol>
 
@@ -28,6 +28,7 @@
         <FormImageInput
           v-model="image"
           hint="Please provide the best image to describe your recipe"
+          data-test="form-recipe-create-form-image-input"
         />
       </VCol>
     </VRow>
@@ -42,7 +43,7 @@
           elevation="5"
           class="text-h5 text-center"
           size="x-large"
-          data-test="form-recipe-submit-button"
+          data-test="form-recipe-create-submit-button"
           text="Submit"
         />
       </VCol>
@@ -54,7 +55,7 @@
           elevation="5"
           class="text-h5 text-center"
           size="x-large"
-          data-test="form-recipe-cancel-button"
+          data-test="form-recipe-create-cancel-button"
           text="Cancel"
           @click="$emit('cancel')"
         />
