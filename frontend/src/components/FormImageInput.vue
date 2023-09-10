@@ -61,7 +61,7 @@ const image = computed({
 
 const imageUri = ref('');
 const imageFiles = ref<File[]>([]);
-const { imageSrc, onError, getImage } = useImage(imageUri, imageFiles, props.image);
+const { imageSrc, onError, getImage } = useImage(props.image, imageUri, imageFiles);
 
 watch(imageSrc, () => {
   image.value = getImage.value;

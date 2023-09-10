@@ -1,4 +1,4 @@
-import { defaultImage, urlToDev } from '@/env';
+import { defaultImage, urlFromDev, urlToDev } from '@/env';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { computed, ref, watch, type Ref } from 'vue';
@@ -59,20 +59,22 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
   return { hasError };
 }
 
-export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImage?: string | null) {
-  const image = urlToDev(initImage);
+export function useImage(rawImage?: string | null, fromSrc?: Ref<string>, fromFiles?: Ref<File[]>) {
+  const initImage = urlToDev(rawImage) ?? defaultImage;
 
-  const imageSrc = ref(image ?? defaultImage);
+  const imageSrc = ref(initImage);
 
-  watch(fromSrc, () => {
-    imageSrc.value = fromSrc.value || image || defaultImage;
-  });
+  if (fromSrc) {
+    watch(fromSrc, () => {
+      imageSrc.value = fromSrc.value || initImage;
+    });
+  }
 
   if (fromFiles) {
     const reader = new FileReader();
     reader.onload = function () {
       if (reader.result) {
-        imageSrc.value = reader.result.toString() || image || defaultImage;
+        imageSrc.value = reader.result.toString() || initImage;
       }
     };
 
@@ -80,15 +82,17 @@ export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImag
       if (fromFiles.value && fromFiles.value.length) {
         reader.readAsDataURL(fromFiles.value[0]);
       } else {
-        imageSrc.value = image || defaultImage;
+        imageSrc.value = initImage;
       }
     });
   }
 
   function onError() {
-    imageSrc.value = image || defaultImage;
+    imageSrc.value = initImage;
   }
 
-  const getImage = computed(() => (imageSrc.value === defaultImage ? null : imageSrc.value));
-  return { imageSrc, onError, getImage };
+  const realImage = computed(() =>
+    urlFromDev(imageSrc.value === defaultImage ? null : imageSrc.value)
+  );
+  return { imageSrc, onError, getImage: realImage };
 }
