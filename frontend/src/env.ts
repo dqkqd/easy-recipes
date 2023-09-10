@@ -9,22 +9,20 @@ if (env.MODE == 'development') {
   _fileServerURL = `http://${env.VITE_FILE_SERVER_HOST}`;
 }
 
-export function convertFileServerDev(url: string | null | undefined) {
-  if (!url || env.MODE != 'development') {
+const fileServerDevURL = `http://${env.VITE_FILE_SERVER_HOST_DEV}`;
+
+export function urlToDev(url: string | null | undefined) {
+  if (!url || env.MODE !== 'development') {
     return url;
   }
+  return url.replace(_fileServerURL, fileServerDevURL);
+}
 
-  const fileServerDevURL = `http://${env.VITE_FILE_SERVER_HOST_DEV}`;
-
-  if (url.startsWith(_fileServerURL)) {
-    return url.replace(_fileServerURL, fileServerDevURL);
+export function urlFromDev(url: string | null | undefined) {
+  if (!url || env.MODE !== 'development') {
+    return url;
   }
-
-  if (url.startsWith(fileServerDevURL)) {
-    return url.replace(fileServerDevURL, _fileServerURL);
-  }
-
-  return url;
+  return url.replace(fileServerDevURL, _fileServerURL);
 }
 
 export const apiUrl = _apiUrl;

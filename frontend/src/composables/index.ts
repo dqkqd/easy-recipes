@@ -1,4 +1,4 @@
-import { convertFileServerDev, defaultImage } from '@/env';
+import { defaultImage, urlToDev } from '@/env';
 import type { AxiosRequestConfig, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { computed, ref, watch, type Ref } from 'vue';
@@ -32,6 +32,7 @@ export function useAxios<T>(
       result.value = response;
       return response;
     } catch (e) {
+      console.log(e);
       error.value = e as Error;
       result.value = undefined;
     } finally {
@@ -59,7 +60,7 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
 }
 
 export function useImage(fromSrc: Ref<string>, fromFiles?: Ref<File[]>, initImage?: string | null) {
-  const image = convertFileServerDev(initImage);
+  const image = urlToDev(initImage);
 
   const imageSrc = ref(image ?? defaultImage);
 

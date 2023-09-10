@@ -88,7 +88,7 @@
 import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
 import { useAxios } from '@/composables';
-import { apiUrl, convertFileServerDev } from '@/env';
+import { apiUrl, urlToDev } from '@/env';
 import {
   RecipeDeletedResponseSchema,
   type Recipe,
@@ -101,7 +101,7 @@ const props = defineProps<{ recipe: Recipe }>();
 
 const updateDialog = ref(false);
 const image_uri = computed(() => {
-  return convertFileServerDev(props.recipe.image_uri);
+  return urlToDev(props.recipe.image_uri);
 });
 
 const router = useRouter();
