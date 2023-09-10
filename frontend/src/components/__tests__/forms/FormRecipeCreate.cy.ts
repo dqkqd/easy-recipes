@@ -1,9 +1,9 @@
-import FormRecipeCreate from '@/components/forms/FormRecipeCreate.vue';
+import FormRecipe from '@/components/forms/FormRecipe.vue';
 import { h } from 'vue';
 
 describe('Render', () => {
   it('Render properly', () => {
-    cy.mount(() => h(FormRecipeCreate))
+    cy.mount(() => h(FormRecipe))
 
       .get('[data-test=form-recipe-create-name] label')
       .first()
@@ -23,7 +23,7 @@ describe('Render', () => {
   it('Render passed recipe', () => {
     cy.fixture('recipes/details/1.json').then((recipe) => {
       cy.mount(() =>
-        h(FormRecipeCreate, {
+        h(FormRecipe, {
           recipeName: recipe.name,
           recipeImageUri: recipe.image_uri,
           recipeDescription: recipe.description
@@ -49,7 +49,7 @@ describe('Submit', () => {
         .as('validRecipe')
         .then((recipe) => {
           cy.mount(() =>
-            h(FormRecipeCreate, {
+            h(FormRecipe, {
               onSubmit: cy.spy().as('onSubmit')
             })
           )
@@ -96,7 +96,7 @@ describe('Submit', () => {
     describe('Invalid form', () => {
       beforeEach(() => {
         cy.mount(() =>
-          h(FormRecipeCreate, {
+          h(FormRecipe, {
             onSubmit: cy.spy().as('onSubmit')
           })
         )
@@ -129,7 +129,7 @@ describe('Submit', () => {
 describe('Cancel', () => {
   it('Cancel will emit cancel even', () => {
     cy.mount(() =>
-      h(FormRecipeCreate, {
+      h(FormRecipe, {
         onCancel: cy.spy().as('onCancel')
       })
     )
@@ -160,11 +160,11 @@ describe('Loading', () => {
     });
 
     it('default', () => {
-      cy.mount(() => h(FormRecipeCreate));
+      cy.mount(() => h(FormRecipe));
     });
 
     it('Loading=false', () => {
-      cy.mount(() => h(FormRecipeCreate, { loading: false }));
+      cy.mount(() => h(FormRecipe, { loading: false }));
     });
   });
 
@@ -191,7 +191,7 @@ describe('Loading', () => {
     });
 
     it('Loading=true', () => {
-      cy.mount(() => h(FormRecipeCreate, { loading: true }));
+      cy.mount(() => h(FormRecipe, { loading: true }));
     });
   });
 });

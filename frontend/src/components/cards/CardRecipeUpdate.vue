@@ -13,7 +13,7 @@
             >Update your recipe</VCardTitle
           >
 
-          <FormRecipeCreate
+          <FormRecipe
             :loading="isLoading"
             :recipe-name="recipe.name"
             :recipe-image-uri="recipe.image_uri"
@@ -46,7 +46,7 @@ import {
   type RecipeUpdatedResponse
 } from '@/schema/recipe';
 import { ref } from 'vue';
-import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
+import FormRecipe from '../forms/FormRecipe.vue';
 
 const props = defineProps<{
   recipe: Recipe;

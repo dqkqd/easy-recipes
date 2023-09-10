@@ -7,7 +7,7 @@
         >Add new recipe</VCardTitle
       >
 
-      <FormRecipeCreate
+      <FormRecipe
         :loading="isLoading"
         @submit="createRecipe"
         @cancel="$emit('cancel')"
@@ -42,7 +42,7 @@ import {
 } from '@/schema/recipe';
 import { replaceBase64Prefix } from '@/utils';
 import { useRouter } from 'vue-router';
-import FormRecipeCreate from '../forms/FormRecipeCreate.vue';
+import FormRecipe from '../forms/FormRecipe.vue';
 
 const { result, isLoading, error, execute } = useAxios<RecipeCreatedResponse>(
   (r) => {
