@@ -28,7 +28,7 @@
 
 <script setup lang="ts">
 import { useImage } from '@/composables';
-import { defaultImage } from '@/env';
+import { convertFileServerDev, defaultImage } from '@/env';
 import { supportedImages } from '@/utils';
 import { validateURL } from '@/validators';
 import { computed, onMounted, ref, watch } from 'vue';
@@ -73,7 +73,7 @@ watch(imageSrc, () => {
 });
 
 onMounted(() => {
-  imageSrc.value = props.image ?? defaultImage;
+  imageSrc.value = convertFileServerDev(props.image) ?? defaultImage;
 });
 </script>
 
