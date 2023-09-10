@@ -28,7 +28,7 @@
         <FormImageInput
           v-model="image"
           :loading="loading"
-          :image="recipeImageUri"
+          :image="recipe?.image_uri"
           hint="Please provide the best image to describe your recipe"
         />
       </VCol>
@@ -67,6 +67,7 @@
 
 <script setup lang="ts">
 import FormImageInput from '@/components/forms/FormImageInput.vue';
+import type { Recipe } from '@/schema/recipe';
 import { required } from '@/validators';
 import { computed, ref } from 'vue';
 import type { SubmitEventPromise } from 'vuetify';
@@ -74,15 +75,10 @@ import type { SubmitEventPromise } from 'vuetify';
 const props = withDefaults(
   defineProps<{
     loading?: boolean;
-    recipeName?: string;
-    recipeImageUri?: string | null;
-    recipeDescription?: string;
+    recipe?: Recipe;
   }>(),
   {
-    loading: false,
-    recipeName: '',
-    recipeImageUri: null,
-    recipeDescription: ''
+    loading: false
   }
 );
 
@@ -90,8 +86,8 @@ const emit = defineEmits<{
   (e: 'submit', name: string, image: string | null, description: string): void;
 }>();
 
-const name = ref(props.recipeName);
-const description = ref(props.recipeDescription);
+const name = ref(props.recipe?.name ?? '');
+const description = ref(props.recipe?.description ?? '');
 const image = ref(null);
 
 const validating = ref(false);

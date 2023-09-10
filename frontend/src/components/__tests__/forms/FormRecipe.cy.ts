@@ -22,14 +22,7 @@ describe('Render', () => {
 
   it('Render passed recipe', () => {
     cy.fixture('recipes/details/1.json').then((recipe) => {
-      cy.mount(() =>
-        h(FormRecipe, {
-          recipeName: recipe.name,
-          recipeImageUri: recipe.image_uri,
-          recipeDescription: recipe.description
-        })
-      )
-
+      cy.mount(() => h(FormRecipe, { recipe: recipe }))
         .get('[data-test=form-recipe-name] input')
         .should('have.value', recipe.name)
 
