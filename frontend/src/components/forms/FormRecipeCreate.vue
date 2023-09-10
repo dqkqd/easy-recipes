@@ -62,78 +62,43 @@
       </VCol>
     </VRow>
   </VForm>
-
-  <VDialog
-    :width="500"
-    v-model="hasError"
-    transition="fade-transition"
-    data-test="form-recipe-create-error-dialog"
-  >
-    <VAlert color="red-darken-2" prominent :rounded="0" type="error" title="Error adding recipe" />
-  </VDialog>
 </template>
 
 <script setup lang="ts">
 import FormImageInput from '@/components/forms/FormImageInput.vue';
-import { useAxios, useErrorWithTimeout } from '@/composables';
-import { apiUrl } from '@/env';
-import {
-  RecipeCreateSchema,
-  RecipeCreatedResponseSchema,
-  type RecipeCreatedResponse
-} from '@/schema/recipe';
-import { replaceBase64Prefix } from '@/utils';
+import { type Recipe } from '@/schema/recipe';
 import { required } from '@/validators';
 import { computed, ref } from 'vue';
-import { useRouter } from 'vue-router';
 import type { SubmitEventPromise } from 'vuetify';
+
+const props = withDefaults(
+  defineProps<{
+    loading?: boolean;
+    recipe?: Recipe;
+  }>(),
+  {
+    loading: false
+  }
+);
+
+const emit = defineEmits<{
+  (e: 'submit', name: string, image: string | null, description: string): void;
+}>();
 
 const name = ref('');
 const image = ref(null);
 const description = ref('');
 
-const { result, isLoading, error, execute } = useAxios<RecipeCreatedResponse>(
-  (r) => {
-    return RecipeCreatedResponseSchema.parse(r.data);
-  },
-  (data) => {
-    const parsedData = RecipeCreateSchema.parse(data);
-    parsedData.image_uri = replaceBase64Prefix(parsedData.image_uri);
-    return parsedData;
-  }
-);
-
-const { hasError } = useErrorWithTimeout(error, 2000);
-
 const validating = ref(false);
-const loading = computed(() => isLoading.value || validating.value);
-
-const router = useRouter();
+const loading = computed(() => props.loading || validating.value);
 
 async function submit(event: SubmitEventPromise) {
   validating.value = true;
   const formValidationResult = await event;
   validating.value = false;
 
-  if (!formValidationResult.valid) {
-    return;
-  }
-
-  await execute({
-    method: 'post',
-    url: `${apiUrl}/recipes/`,
-    data: {
-      name: name.value,
-      image_uri: image.value,
-      description: description.value
-    },
-    headers: {
-      authorization: 'bearer create:recipe'
-    }
-  });
-
-  if (!error.value && result.value) {
-    router.push({ name: 'RecipeInfo', params: { id: result.value.id } });
+  if (formValidationResult.valid) {
+    emit('submit', name.value, image.value, description.value);
   }
 }
 </script>
