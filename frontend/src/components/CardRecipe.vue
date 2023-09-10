@@ -8,7 +8,7 @@
       :class="{ 'recipe-on-hover': hover && hover.isHovering }"
     >
       <VAvatar class="ma-3" :size="256" :rounded="0">
-        <VImg :src="urlToDev(recipe.image_uri)" data-test="card-recipe-image"></VImg>
+        <VImg :src="imageSrc" @error="onError" data-test="card-recipe-image"></VImg>
       </VAvatar>
       <VCardTitle class="text-h5 text-center font-weight-bold" data-test="card-recipe-name">
         {{ recipe.name }}
@@ -18,15 +18,17 @@
 </template>
 
 <script setup lang="ts">
-import { urlToDev } from '@/env';
+import { useImage } from '@/composables';
 import type { Recipe } from '@/schema/recipe';
 import { useRouter } from 'vue-router';
 
 const router = useRouter();
 
-defineProps<{
+const props = defineProps<{
   recipe: Recipe;
 }>();
+
+const { imageSrc, onError } = useImage(props.recipe.image_uri);
 </script>
 
 <style scoped>

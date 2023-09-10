@@ -61,14 +61,14 @@ const image = computed({
 
 const imageUri = ref('');
 const imageFiles = ref<File[]>([]);
-const { imageSrc, onError, getImage } = useImage(props.image, imageUri, imageFiles);
+const { imageSrc, onError, realImage } = useImage(props.image, imageUri, imageFiles);
 
 watch(imageSrc, () => {
-  image.value = getImage.value;
+  image.value = realImage.value;
 });
 
 onMounted(() => {
-  image.value = getImage.value;
+  image.value = realImage.value;
 });
 </script>
 

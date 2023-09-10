@@ -11,14 +11,14 @@ if (env.MODE == 'development') {
 
 const fileServerDevURL = `http://${env.VITE_FILE_SERVER_HOST_DEV}`;
 
-export function urlToDev(url: string | null | undefined) {
+export function urlToDev(url: string | null) {
   if (!url || env.MODE !== 'development') {
     return url;
   }
   return url.replace(_fileServerURL, fileServerDevURL);
 }
 
-export function urlFromDev(url: string | null | undefined) {
+export function urlFromDev(url: string | null) {
   if (!url || env.MODE !== 'development') {
     return url;
   }

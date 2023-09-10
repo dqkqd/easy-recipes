@@ -60,7 +60,7 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
 }
 
 export function useImage(rawImage?: string | null, fromSrc?: Ref<string>, fromFiles?: Ref<File[]>) {
-  const initImage = urlToDev(rawImage) ?? defaultImage;
+  const initImage = rawImage ? urlToDev(rawImage) ?? defaultImage : defaultImage;
 
   const imageSrc = ref(initImage);
 
@@ -94,5 +94,5 @@ export function useImage(rawImage?: string | null, fromSrc?: Ref<string>, fromFi
   const realImage = computed(() =>
     urlFromDev(imageSrc.value === defaultImage ? null : imageSrc.value)
   );
-  return { imageSrc, onError, getImage: realImage };
+  return { imageSrc, onError, realImage };
 }

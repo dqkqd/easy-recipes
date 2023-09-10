@@ -23,7 +23,8 @@
         <VImg
           :height="500"
           :max-width="500"
-          :src="image_uri"
+          :src="imageSrc"
+          @error="onError"
           class="align-end"
           data-test="recipe-details-image"
           cover
@@ -87,22 +88,21 @@
 <script setup lang="ts">
 import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
 import DeleteButton from '@/components/DeleteButton.vue';
-import { useAxios } from '@/composables';
-import { apiUrl, urlToDev } from '@/env';
+import { useAxios, useImage } from '@/composables';
+import { apiUrl } from '@/env';
 import {
   RecipeDeletedResponseSchema,
   type Recipe,
   type RecipeDeletedResponse
 } from '@/schema/recipe';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 const props = defineProps<{ recipe: Recipe }>();
 
 const updateDialog = ref(false);
-const image_uri = computed(() => {
-  return urlToDev(props.recipe.image_uri);
-});
+
+const { imageSrc, onError } = useImage(props.recipe.image_uri);
 
 const router = useRouter();
 
