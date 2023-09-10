@@ -26,7 +26,7 @@ it('Render properly', function () {
     .should('be.visible')
 
     // TODO(khanhdq): authorization
-    .get('[data-test=recipe-details-edit-button]')
+    .get('[data-test=recipe-details-update-button]')
     .should('be.visible')
 
     .get('[data-test=recipe-details-delete-button]')
