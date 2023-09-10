@@ -35,10 +35,7 @@ export const RecipeCreatedResponseSchema = z.object({
   id: z.number()
 });
 
-export const RecipeUpdatedResponseSchema = z.object({
-  id: z.number()
-});
-
+export const RecipeUpdatedResponseSchema = RecipeSchema.extend({});
 export const RecipeDeletedResponseSchema = z.object({
   id: z.number()
 });
@@ -50,5 +47,5 @@ export type RecipeUpdate = z.infer<typeof RecipeUpdateSchema>;
 
 export type RecipesResponse = z.infer<typeof RecipesResponseSchema>;
 export type RecipeCreatedResponse = z.infer<typeof RecipeCreatedResponseSchema>;
-export type RecipeUpdatedResponse = z.infer<typeof RecipeCreatedResponseSchema>;
+export type RecipeUpdatedResponse = z.infer<typeof RecipeUpdatedResponseSchema>;
 export type RecipeDeletedResponse = z.infer<typeof RecipeDeletedResponseSchema>;
