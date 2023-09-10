@@ -35,9 +35,9 @@
 </template>
 
 <script setup lang="ts">
-import CardRecipe from '@/components/cards/CardRecipe.vue';
-import CardRecipeCreate from '@/components/cards/CardRecipeCreate.vue';
-import MainAppBar from '@/components/navs/MainAppBar.vue';
+import CardRecipe from '@/components/CardRecipe.vue';
+import CardRecipeCreate from '@/components/CardRecipeCreate.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipesResponseSchema, type RecipesResponse } from '@/schema/recipe';

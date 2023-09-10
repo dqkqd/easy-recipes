@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-import FormImageInput from '@/components/forms/FormImageInput.vue';
+import FormImageInput from '@/components/FormImageInput.vue';
 import type { Recipe } from '@/schema/recipe';
 import { required } from '@/validators';
 import { computed, ref } from 'vue';

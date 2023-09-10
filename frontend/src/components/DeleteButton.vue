@@ -17,7 +17,7 @@
 </template>
 
 <script setup lang="ts">
-import CardWarning from '@/components/cards/CardWarning.vue';
+import CardWarning from '@/components/CardWarning.vue';
 import { ref } from 'vue';
 withDefaults(
   defineProps<{

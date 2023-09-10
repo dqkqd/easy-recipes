@@ -1,4 +1,4 @@
-import CardRecipeUpdate from '@/components/cards/CardRecipeUpdate.vue';
+import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
 import { apiUrl } from '@/env';
 import axios from 'axios';
 import { h } from 'vue';

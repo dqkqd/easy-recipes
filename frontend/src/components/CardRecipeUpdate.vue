@@ -27,6 +27,7 @@
 </template>
 
 <script setup lang="ts">
+import FormRecipe from '@/components/FormRecipe.vue';
 import { useAxios, useErrorWithTimeout } from '@/composables';
 import { apiUrl, convertFileServerDev } from '@/env';
 import {
@@ -36,7 +37,6 @@ import {
   type RecipeUpdatedResponse
 } from '@/schema/recipe';
 import { replaceBase64Prefix } from '@/utils';
-import FormRecipe from '../forms/FormRecipe.vue';
 
 const props = defineProps<{
   recipe: Recipe;

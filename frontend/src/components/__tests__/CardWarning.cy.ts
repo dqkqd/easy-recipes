@@ -1,4 +1,4 @@
-import CardWarning from '@/components/cards/CardWarning.vue';
+import CardWarning from '@/components/CardWarning.vue';
 import { h } from 'vue';
 
 it('Render properly', () => {

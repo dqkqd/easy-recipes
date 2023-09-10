@@ -1,4 +1,4 @@
-import CardRecipe from '@/components/cards/CardRecipe.vue';
+import CardRecipe from '@/components/CardRecipe.vue';
 import router from '@/router';
 import { RecipeSchema } from '@/schema/recipe';
 import { h } from 'vue';

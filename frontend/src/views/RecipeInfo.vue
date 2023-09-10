@@ -16,8 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import MainAppBar from '@/components/navs/MainAppBar.vue';
-import RecipeDetails from '@/components/recipes/RecipeDetails.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
+import RecipeDetails from '@/components/RecipeDetails.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipeSchema, type Recipe } from '@/schema/recipe';

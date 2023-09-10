@@ -1,4 +1,4 @@
-import CardRecipeCreate from '@/components/cards/CardRecipeCreate.vue';
+import CardRecipeCreate from '@/components/CardRecipeCreate.vue';
 import { apiUrl } from '@/env';
 import router from '@/router';
 import axios from 'axios';

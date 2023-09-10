@@ -1,4 +1,4 @@
-import FormImageInput from '@/components/forms/FormImageInput.vue';
+import FormImageInput from '@/components/FormImageInput.vue';
 import { defaultImage } from '@/env';
 import { h } from 'vue';
 

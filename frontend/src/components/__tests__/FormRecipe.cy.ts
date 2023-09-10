@@ -1,4 +1,4 @@
-import FormRecipe from '@/components/forms/FormRecipe.vue';
+import FormRecipe from '@/components/FormRecipe.vue';
 import { h } from 'vue';
 
 describe('Render', () => {

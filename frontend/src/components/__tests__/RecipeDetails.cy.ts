@@ -1,4 +1,4 @@
-import RecipeDetails from '@/components/recipes/RecipeDetails.vue';
+import RecipeDetails from '@/components/RecipeDetails.vue';
 import { apiUrl } from '@/env';
 import router from '@/router';
 import { RecipeSchema } from '@/schema/recipe';

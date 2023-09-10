@@ -33,6 +33,7 @@
 </template>
 
 <script setup lang="ts">
+import FormRecipe from '@/components/FormRecipe.vue';
 import { useAxios, useErrorWithTimeout } from '@/composables';
 import { apiUrl } from '@/env';
 import {
@@ -42,7 +43,6 @@ import {
 } from '@/schema/recipe';
 import { replaceBase64Prefix } from '@/utils';
 import { useRouter } from 'vue-router';
-import FormRecipe from '../forms/FormRecipe.vue';
 
 const { result, isLoading, error, execute } = useAxios<RecipeCreatedResponse>(
   (r) => {

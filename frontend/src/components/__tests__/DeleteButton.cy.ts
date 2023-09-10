@@ -1,4 +1,4 @@
-import DeleteButton from '@/components/buttons/DeleteButton.vue';
+import DeleteButton from '@/components/DeleteButton.vue';
 import { h } from 'vue';
 
 it('Render properly', () => {

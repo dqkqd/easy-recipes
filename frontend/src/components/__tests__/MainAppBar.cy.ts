@@ -1,4 +1,4 @@
-import MainAppBar from '@/components/navs/MainAppBar.vue';
+import MainAppBar from '@/components/MainAppBar.vue';
 import router from '@/router';
 import { h } from 'vue';
 

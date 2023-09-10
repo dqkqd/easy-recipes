@@ -85,6 +85,8 @@
 </template>
 
 <script setup lang="ts">
+import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
+import DeleteButton from '@/components/DeleteButton.vue';
 import { useAxios } from '@/composables';
 import { apiUrl, convertFileServerDev } from '@/env';
 import {
@@ -94,8 +96,6 @@ import {
 } from '@/schema/recipe';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import DeleteButton from '../buttons/DeleteButton.vue';
-import CardRecipeUpdate from '../cards/CardRecipeUpdate.vue';
 
 const props = defineProps<{ recipe: Recipe }>();
 
