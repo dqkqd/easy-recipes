@@ -1,8 +1,10 @@
 <template>
   <VDialog persistent width="auto" v-model="dialog">
     <VAlert prominent :rounded="0" justify="center" type="success" class="px-16 py-5 text-center">
-      <VAlertTitle v-if="title" class="text-h5">{{ title }}</VAlertTitle>
-      <div v-if="content">{{ content }}</div>
+      <VAlertTitle v-if="title" class="text-h5" data-test="dialog-success-title">{{
+        title
+      }}</VAlertTitle>
+      <div v-if="content" data-test="dialog-success-content">{{ content }}</div>
     </VAlert>
   </VDialog>
 </template>
