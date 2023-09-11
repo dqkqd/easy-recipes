@@ -1,8 +1,8 @@
+import CardRecipeDelete from '@/components/CardRecipeDelete.vue';
 import { apiUrl } from '@/env';
 import router from '@/router';
 import axios from 'axios';
 import { h } from 'vue';
-import CardRecipeDelete from '../CardRecipeDelete.vue';
 
 beforeEach(() => {
   cy.mount(() => h(CardRecipeDelete, { id: 1, onCancel: cy.spy().as('onCancel') }));

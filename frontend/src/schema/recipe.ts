@@ -1,5 +1,5 @@
+import { IngredientBaseSchema } from '@/schema/ingredient';
 import { z } from 'zod';
-import { IngredientBaseSchema } from './ingredient';
 
 export const RecipeBaseSchema = z.object({
   id: z.number(),
