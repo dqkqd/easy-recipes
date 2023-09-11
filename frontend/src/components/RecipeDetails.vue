@@ -17,11 +17,11 @@
       <VCol class="mx-3">
         <VSheet :height="460" :max-width="400">
           <VCard :elevation="0">
-            <VCardTitle class="text-h4 font-weight-black">
+            <VCardTitle class="text-h4 font-weight-black" data-test="recipe-details-name">
               {{ recipeDetails.name }}
             </VCardTitle>
             <VDivider />
-            <VCardText class="text-left text-body-1">
+            <VCardText class="text-left text-body-1" data-test="recipe-details-description">
               {{ recipeDetails.description }}
             </VCardText>
           </VCard>
