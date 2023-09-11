@@ -59,14 +59,18 @@ export function useErrorWithTimeout(error: Ref<Error | undefined>, timeout: numb
   return { hasError };
 }
 
-export function useImage(rawImage?: string | null, fromSrc?: Ref<string>, fromFiles?: Ref<File[]>) {
+export function useImage(
+  rawImage?: string | null,
+  fromSrc?: Ref<string | null>,
+  fromFiles?: Ref<File[]>
+) {
   const initImage = rawImage ? urlToDev(rawImage) ?? defaultImage : defaultImage;
 
   const imageSrc = ref(initImage);
 
   if (fromSrc) {
     watch(fromSrc, () => {
-      imageSrc.value = fromSrc.value || initImage;
+      imageSrc.value = urlToDev(fromSrc.value) || initImage;
     });
   }
 
