@@ -1,6 +1,6 @@
 <template>
-  <VDialog persistent width="auto" v-model="dialog" data-test="card-recipe-delete-loading-dialog">
-    <VProgressCircular color="red" :size="80" indeterminate />
+  <VDialog persistent width="auto" v-model="dialog">
+    <VProgressCircular color="blue" :size="80" indeterminate />
   </VDialog>
 </template>
 

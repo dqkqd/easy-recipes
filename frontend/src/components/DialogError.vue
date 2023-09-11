@@ -1,8 +1,8 @@
 <template>
-  <VDialog width="auto" v-model="dialog" data-test="card-recipe-delete-error-dialog">
+  <VDialog width="auto" v-model="dialog">
     <VAlert prominent :rounded="0" justify="center" type="error" class="px-16 py-5 text-center">
-      <VAlertTitle class="text-h5">Can not delete recipe</VAlertTitle>
-      <div>Please try again later</div>
+      <VAlertTitle v-if="title" class="text-h5">{{ title }}</VAlertTitle>
+      <div v-if="content">{{ content }}</div>
     </VAlert>
   </VDialog>
 </template>
@@ -12,6 +12,8 @@ import { computed } from 'vue';
 
 const props = defineProps<{
   modelValue: boolean;
+  title?: string;
+  content?: string;
 }>();
 
 const emit = defineEmits<{

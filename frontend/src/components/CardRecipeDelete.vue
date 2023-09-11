@@ -1,9 +1,19 @@
 <template>
-  <DialogLoading v-model="isLoading" />
+  <DialogLoading v-model="isLoading" data-test="card-recipe-delete-loading-dialog" />
 
-  <DialogError v-model="hasError" />
+  <DialogError
+    v-model="hasError"
+    title="Can not delete recipe"
+    content="Please try again later..."
+    data-test="card-recipe-delete-error-dialog"
+  />
 
-  <DialogSuccess v-model="deleted" />
+  <DialogSuccess
+    v-model="deleted"
+    title="Recipe deleted"
+    content="You will be redirected shortly..."
+    data-test="card-recipe-delete-deleted-dialog"
+  />
 
   <CardWarning
     title="Are you sure you want to delete your recipe?"
