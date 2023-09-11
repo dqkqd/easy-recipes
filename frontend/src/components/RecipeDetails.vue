@@ -1,6 +1,6 @@
 <template>
   <VSheet border>
-    <VRow class="my-6 mx-3" justify="center" no-gutters>
+    <VRow class="my-6 mx-3" no-gutters>
       <VCol>
         <VImg
           :height="500"
@@ -15,19 +15,16 @@
       </VCol>
 
       <VCol class="mx-3">
-        <VSheet :height="460">
-          <div
-            class="font-weight-bold text-h4 text-wrap text-center"
-            data-test="recipe-details-name"
-          >
-            {{ recipe.name }}
-          </div>
-
-          <VDivider />
-
-          <div class="text-h6 ma-3" data-test="recipe-details-description">
-            {{ recipe.description }}
-          </div>
+        <VSheet :height="460" :max-width="400">
+          <VCard :elevation="0">
+            <VCardTitle class="text-h4 font-weight-black">
+              {{ recipeDetails.name }}
+            </VCardTitle>
+            <VDivider />
+            <VCardText class="text-left text-body-1">
+              {{ recipeDetails.description }}
+            </VCardText>
+          </VCard>
         </VSheet>
 
         <VRow align="center">
@@ -45,22 +42,26 @@
 
           <VCol cols="2">
             <VRow justify="center">
-              <VDialog v-model="updateDialog" width="auto">
+              <VDialog v-model="updateDialog" width="auto" data-test="recipe-details-update-dialog">
                 <template v-slot:activator="{ props }">
                   <VBtn icon="mdi-pencil" v-bind="props" data-test="recipe-details-update-button" />
                 </template>
-                <CardRecipeUpdate :recipe="recipe" @cancel="updateDialog = false" />
+                <CardRecipeUpdate
+                  @updated="updated"
+                  :recipe="recipeDetails"
+                  @cancel="closeUpdateDialog"
+                />
               </VDialog>
             </VRow>
           </VCol>
 
           <VCol cols="2">
             <VRow justify="center">
-              <VDialog v-model="deleteDialog" width="auto">
+              <VDialog v-model="deleteDialog" width="auto" data-test="recipe-details-delete-dialog">
                 <template v-slot:activator="{ props }">
                   <VBtn icon="mdi-delete" v-bind="props" data-test="recipe-details-delete-button" />
                 </template>
-                <CardRecipeDelete :id="recipe.id" @cancel="deleteDialog = false" />
+                <CardRecipeDelete :id="recipe.id" @cancel="closeDeleteDialog" />
               </VDialog>
             </VRow>
           </VCol>
@@ -79,10 +80,28 @@ import { ref } from 'vue';
 
 const props = defineProps<{ recipe: Recipe }>();
 
-const updateDialog = ref(false);
-const deleteDialog = ref(false);
+const recipeDetails = ref({ ...props.recipe });
+const recipeImage = ref(recipeDetails.value.image_uri);
 
-const { imageSrc, onError } = useImage(props.recipe.image_uri);
+const { imageSrc, onError } = useImage(recipeDetails.value.image_uri, recipeImage);
+
+const updateDialog = ref(false);
+function closeUpdateDialog() {
+  updateDialog.value = false;
+}
+
+const deleteDialog = ref(false);
+function closeDeleteDialog() {
+  deleteDialog.value = false;
+}
+
+async function updated(name: string, image: string | null, description: string) {
+  recipeDetails.value.name = name;
+  recipeDetails.value.description = description;
+  recipeDetails.value.image_uri = image;
+  recipeImage.value = image;
+  closeUpdateDialog();
+}
 </script>
 
 <style scoped></style>
