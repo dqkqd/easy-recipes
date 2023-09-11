@@ -84,6 +84,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'submit', name: string, image: string | null, description: string): void;
+  (e: 'cancel'): void;
 }>();
 
 const name = ref(props.recipe?.name ?? '');
