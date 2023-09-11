@@ -5,7 +5,7 @@ import { h } from 'vue';
 import CardRecipeDelete from '../CardRecipeDelete.vue';
 
 beforeEach(() => {
-  cy.mount(() => h(CardRecipeDelete, { id: 1 }));
+  cy.mount(() => h(CardRecipeDelete, { id: 1, onCancel: cy.spy().as('onCancel') }));
 });
 
 describe('Render', () => {
@@ -26,8 +26,7 @@ describe('Render', () => {
 
 describe('Cancel', () => {
   it('Cancel should emit cancel event', () => {
-    cy.mount(() => h(CardRecipeDelete, { id: 1, onCancel: cy.spy().as('onCancel') }))
-      .get('[data-test=card-warning-cancel-button]')
+    cy.get('[data-test=card-warning-cancel-button]')
       .click()
       .get('@onCancel')
       .should('have.been.calledOnce');
@@ -84,7 +83,10 @@ describe('Delete', () => {
       .should('contain.text', 'Please try again later')
 
       .get('@redirectedToRecipeVIew')
-      .should('not.have.been.called');
+      .should('not.have.been.called')
+
+      .get('@onCancel')
+      .should('have.been.calledOnce');
   });
 
   it('Loading', () => {

@@ -47,6 +47,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   (e: 'cancel'): void;
 }>();
+
 const router = useRouter();
 
 const deleted = ref(false);
@@ -57,8 +58,6 @@ const { result, error, isLoading, execute } = useAxios<RecipeDeletedResponse>((r
 });
 
 async function deleteRecipe() {
-  emit('cancel');
-
   await execute({
     method: 'delete',
     url: `${apiUrl}/recipes/${props.id}`,
@@ -74,6 +73,9 @@ async function deleteRecipe() {
     }, 1500);
   } else {
     hasError.value = true;
+    setTimeout(() => {
+      emit('cancel');
+    }, 2000);
   }
 }
 </script>
