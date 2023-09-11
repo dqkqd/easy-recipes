@@ -1,26 +1,9 @@
 <template>
-  <VDialog
-    persistent
-    width="auto"
-    v-model="isLoading"
-    data-test="card-recipe-delete-loading-dialog"
-  >
-    <VProgressCircular color="red" :size="80" indeterminate />
-  </VDialog>
+  <DialogLoading v-model="isLoading" />
 
-  <VDialog width="auto" v-model="hasError" data-test="card-recipe-delete-error-dialog">
-    <VAlert prominent :rounded="0" justify="center" type="error" class="px-16 py-5 text-center">
-      <VAlertTitle class="text-h5">Can not delete recipe</VAlertTitle>
-      <div>Please try again later</div>
-    </VAlert>
-  </VDialog>
+  <DialogError v-model="hasError" />
 
-  <VDialog persistent width="auto" v-model="deleted" data-test="card-recipe-delete-deleted-dialog">
-    <VAlert prominent :rounded="0" justify="center" type="success" class="px-16 py-5 text-center">
-      <VAlertTitle class="text-h5">Recipe deleted</VAlertTitle>
-      <div>You will be redirected shortly...</div>
-    </VAlert>
-  </VDialog>
+  <DialogSuccess v-model="deleted" />
 
   <CardWarning
     title="Are you sure you want to delete your recipe?"
@@ -33,12 +16,15 @@
 </template>
 
 <script setup lang="ts">
+import CardWarning from '@/components/CardWarning.vue';
+import DialogError from '@/components/DialogError.vue';
+import DialogLoading from '@/components/DialogLoading.vue';
+import DialogSuccess from '@/components/DialogSuccess.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipeDeletedResponseSchema, type RecipeDeletedResponse } from '@/schema/recipe';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
-import CardWarning from './CardWarning.vue';
 
 const props = defineProps<{
   id: number;
