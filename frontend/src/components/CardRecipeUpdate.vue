@@ -1,4 +1,11 @@
 <template>
+  <DialogError
+    v-model="hasError"
+    title="Error updating recipe"
+    content="Please try again later..."
+    data-test="card-recipe-update-error-dialog"
+  />
+
   <VSheet :width="800">
     <VCard class="px-5 pb-8">
       <VCardTitle
@@ -14,19 +21,12 @@
         @cancel="$emit('cancel')"
         data-test="card-recipe-update-form-recipe"
       />
-
-      <VDialog
-        v-model="hasError"
-        transition="fade-transition"
-        data-test="card-recipe-update-error-dialog"
-      >
-        <VAlert prominent :rounded="0" type="error" title="Error updating recipe" />
-      </VDialog>
     </VCard>
   </VSheet>
 </template>
 
 <script setup lang="ts">
+import DialogError from '@/components/DialogError.vue';
 import FormRecipe from '@/components/FormRecipe.vue';
 import { useAxios, useErrorWithTimeout } from '@/composables';
 import { apiUrl } from '@/env';
