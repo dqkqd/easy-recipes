@@ -52,6 +52,12 @@
                   @cancel="closeUpdateDialog"
                 />
               </VDialog>
+
+              <DialogSuccess
+                v-model="recipeUpdated"
+                title="Recipe updated"
+                data-test="card-recipe-update-updated-dialog"
+              />
             </VRow>
           </VCol>
 
@@ -74,11 +80,14 @@
 <script setup lang="ts">
 import CardRecipeDelete from '@/components/CardRecipeDelete.vue';
 import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
+import DialogSuccess from '@/components/DialogSuccess.vue';
 import { useImage } from '@/composables';
 import { type Recipe } from '@/schema/recipe';
 import { ref } from 'vue';
 
 const props = defineProps<{ recipe: Recipe }>();
+
+const recipeUpdated = ref(false);
 
 const recipeDetails = ref({ ...props.recipe });
 const recipeImage = ref(recipeDetails.value.image_uri);
@@ -101,6 +110,13 @@ async function updated(name: string, image: string | null, description: string) 
   recipeDetails.value.image_uri = image;
   recipeImage.value = image;
   closeUpdateDialog();
+
+  setTimeout(() => {
+    recipeUpdated.value = true;
+    setTimeout(() => {
+      recipeUpdated.value = false;
+    }, 500);
+  }, 50);
 }
 </script>
 

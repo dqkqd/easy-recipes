@@ -40,7 +40,7 @@ describe('Update recipe', () => {
       .get('[data-test=recipe-details-update-dialog]')
       .should('be.visible');
   });
-  it.only('Updating recipe close update dialog', function () {
+  it('Updating recipe close update dialog and show success dialog', function () {
     cy.fixture('recipes/details/2.json').then((secondRecipe) => {
       const recipe = { ...this.recipe };
       recipe.name = secondRecipe.name;
@@ -63,6 +63,12 @@ describe('Update recipe', () => {
         .click()
 
         .get('[data-test=recipe-details-update-dialog')
+        .should('not.exist')
+
+        .get('[data-test=card-recipe-update-updated-dialog]')
+        .should('be.visible')
+
+        .get('[data-test=card-recipe-update-updated-dialog]')
         .should('not.exist');
     });
   });
