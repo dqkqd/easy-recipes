@@ -1,6 +1,6 @@
 <template>
   <VDialog persistent width="auto" v-model="dialog">
-    <VProgressCircular color="blue" :size="80" indeterminate />
+    <VProgressCircular color="black" :size="80" indeterminate />
   </VDialog>
 </template>
 

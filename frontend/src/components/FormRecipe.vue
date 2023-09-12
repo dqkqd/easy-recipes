@@ -40,7 +40,7 @@
           type="submit"
           :loading="loading"
           block
-          color="#04a5e5"
+          color="black"
           elevation="5"
           class="text-h5 text-center"
           size="x-large"
@@ -52,7 +52,7 @@
         <VBtn
           :disabled="loading"
           block
-          color="#9ca0b0"
+          color="white"
           elevation="5"
           class="text-h5 text-center"
           size="x-large"
