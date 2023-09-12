@@ -7,7 +7,7 @@
       v-bind="hover && hover.props"
       :class="{ 'recipe-on-hover': hover && hover.isHovering }"
     >
-      <VAvatar class="ma-3" :size="256" :rounded="0">
+      <VAvatar class="ma-2" :size="200" :rounded="0">
         <VImg :src="imageSrc" @error="onError" data-test="card-recipe-image"></VImg>
       </VAvatar>
       <VCardTitle class="text-h5 text-center font-weight-bold" data-test="card-recipe-name">
