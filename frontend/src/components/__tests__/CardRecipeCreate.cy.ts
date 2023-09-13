@@ -30,9 +30,9 @@ describe('Submit', () => {
         .as('validRecipe')
         .then((recipe) => {
           cy.mount(() => h(CardRecipeCreate))
-            .get('[data-test=form-recipe-name]')
+            .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-name]')
             .type(recipe.name)
-            .get('[data-test=form-recipe-description]')
+            .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-description]')
             .type(recipe.description);
         });
     });
@@ -56,7 +56,7 @@ describe('Submit', () => {
         })
         .as('requestToBackEnd');
 
-      cy.get('[data-test=form-recipe-submit-button]')
+      cy.get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]')
         .click()
         .get('@requestToBackEnd')
         .should('have.been.called');
@@ -76,7 +76,7 @@ describe('Submit', () => {
 
       cy.get('[data-test=form-image-input-url]')
         .type(this.validRecipe.image_uri)
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]')
         .click()
         .get('@requestToBackEnd')
         .should('have.been.called');
@@ -100,7 +100,7 @@ describe('Submit', () => {
 
       cy.get('[data-test=form-image-input-file] input')
         .selectFile('cypress/fixtures/images/recipe.png')
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]')
         .click()
         .get('@requestToBackEnd')
         .should('have.been.called');
@@ -109,25 +109,29 @@ describe('Submit', () => {
     it('Loading', () => {
       cy.get('.v-progress-circular')
         .should('not.exist')
-        .get('[data-test=form-recipe-name] input')
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-name] input')
         .should('not.be.disabled')
-        .get('[data-test=form-recipe-description] textarea')
+        .get(
+          '[data-test=card-recipe-create-form-recipe] [data-test=base-form-description] textarea'
+        )
         .should('not.be.disabled')
         .get('[data-test=form-image-input-file] input')
         .should('not.be.disabled')
         .get('[data-test=form-image-input-url] input')
         .should('not.be.disabled')
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]')
         .should('not.be.disabled')
 
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]')
         .click()
 
         .get('.v-progress-circular')
         .should('be.visible')
-        .get('[data-test=form-recipe-name] input')
+        .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-name] input')
         .should('be.disabled')
-        .get('[data-test=form-recipe-description] textarea')
+        .get(
+          '[data-test=card-recipe-create-form-recipe] [data-test=base-form-description] textarea'
+        )
         .should('be.disabled')
         .get('[data-test=form-image-input-file] input')
         .should('be.disabled')
@@ -138,7 +142,9 @@ describe('Submit', () => {
         expect(err.message).to.include('`cy.click()` failed because this element');
         expect(err.message).to.include('`pointer-events: none` prevents user mouse interaction');
       });
-      cy.get('[data-test=form-recipe-submit-button]').click({ timeout: 100 });
+      cy.get(
+        '[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]'
+      ).click({ timeout: 100 });
     });
   });
 
@@ -159,12 +165,12 @@ describe('Submit', () => {
       it('Network error', () => {
         cy.intercept({ method: 'post', url: `${apiUrl}/recipes/` }, { forceNetworkError: true });
         cy.mount(() => h(CardRecipeCreate))
-          .get('[data-test=form-recipe-name] input')
+          .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-name] input')
           .type('My first recipe')
 
           .get('[data-test=card-recipe-create-error-dialog]')
           .should('not.exist')
-          .get('[data-test=form-recipe-submit-button]')
+          .get('[data-test=card-recipe-create-form-recipe] [data-test=base-form-submit-button]')
           .click()
 
           .get('[data-test=card-recipe-create-error-dialog]')
