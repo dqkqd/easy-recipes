@@ -1,63 +1,18 @@
 <template>
-  <VForm class="pt-8" :disabled="loading" fast-fail @submit.prevent="submit">
-    <VRow>
-      <VCol>
-        <VTextField
-          variant="solo-filled"
-          v-model="name"
-          clearable
-          label="Name *"
-          required
-          :rules="[required('Name')]"
-          data-test="form-recipe-name"
-        />
-
-        <VTextarea
-          variant="solo-filled"
-          v-model="description"
-          rows="19"
-          clearable
-          label="Description"
-          hint="Please provide the best description to describe your recipe"
-          density="compact"
-          data-test="form-recipe-description"
-        />
-      </VCol>
-
-      <VCol>
-        <FormImageInput
-          v-model="image"
-          :loading="loading"
-          :image="recipe?.image_uri"
-          hint="Please provide the best image to describe your recipe"
-        />
-      </VCol>
-    </VRow>
-
-    <VRow class="px-2">
-      <VBtn
-        type="submit"
-        :loading="loading"
-        block
-        color="black"
-        elevation="5"
-        class="text-h5 text-center font-weight-black"
-        size="x-large"
-        data-test="form-recipe-submit-button"
-        text="Submit"
-      />
-    </VRow>
-  </VForm>
+  <BaseForm
+    :loading="loading"
+    :name="recipe?.name"
+    :description="recipe?.description"
+    :image="recipe?.image_uri"
+    @submit="submit"
+  />
 </template>
 
 <script setup lang="ts">
-import FormImageInput from '@/components/FormImageInput.vue';
+import BaseForm from '@/components/BaseForm.vue';
 import type { Recipe } from '@/schema/recipe';
-import { required } from '@/validators';
-import { computed, ref } from 'vue';
-import type { SubmitEventPromise } from 'vuetify';
 
-const props = withDefaults(
+withDefaults(
   defineProps<{
     loading?: boolean;
     recipe?: Recipe;
@@ -71,21 +26,8 @@ const emit = defineEmits<{
   (e: 'submit', name: string, image: string | null, description: string): void;
 }>();
 
-const name = ref(props.recipe?.name ?? '');
-const description = ref(props.recipe?.description ?? '');
-const image = ref(null);
-
-const validating = ref(false);
-const loading = computed(() => props.loading || validating.value);
-
-async function submit(event: SubmitEventPromise) {
-  validating.value = true;
-  const formValidationResult = await event;
-  validating.value = false;
-
-  if (formValidationResult.valid) {
-    emit('submit', name.value, image.value, description.value);
-  }
+function submit(name: string, image: string | null, description: string) {
+  emit('submit', name, image, description);
 }
 </script>
 
