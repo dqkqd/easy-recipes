@@ -18,22 +18,20 @@ describe('Render', () => {
 });
 
 describe('Submit', () => {
-  describe('Success', () => {
-    beforeEach(() => {
-      cy.fixture('recipes/create/1.json')
-        .as('validRecipe')
-        .then((recipe) => {
-          cy.mount(() =>
-            h(FormRecipe, {
-              onSubmit: cy.spy().as('onSubmit')
-            })
-          )
-            .get('[data-test=form-recipe] [data-test=base-form-name]')
-            .type(recipe.name)
-            .get('[data-test=form-recipe] [data-test=base-form-description]')
-            .type(recipe.description);
-        });
-    });
+  it('Success', () => {
+    cy.fixture('recipes/create/1.json')
+      .as('validRecipe')
+      .then((recipe) => {
+        cy.mount(() =>
+          h(FormRecipe, {
+            onSubmit: cy.spy().as('onSubmit')
+          })
+        )
+          .get('[data-test=form-recipe] [data-test=base-form-name]')
+          .type(recipe.name)
+          .get('[data-test=form-recipe] [data-test=base-form-description]')
+          .type(recipe.description);
+      });
   });
 });
 
