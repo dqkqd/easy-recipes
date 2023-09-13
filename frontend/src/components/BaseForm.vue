@@ -9,7 +9,7 @@
           label="Name *"
           required
           :rules="[required('Name')]"
-          data-test="form-recipe-name"
+          data-test="base-form-name"
         />
 
         <VTextarea
@@ -20,7 +20,7 @@
           label="Description"
           hint="Please provide the best description to describe your recipe"
           density="compact"
-          data-test="form-recipe-description"
+          data-test="base-form-description"
         />
       </VCol>
 
@@ -43,7 +43,7 @@
         elevation="5"
         class="text-h5 text-center font-weight-black"
         size="x-large"
-        data-test="form-recipe-submit-button"
+        data-test="base-form-submit-button"
         text="Submit"
       />
     </VRow>

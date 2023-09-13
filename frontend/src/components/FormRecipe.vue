@@ -5,6 +5,7 @@
     :description="recipe?.description"
     :image="recipe?.image_uri"
     @submit="submit"
+    data-test="form-recipe"
   />
 </template>
 

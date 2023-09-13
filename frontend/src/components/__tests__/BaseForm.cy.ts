@@ -1,88 +1,84 @@
 import BaseForm from '@/components/BaseForm.vue';
-import type { Recipe } from '@/schema/recipe';
 import { h } from 'vue';
+
+before(() => {
+  cy.wrap({
+    name: 'Form name',
+    description: 'Form description',
+    image: 'https://picsum.photos/200'
+  }).as('form');
+});
 
 describe('Render', () => {
   it('Render properly', () => {
     cy.mount(() => h(BaseForm))
 
-      .get('[data-test=form-recipe-name] label')
+      .get('[data-test=base-form-name] label')
       .first()
       .should('have.text', 'Name *')
 
-      .get('[data-test=form-recipe-description] label')
+      .get('[data-test=base-form-description] label')
       .first()
       .should('have.text', 'Description')
 
-      .get('[data-test=form-recipe-submit-button]')
+      .get('[data-test=base-form-submit-button]')
       .should('have.text', 'Submit');
   });
 
-  it('Render passed recipe', () => {
-    cy.fixture('recipes/details/1.json').then((recipe: Recipe) => {
-      cy.mount(() =>
-        h(BaseForm, {
-          name: recipe.name,
-          description: recipe.description,
-          image: recipe.image_uri
-        })
-      )
-        .get('[data-test=form-recipe-name] input')
-        .should('have.value', recipe.name)
+  it('Render passed props', function () {
+    cy.mount(() =>
+      h(BaseForm, {
+        name: this.form.name,
+        description: this.form.description,
+        image: this.form.image
+      })
+    )
+      .get('[data-test=base-form-name] input')
+      .should('have.value', this.form.name)
 
-        .get('[data-test=form-recipe-description] textarea')
-        .should('have.value', recipe.description)
+      .get('[data-test=base-form-description] textarea')
+      .should('have.value', this.form.description)
 
-        .get('[data-test=form-image-input-image] img')
-        .should('have.attr', 'src', recipe.image_uri);
-    });
+      .get('[data-test=form-image-input-image] img')
+      .should('have.attr', 'src', this.form.image);
   });
 });
 
 describe('Submit', () => {
   describe('Success', () => {
-    beforeEach(() => {
-      cy.fixture('recipes/create/1.json')
-        .as('validRecipe')
-        .then((recipe: Recipe) => {
-          cy.mount(() =>
-            h(BaseForm, {
-              onSubmit: cy.spy().as('onSubmit')
-            })
-          )
-            .get('[data-test=form-recipe-name]')
-            .type(recipe.name)
-            .get('[data-test=form-recipe-description]')
-            .type(recipe.description!);
-        });
+    beforeEach(function () {
+      cy.mount(() =>
+        h(BaseForm, {
+          onSubmit: cy.spy().as('onSubmit')
+        })
+      )
+        .get('[data-test=base-form-name]')
+        .type(this.form.name)
+        .get('[data-test=base-form-description]')
+        .type(this.form.description);
     });
 
     it('No image selected', function () {
-      cy.get('[data-test=form-recipe-submit-button]')
+      cy.get('[data-test=base-form-submit-button]')
         .click()
         .get('@onSubmit')
-        .should('have.been.calledWith', this.validRecipe.name, null, this.validRecipe.description);
+        .should('have.been.calledWith', this.form.name, null, this.form.description);
     });
 
     it('Input image url', function () {
       cy.get('[data-test=form-image-input-url]')
-        .type(this.validRecipe.image_uri)
-        .get('[data-test=form-recipe-submit-button]')
+        .type(this.form.image)
+        .get('[data-test=base-form-submit-button]')
         .click()
         .get('@onSubmit')
-        .should(
-          'have.been.calledWith',
-          this.validRecipe.name,
-          this.validRecipe.image_uri,
-          this.validRecipe.description
-        );
+        .should('have.been.calledWith', this.form.name, this.form.image, this.form.description);
     });
 
     it('Input image file', function () {
       const file = 'cypress/fixtures/images/recipe.png';
       cy.get('[data-test=form-image-input-file] input')
         .selectFile(file)
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=base-form-submit-button]')
         .click()
         .get('@onSubmit')
         .should('have.been.calledOnce');
@@ -106,14 +102,14 @@ describe('Submit', () => {
         cy.get('@onSubmit').should('not.have.been.called');
       });
 
-      it('Can not create recipe with empty name', () => {
-        cy.get('[data-test=form-recipe-submit-button]')
+      it('Can not submit form with empty name', () => {
+        cy.get('[data-test=base-form-submit-button]')
           .click()
           .root()
           .should('contain.text', 'Name is required');
       });
 
-      it('Can not create recipe with invalid url', function () {
+      it('Can not submit form with invalid url', function () {
         cy.get('[data-test=form-image-input-url]')
           .type('Invalid url')
           .root()
@@ -128,15 +124,15 @@ describe('Loading', () => {
     afterEach(() => {
       cy.get('.v-progress-circular')
         .should('not.exist')
-        .get('[data-test=form-recipe-name] input')
+        .get('[data-test=base-form-name] input')
         .should('not.be.disabled')
-        .get('[data-test=form-recipe-description] textarea')
+        .get('[data-test=base-form-description] textarea')
         .should('not.be.disabled')
         .get('[data-test=form-image-input-file] input')
         .should('not.be.disabled')
         .get('[data-test=form-image-input-url] input')
         .should('not.be.disabled')
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=base-form-submit-button]')
         .should('not.be.disabled');
     });
 
@@ -153,9 +149,9 @@ describe('Loading', () => {
     afterEach(() => {
       cy.get('.v-progress-circular')
         .should('be.visible')
-        .get('[data-test=form-recipe-name] input')
+        .get('[data-test=base-form-name] input')
         .should('be.disabled')
-        .get('[data-test=form-recipe-description] textarea')
+        .get('[data-test=base-form-description] textarea')
         .should('be.disabled')
         .get('[data-test=form-image-input-file] input')
         .should('be.disabled')
@@ -166,7 +162,7 @@ describe('Loading', () => {
         expect(err.message).to.include('`cy.click()` failed because this element');
         expect(err.message).to.include('`pointer-events: none` prevents user mouse interaction');
       });
-      cy.get('[data-test=form-recipe-submit-button]').click({ timeout: 100 });
+      cy.get('[data-test=base-form-submit-button]').click({ timeout: 100 });
     });
 
     it('Loading=true', () => {
