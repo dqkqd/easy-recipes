@@ -57,17 +57,19 @@ describe('Submit', () => {
           })
           .as('requestToBackEnd');
 
-        cy.get('[data-test=form-recipe-name] input')
+        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
           .clear()
           .type(recipe.name)
-          .get('[data-test=form-recipe-description] textarea')
+          .get(
+            '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
+          )
           .clear()
           .type(recipe.description)
           .get('[data-test=form-image-input-url] input')
           .clear()
           .type(recipe.image_uri)
 
-          .get('[data-test=form-recipe-submit-button]')
+          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
           .click()
 
           .get('@onUpdated')
@@ -101,7 +103,7 @@ describe('Submit', () => {
 
         cy.get('[data-test=form-image-input-file] input')
           .selectFile('cypress/fixtures/images/recipe.png')
-          .get('[data-test=form-recipe-submit-button]')
+          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
           .click()
           .get('@onUpdated')
           .should('have.been.calledOnce');
@@ -116,27 +118,31 @@ describe('Submit', () => {
       );
       cy.get('.v-progress-circular')
         .should('not.exist')
-        .get('[data-test=form-recipe-name] input')
+        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
         .should('not.be.disabled')
         .type('New name')
 
-        .get('[data-test=form-recipe-description] textarea')
+        .get(
+          '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
+        )
         .should('not.be.disabled')
         .get('[data-test=form-image-input-file] input')
         .should('not.be.disabled')
         .get('[data-test=form-image-input-url] input')
         .should('not.be.disabled')
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
         .should('not.be.disabled')
 
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
         .click()
 
         .get('.v-progress-circular')
         .should('be.visible')
-        .get('[data-test=form-recipe-name] input')
+        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
         .should('be.disabled')
-        .get('[data-test=form-recipe-description] textarea')
+        .get(
+          '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
+        )
         .should('be.disabled')
         .get('[data-test=form-image-input-file] input')
         .should('be.disabled')
@@ -147,7 +153,9 @@ describe('Submit', () => {
         expect(err.message).to.include('`cy.click()` failed because this element');
         expect(err.message).to.include('`pointer-events: none` prevents user mouse interaction');
       });
-      cy.get('[data-test=form-recipe-submit-button]').click({ timeout: 100 });
+      cy.get(
+        '[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]'
+      ).click({ timeout: 100 });
     });
   });
 
@@ -157,7 +165,7 @@ describe('Submit', () => {
     });
 
     afterEach(() => {
-      cy.get('[data-test=form-recipe-submit-button]')
+      cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
         .click()
         .get('@requestToBackEnd')
         .should('not.have.been.called');
@@ -167,15 +175,15 @@ describe('Submit', () => {
 
     describe('Editting then rollback', () => {
       it('Name', function () {
-        cy.get('[data-test=form-recipe-name] input').type(
+        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input').type(
           `{selectall}{backspace}${this.recipe.name}`
         );
       });
 
       it('Description', function () {
-        cy.get('[data-test=form-recipe-description] textarea').type(
-          `{selectall}{backspace}${this.recipe.description}`
-        );
+        cy.get(
+          '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
+        ).type(`{selectall}{backspace}${this.recipe.description}`);
       });
 
       it('Image URL', function () {
@@ -208,12 +216,12 @@ describe('Submit', () => {
           { method: 'patch', url: `${apiUrl}/recipes/${this.recipe.id}` },
           { forceNetworkError: true }
         );
-        cy.get('[data-test=form-recipe-name] input')
+        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
           .type('{selectall}{backspace}My new recipe')
 
           .get('[data-test=card-recipe-update-error-dialog]')
           .should('not.exist')
-          .get('[data-test=form-recipe-submit-button]')
+          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
           .click()
 
           .get('[data-test=card-recipe-update-error-dialog]')
