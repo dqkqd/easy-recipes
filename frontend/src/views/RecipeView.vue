@@ -3,7 +3,7 @@
     <VLayout>
       <MainAppBar />
 
-      <VMain class="bg-grey-lighten-2">
+      <VMain>
         <VContainer justify="center">
           <VRow>
             <RecipeViewBanner />
