@@ -36,7 +36,7 @@
                 :color="isHovering ? 'red-darken-1' : 'red-lighten-2'"
                 :size="40"
               />
-              <span class="mx-2 font-weight-bold">0 people like it</span>
+              <span class="mx-2 font-weight-bold">0 people like this</span>
             </VHover>
           </VCol>
 
