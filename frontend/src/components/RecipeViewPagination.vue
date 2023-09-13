@@ -55,18 +55,22 @@ const pageLength = computed(() => {
   return Math.ceil(result.value.total / result.value.per_page);
 });
 
-onMounted(async () => {
+const getRecipesByPages = async () => {
   await execute({
     method: 'get',
-    url: `${apiUrl}/recipes/`
+    url:
+      currentPage.value === 1
+        ? `${apiUrl}/recipes/`
+        : `${apiUrl}/recipes/?page=${currentPage.value}`
   });
+};
+
+onMounted(async () => {
+  getRecipesByPages();
 });
 
 watch(currentPage, async () => {
-  await execute({
-    method: 'get',
-    url: `${apiUrl}/recipes/?page=${currentPage.value}`
-  });
+  getRecipesByPages();
 
   window.scrollTo({
     top: 0,
