@@ -113,10 +113,6 @@ describe('Update recipe', () => {
         .should('have.text', this.recipe.description);
     });
 
-    it('Cancel updating should not change anything', function () {
-      cy.get('[data-test=form-recipe-cancel-button]').click();
-    });
-
     it('Failed update recipe should not change anything', function () {
       cy.intercept(
         { method: 'patch', url: `${apiUrl}/recipes/${this.recipe.id}` },
@@ -158,7 +154,7 @@ describe('Delete recipe', () => {
       .should('have.been.called');
   });
 
-  it.only('Failed', function () {
+  it('Failed', function () {
     cy.intercept(
       { method: 'delete', url: `${apiUrl}/recipes/${this.recipe.id}` },
       { forceNetworkError: true }

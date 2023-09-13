@@ -18,7 +18,6 @@
         :loading="isLoading"
         :recipe="recipe"
         @submit="updateRecipe"
-        @cancel="$emit('cancel')"
         data-test="card-recipe-update-form-recipe"
       />
     </VCard>
@@ -44,7 +43,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   (e: 'updated', name: string, image_uri: string | null, description: string): void;
-  (e: 'cancel'): void;
 }>();
 
 const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>(

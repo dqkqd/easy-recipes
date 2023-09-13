@@ -35,32 +35,17 @@
     </VRow>
 
     <VRow class="px-2">
-      <VCol>
-        <VBtn
-          type="submit"
-          :loading="loading"
-          block
-          color="black"
-          elevation="5"
-          class="text-h5 text-center"
-          size="x-large"
-          data-test="form-recipe-submit-button"
-          text="Submit"
-        />
-      </VCol>
-      <VCol>
-        <VBtn
-          :disabled="loading"
-          block
-          color="white"
-          elevation="5"
-          class="text-h5 text-center"
-          size="x-large"
-          data-test="form-recipe-cancel-button"
-          text="Cancel"
-          @click="$emit('cancel')"
-        />
-      </VCol>
+      <VBtn
+        type="submit"
+        :loading="loading"
+        block
+        color="black"
+        elevation="5"
+        class="text-h5 text-center font-weight-black"
+        size="x-large"
+        data-test="form-recipe-submit-button"
+        text="Submit"
+      />
     </VRow>
   </VForm>
 </template>
@@ -84,7 +69,6 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   (e: 'submit', name: string, image: string | null, description: string): void;
-  (e: 'cancel'): void;
 }>();
 
 const name = ref(props.recipe?.name ?? '');

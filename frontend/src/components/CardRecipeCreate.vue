@@ -10,7 +10,6 @@
       <FormRecipe
         :loading="isLoading"
         @submit="createRecipe"
-        @cancel="$emit('cancel')"
         data-test="card-recipe-create-form-recipe"
       />
     </VCard>

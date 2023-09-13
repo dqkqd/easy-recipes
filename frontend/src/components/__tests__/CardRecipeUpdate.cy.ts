@@ -10,8 +10,7 @@ beforeEach(() => {
       cy.mount(() =>
         h(CardRecipeUpdate, {
           recipe: recipe,
-          onUpdated: cy.spy().as('onUpdated'),
-          onCancel: cy.spy().as('onCancel')
+          onUpdated: cy.spy().as('onUpdated')
         })
       );
     });
@@ -129,8 +128,6 @@ describe('Submit', () => {
         .should('not.be.disabled')
         .get('[data-test=form-recipe-submit-button]')
         .should('not.be.disabled')
-        .get('[data-test=form-recipe-cancel-button]')
-        .should('not.be.disabled')
 
         .get('[data-test=form-recipe-submit-button]')
         .click()
@@ -144,8 +141,6 @@ describe('Submit', () => {
         .get('[data-test=form-image-input-file] input')
         .should('be.disabled')
         .get('[data-test=form-image-input-url] input')
-        .should('be.disabled')
-        .get('[data-test=form-recipe-cancel-button]')
         .should('be.disabled');
 
       cy.once('fail', (err) => {
@@ -228,14 +223,5 @@ describe('Submit', () => {
           .should('not.exist');
       });
     });
-  });
-});
-
-describe('Cancel', () => {
-  it('Cancel will emit cancel even', () => {
-    cy.get('[data-test=form-recipe-cancel-button]')
-      .click()
-      .get('@onCancel')
-      .should('have.been.called');
   });
 });

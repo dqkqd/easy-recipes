@@ -46,11 +46,7 @@
                 <template v-slot:activator="{ props }">
                   <VBtn icon="mdi-pencil" v-bind="props" data-test="recipe-details-update-button" />
                 </template>
-                <CardRecipeUpdate
-                  @updated="updated"
-                  :recipe="recipeDetails"
-                  @cancel="closeUpdateDialog"
-                />
+                <CardRecipeUpdate @updated="updated" :recipe="recipeDetails" />
               </VDialog>
 
               <DialogSuccess

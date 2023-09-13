@@ -14,10 +14,7 @@ describe('Render', () => {
       .should('have.text', 'Description')
 
       .get('[data-test=form-recipe-submit-button]')
-      .should('have.text', 'Submit')
-
-      .get('[data-test=form-recipe-cancel-button]')
-      .should('have.text', 'Cancel');
+      .should('have.text', 'Submit');
   });
 
   it('Render passed recipe', () => {
@@ -119,20 +116,6 @@ describe('Submit', () => {
   });
 });
 
-describe('Cancel', () => {
-  it('Cancel will emit cancel even', () => {
-    cy.mount(() =>
-      h(FormRecipe, {
-        onCancel: cy.spy().as('onCancel')
-      })
-    )
-      .get('[data-test=form-recipe-cancel-button]')
-      .click()
-      .get('@onCancel')
-      .should('have.been.called');
-  });
-});
-
 describe('Loading', () => {
   describe('No loading', () => {
     afterEach(() => {
@@ -147,8 +130,6 @@ describe('Loading', () => {
         .get('[data-test=form-image-input-url] input')
         .should('not.be.disabled')
         .get('[data-test=form-recipe-submit-button]')
-        .should('not.be.disabled')
-        .get('[data-test=form-recipe-cancel-button]')
         .should('not.be.disabled');
     });
 
@@ -172,8 +153,6 @@ describe('Loading', () => {
         .get('[data-test=form-image-input-file] input')
         .should('be.disabled')
         .get('[data-test=form-image-input-url] input')
-        .should('be.disabled')
-        .get('[data-test=form-recipe-cancel-button]')
         .should('be.disabled');
 
       cy.once('fail', (err) => {
