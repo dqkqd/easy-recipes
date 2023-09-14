@@ -367,8 +367,8 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
 
 def test_200_get_pagination_basic(client: FlaskClient) -> None:
     total_pages = 2
-    last_page_items = config.PAGINATION_SIZE // 2
-    num_datas = total_pages * config.PAGINATION_SIZE + last_page_items
+    last_page_items = config.RECIPES_PAGINATION_SIZE // 2
+    num_datas = total_pages * config.RECIPES_PAGINATION_SIZE + last_page_items
 
     for _ in range(num_datas):
         data = MockRecipe.random_data()
@@ -386,7 +386,7 @@ def test_200_get_pagination_basic(client: FlaskClient) -> None:
 
         assert data["page"] == page
         if page != total_pages + 1:
-            assert len(data["recipes"]) == config.PAGINATION_SIZE
+            assert len(data["recipes"]) == config.RECIPES_PAGINATION_SIZE
         else:
             assert len(data["recipes"]) == last_page_items
 
@@ -428,7 +428,7 @@ def test_404_get_page_no_items(client: FlaskClient) -> None:
         "page": 1,
         "recipes": [],
         "total": 0,
-        "per_page": config.PAGINATION_SIZE,
+        "per_page": config.RECIPES_PAGINATION_SIZE,
     }
     assert response.status_code == 200
 
@@ -439,12 +439,12 @@ def test_404_get_page_no_items(client: FlaskClient) -> None:
         "page": 1,
         "recipes": [],
         "total": 0,
-        "per_page": config.PAGINATION_SIZE,
+        "per_page": config.RECIPES_PAGINATION_SIZE,
     }
 
 
 def test_200_404_pagination_render_enough(client: FlaskClient) -> None:
-    for _ in range(config.PAGINATION_SIZE * 2):
+    for _ in range(config.RECIPES_PAGINATION_SIZE * 2):
         data = MockRecipe.random_data()
         client.post(
             "/recipes/",

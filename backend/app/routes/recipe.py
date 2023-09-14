@@ -34,7 +34,7 @@ def get_recipes() -> Response:
 @api.route("/")
 @to_handleable_error
 def get_paginations() -> Response:
-    paginaged_recipes = crud_recipe.get_pagination()
+    paginaged_recipes = crud_recipe.get_pagination(config.RECIPES_PAGINATION_SIZE)
 
     if paginaged_recipes.page != 1 and paginaged_recipes.page > paginaged_recipes.pages:
         abort(404)
@@ -47,7 +47,7 @@ def get_paginations() -> Response:
                 for recipe in paginaged_recipes
             ],
             "total": paginaged_recipes.total,
-            "per_page": config.PAGINATION_SIZE,
+            "per_page": paginaged_recipes.per_page,
         },
     )
 

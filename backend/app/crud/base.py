@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Generic, TypeVar
 
 from sqlalchemy import inspect
 
-from app import config
 from app.database import BaseORMModel, safe_db
 from app.schemas.base import BaseSchema
 
@@ -36,11 +35,11 @@ class CRUDBase(
         with safe_db():
             return self.model.query.order_by(self.model.id).all()
 
-    def get_pagination(self) -> Pagination:
+    def get_pagination(self, pagination_size: int) -> Pagination:
         with safe_db() as db:
             return db.paginate(
                 db.select(self.model).order_by(self.model.id),
-                per_page=config.PAGINATION_SIZE,
+                per_page=pagination_size,
                 error_out=False,
             )
 

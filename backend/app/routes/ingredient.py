@@ -34,7 +34,9 @@ def get_ingredients() -> Response:
 @api.route("/")
 @to_handleable_error
 def get_paginations() -> Response:
-    paginaged_ingredients = crud_ingredient.get_pagination()
+    paginaged_ingredients = crud_ingredient.get_pagination(
+        config.INGREDIENTS_PAGINATION_SIZE,
+    )
 
     if (
         paginaged_ingredients.page != 1
@@ -50,7 +52,7 @@ def get_paginations() -> Response:
                 for ingredient in paginaged_ingredients
             ],
             "total": paginaged_ingredients.total,
-            "per_page": config.PAGINATION_SIZE,
+            "per_page": paginaged_ingredients.per_page,
         },
     )
 
