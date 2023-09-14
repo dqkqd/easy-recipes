@@ -1,7 +1,12 @@
 <template>
   <VHover v-slot="hover">
+    <VDialog v-model="dialog" :width="500">
+      <IngredientDetails :ingredient="ingredient" />
+    </VDialog>
+
     <VCard
       :width="130"
+      @click="dialog = true"
       :elevation="hover && hover.isHovering ? 12 : 2"
       data-test="card-to-ingredient-details"
       v-bind="hover && hover.props"
@@ -27,11 +32,14 @@
 import { useImage } from '@/composables';
 import type { Ingredient } from '@/schema/ingredient';
 import { stripText } from '@/utils';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
+import IngredientDetails from './IngredientDetails.vue';
 
 const props = defineProps<{
   ingredient: Ingredient;
 }>();
+
+const dialog = ref(false);
 
 const ingredientName = computed(() => stripText(props.ingredient.name, 10));
 

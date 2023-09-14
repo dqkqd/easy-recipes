@@ -35,3 +35,25 @@ describe('Render', () => {
       .should('have.attr', 'src', ingredient.image_uri);
   });
 });
+
+describe('Ingredient details dialog', () => {
+  it('Show ingredient details after clicking', () => {
+    const ingredient = IngredientSchema.parse({
+      id: 1,
+      name: 'Ingredient',
+      description: 'My first ingredient description',
+      image_uri: 'https://picsum.photos/200',
+      recipes: []
+    });
+
+    cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
+      .get('[data-test=ingredient-details]')
+      .should('not.exist')
+
+      .get('[data-test=card-to-ingredient-details]')
+      .click()
+
+      .get('[data-test=ingredient-details]')
+      .should('be.visible');
+  });
+});

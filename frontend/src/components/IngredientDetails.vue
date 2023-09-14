@@ -1,5 +1,5 @@
 <template>
-  <VSheet border>
+  <VSheet border data-test="ingredient-details">
     <VRow class="my-6 mx-3" no-gutters>
       <VCol>
         <VImg
