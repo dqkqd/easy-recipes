@@ -1,0 +1,42 @@
+{
+  "page": 2,
+  "ingredients": [
+    {
+      "id": 6,
+      "name": "My sixth ingredient",
+      "description": "My sixth description",
+      "image_uri": "https://picsum.photos/200",
+      "recipes": []
+    },
+    {
+      "id": 7,
+      "name": "My seventh ingredient",
+      "description": "My seventh description",
+      "image_uri": "https://picsum.photos/200",
+      "recipes": []
+    },
+    {
+      "id": 8,
+      "name": "My eighth ingredient",
+      "description": "My eighth description",
+      "image_uri": "https://picsum.photos/200",
+      "recipes": []
+    },
+    {
+      "id": 9,
+      "name": "My nineth ingredient",
+      "description": "My nineth description",
+      "image_uri": "https://picsum.photos/200",
+      "recipes": []
+    },
+    {
+      "id": 10,
+      "name": "My tenth ingredient",
+      "description": "My tenth description",
+      "image_uri": "https://picsum.photos/200",
+      "recipes": []
+    }
+  ],
+  "total": 34,
+  "per_page": 5
+}

@@ -12,7 +12,7 @@ export const IngredientSchema = IngredientBaseSchema.extend({
   recipes: z.lazy(() => RecipeBaseSchema.array())
 });
 
-export const IngredientResponseSchema = z.object({
+export const IngredientsResponseSchema = z.object({
   page: z.number(),
   ingredients: IngredientSchema.array(),
   total: z.number(),
@@ -45,7 +45,7 @@ export type Ingredient = z.infer<typeof IngredientSchema>;
 export type IngredientCreate = z.infer<typeof IngredientCreateSchema>;
 export type IngredientUpdate = z.infer<typeof IngredientUpdateSchema>;
 
-export type IngredientResponse = z.infer<typeof IngredientResponseSchema>;
+export type IngredientsResponse = z.infer<typeof IngredientsResponseSchema>;
 export type IngredientCreatedResponse = z.infer<typeof IngredientCreatedResponseSchema>;
 export type IngredientUpdatedResponse = z.infer<typeof IngredientUpdatedResponseSchema>;
 export type IngredientDeletedResponse = z.infer<typeof IngredientDeletedResponseSchema>;
