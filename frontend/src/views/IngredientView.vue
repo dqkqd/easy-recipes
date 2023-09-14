@@ -12,7 +12,7 @@
           <IngredientViewPagination />
         </VContainer>
 
-        <VFooter class="mt-16 pt-16" />
+        <VFooter class="mt-16 pt-16" data-test="ingredient-view-footer" />
       </VMain>
     </VLayout>
   </VApp>

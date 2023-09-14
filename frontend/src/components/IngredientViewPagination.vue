@@ -6,7 +6,7 @@
     data-test="ingredient-view-pagination-error-dialog"
   />
 
-  <div v-if="result">
+  <div v-if="result" data-test="ingredient-view-pagination">
     <VRow class="pt-5" justify="center">
       <VCol
         v-for="ingredient in result.ingredients"
