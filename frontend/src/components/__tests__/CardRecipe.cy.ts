@@ -4,17 +4,40 @@ import { RecipeSchema } from '@/schema/recipe';
 import { h } from 'vue';
 
 beforeEach(() => {
-  cy.fixture('recipes/details/1.json').as('validRecipe');
+  cy.wrap({
+    id: 1,
+    name: 'My first recipe',
+    description: 'My first description',
+    image_uri: 'https://picsum.photos/200',
+    ingredients: []
+  }).as('validRecipe');
 });
 
-it('Render properly', function () {
-  const recipe = RecipeSchema.parse(this.validRecipe);
-  cy.mount(() => h(CardRecipe, { recipe: recipe }))
+describe('Render', () => {
+  it('Render name less than 20 characters', function () {
+    const recipe = RecipeSchema.parse(this.validRecipe);
+    cy.mount(() => h(CardRecipe, { recipe: recipe }))
+      .get('[data-test="card-recipe-name"]')
+      .should('have.text', recipe.name)
+      .get('[data-test="card-recipe-image"] img')
+      .should('have.attr', 'src', recipe.image_uri);
+  });
 
-    .get('[data-test="card-recipe-name"]')
-    .should('have.text', recipe.name)
-    .get('[data-test="card-recipe-image"] img')
-    .should('have.attr', 'src', recipe.image_uri);
+  it('Render name more than 20 characters', function () {
+    const recipe = RecipeSchema.parse({
+      id: 1,
+      name: 'This is my first recipe',
+      description: 'My first description',
+      image_uri: 'https://picsum.photos/200',
+      ingredients: []
+    });
+
+    cy.mount(() => h(CardRecipe, { recipe: recipe }))
+      .get('[data-test="card-recipe-name"]')
+      .should('have.text', 'This is my first re…')
+      .get('[data-test="card-recipe-image"] img')
+      .should('have.attr', 'src', recipe.image_uri);
+  });
 });
 
 it('Mock move to recipe info', function () {
