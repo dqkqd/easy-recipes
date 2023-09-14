@@ -49,10 +49,12 @@ describe('Update recipe', () => {
           { ...this.recipe, ...secondRecipe }
         );
 
-        cy.get('[data-test=form-recipe-name] input')
+        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
           .clear()
           .type(secondRecipe.name)
-          .get('[data-test=form-recipe-description] textarea')
+          .get(
+            '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
+          )
           .clear()
           .type(secondRecipe.description)
           .get('[data-test=form-image-input-url] input')
@@ -74,11 +76,13 @@ describe('Update recipe', () => {
     });
 
     it('Update change recipe details', function () {
-      cy.get('[data-test=form-recipe-submit-button]').click();
+      cy.get(
+        '[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]'
+      ).click();
     });
 
     it('After updating recipe close update dialog', () => {
-      cy.get('[data-test=form-recipe-submit-button]')
+      cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
         .click()
 
         .get('[data-test=recipe-details-update-dialog')
@@ -88,7 +92,7 @@ describe('Update recipe', () => {
     it('After updating recipe show success dialog', () => {
       cy.get('[data-test=card-recipe-update-updated-dialog]')
         .should('not.exist')
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
         .click()
 
         .get('[data-test=card-recipe-update-updated-dialog]')
@@ -121,7 +125,7 @@ describe('Update recipe', () => {
 
       cy.get('[data-test=card-recipe-update-error-dialog]')
         .should('not.exist')
-        .get('[data-test=form-recipe-submit-button]')
+        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
         .click()
 
         .get('[data-test=card-recipe-update-error-dialog]');
