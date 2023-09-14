@@ -1,13 +1,26 @@
 <template>
   <VApp>
-    <MainAppBar />
-    <VMain>
-      <div>Ingredients</div>
-    </VMain>
+    <VLayout>
+      <MainAppBar />
+
+      <VMain>
+        <VContainer justify="center">
+          <VRow>
+            <IngredientViewBanner />
+          </VRow>
+
+          <IngredientViewPagination />
+        </VContainer>
+
+        <VFooter class="mt-16 pt-16" />
+      </VMain>
+    </VLayout>
   </VApp>
 </template>
 
 <script setup lang="ts">
+import IngredientViewBanner from '@/components/IngredientViewBanner.vue';
+import IngredientViewPagination from '@/components/IngredientViewPagination.vue';
 import MainAppBar from '@/components/MainAppBar.vue';
 </script>
 
