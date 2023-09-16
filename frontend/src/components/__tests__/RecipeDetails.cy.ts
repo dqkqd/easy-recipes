@@ -5,32 +5,68 @@ import router from '@/router';
 import { h } from 'vue';
 
 beforeEach(() => {
-  cy.fixture('recipes/details/1.json')
-    .as('recipe')
-    .then((recipe) => {
-      cy.mount(() => h(RecipeDetails, { recipe: recipe }));
-    });
+  cy.fixture('recipes/details/1.json').as('recipe');
 });
 
-it('Render properly', function () {
-  cy.get('[data-test=recipe-details-name]')
-    .should('have.text', this.recipe.name)
+describe('Render', () => {
+  afterEach(function () {
+    cy.get('[data-test=recipe-details-name]')
+      .should('have.text', this.recipe.name)
 
-    .get('[data-test=recipe-details-image] img')
-    .should('have.attr', 'src', this.recipe.image_uri)
+      .get('[data-test=recipe-details-image] img')
+      .should('have.attr', 'src', this.recipe.image_uri)
 
-    .get('[data-test=recipe-details-description]')
-    .should('have.text', this.recipe.description)
+      .get('[data-test=recipe-details-description]')
+      .should('have.text', this.recipe.description);
+  });
 
-    .get('[data-test=recipe-details-like]')
-    .should('be.visible')
+  it('No authentication', function () {
+    cy.signJWT(false).then(() => {
+      cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
 
-    // TODO(khanhdq): authorization
-    .get('[data-test=recipe-details-update-button]')
-    .should('be.visible')
+        .get('[data-test=recipe-details-update-button]')
+        .should('not.exist')
 
-    .get('[data-test=recipe-details-delete-button]')
-    .should('be.visible');
+        .get('[data-test=recipe-details-delete-button]')
+        .should('not.exist');
+    });
+  });
+
+  it('Update authentication', function () {
+    cy.signJWT(true, ['update:recipe']).then(() => {
+      cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
+
+        .get('[data-test=recipe-details-update-button]')
+        .should('be.visible')
+
+        .get('[data-test=recipe-details-delete-button]')
+        .should('not.exist');
+    });
+  });
+
+  it('Delete authentication', function () {
+    cy.signJWT(true, ['delete:recipe']).then(() => {
+      cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
+
+        .get('[data-test=recipe-details-update-button]')
+        .should('not.exist')
+
+        .get('[data-test=recipe-details-delete-button]')
+        .should('be.visible');
+    });
+  });
+
+  it('Update and delete authentication', function () {
+    cy.signJWT(true, ['update:recipe', 'delete:recipe']).then(() => {
+      cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
+
+        .get('[data-test=recipe-details-update-button]')
+        .should('be.visible')
+
+        .get('[data-test=recipe-details-delete-button]')
+        .should('be.visible');
+    });
+  });
 });
 
 describe('Update recipe', () => {

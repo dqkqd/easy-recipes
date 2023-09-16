@@ -40,7 +40,7 @@
             </VHover>
           </VCol>
 
-          <VCol cols="2">
+          <VCol v-if="canUpdateRecipe">
             <VRow justify="center">
               <VDialog v-model="updateDialog" width="auto" data-test="recipe-details-update-dialog">
                 <template v-slot:activator="{ props }">
@@ -57,7 +57,7 @@
             </VRow>
           </VCol>
 
-          <VCol cols="2">
+          <VCol v-if="canDeleteRecipe">
             <VRow justify="center">
               <VDialog v-model="deleteDialog" width="auto" data-test="recipe-details-delete-dialog">
                 <template v-slot:activator="{ props }">
@@ -74,14 +74,30 @@
 </template>
 
 <script setup lang="ts">
+import { hasPermission } from '@/auth';
 import CardRecipeDelete from '@/components/CardRecipeDelete.vue';
 import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
 import DialogSuccess from '@/components/DialogSuccess.vue';
 import { useImage } from '@/composables';
 import { type Recipe } from '@/schema/recipe';
-import { ref } from 'vue';
+import { useAuth0 } from '@auth0/auth0-vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps<{ recipe: Recipe }>();
+
+const auth = useAuth0();
+
+const canUpdateRecipe = ref(false);
+const canDeleteRecipe = ref(false);
+
+onMounted(() => {
+  if (auth.isAuthenticated.value) {
+    auth.getAccessTokenSilently().then((token) => {
+      canUpdateRecipe.value = hasPermission('update:recipe', token);
+      canDeleteRecipe.value = hasPermission('delete:recipe', token);
+    });
+  }
+});
 
 const recipeUpdated = ref(false);
 
