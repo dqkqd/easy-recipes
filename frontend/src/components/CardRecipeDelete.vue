@@ -33,6 +33,7 @@ import DialogSuccess from '@/components/DialogSuccess.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { RecipeDeletedResponseSchema, type RecipeDeletedResponse } from '@/schema/recipe';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -53,12 +54,15 @@ const { result, error, isLoading, execute } = useAxios<RecipeDeletedResponse>((r
   return RecipeDeletedResponseSchema.parse(r.data);
 });
 
+const auth = useAuth0();
+
 async function deleteRecipe() {
+  const token = await auth.getAccessTokenSilently();
   await execute({
     method: 'delete',
     url: `${apiUrl}/recipes/${props.id}`,
     headers: {
-      authorization: 'bearer delete:recipe'
+      authorization: `Bearer ${token}`
     }
   });
 

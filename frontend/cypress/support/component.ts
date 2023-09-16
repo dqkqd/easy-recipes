@@ -1,5 +1,6 @@
 import { VApp } from 'vuetify/components';
 // ***********************************************************
+import auth0 from '../../src/plugins/auth0';
 import vuetify from '../../src/plugins/vuetify';
 
 // This example support/component.ts is processed and
@@ -58,6 +59,13 @@ Cypress.Commands.add('mount', (component, options = {}) => {
   options.global.plugins.push({
     install(app) {
       app.use(router);
+    }
+  });
+
+  // Add auth
+  options.global.plugins.push({
+    install(app) {
+      app.use(auth0);
     }
   });
   return mount(() => h(VApp, {}, component), options);

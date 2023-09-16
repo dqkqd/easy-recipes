@@ -1,5 +1,6 @@
 import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
 import { apiUrl } from '@/env';
+import auth0 from '@/plugins/auth0';
 import axios from 'axios';
 import { h } from 'vue';
 
@@ -29,6 +30,10 @@ describe('Render', () => {
 
 describe('Submit', () => {
   describe('Success', () => {
+    beforeEach(() => {
+      cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
+    });
+
     afterEach(() => {
       cy.get('@requestToBackEnd').should('have.been.called');
     });
@@ -52,7 +57,7 @@ describe('Submit', () => {
               description: recipe.description
             },
             headers: {
-              authorization: 'bearer update:recipe'
+              authorization: `Bearer ${Cypress.env('menuManagerToken')}`
             }
           })
           .as('requestToBackEnd');
@@ -96,7 +101,7 @@ describe('Submit', () => {
               description: recipe.description
             },
             headers: {
-              authorization: 'bearer update:recipe'
+              authorization: `Bearer ${Cypress.env('menuManagerToken')}`
             }
           })
           .as('requestToBackEnd');
@@ -203,6 +208,7 @@ describe('Submit', () => {
 
   describe('Failed', () => {
     beforeEach(() => {
+      cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
       cy.spy(axios, 'request').as('requestToBackEnd');
     });
 

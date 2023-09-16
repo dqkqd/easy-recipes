@@ -41,6 +41,7 @@ import {
   type RecipeCreatedResponse
 } from '@/schema/recipe';
 import { replaceBase64Prefix } from '@/utils';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { useRouter } from 'vue-router';
 
 const { result, isLoading, error, execute } = useAxios<RecipeCreatedResponse>(
@@ -58,7 +59,10 @@ const { hasError } = useErrorWithTimeout(error, 2000);
 
 const router = useRouter();
 
+const auth = useAuth0();
+
 async function createRecipe(name: string, image: string | null, description: string) {
+  const token = await auth.getAccessTokenSilently();
   await execute({
     method: 'post',
     url: `${apiUrl}/recipes/`,
@@ -68,7 +72,7 @@ async function createRecipe(name: string, image: string | null, description: str
       description: description
     },
     headers: {
-      authorization: 'bearer create:recipe'
+      authorization: `Bearer ${token}`
     }
   });
 

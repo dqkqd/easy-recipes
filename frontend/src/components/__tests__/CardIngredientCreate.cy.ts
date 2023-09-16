@@ -1,5 +1,6 @@
 import CardIngredientCreate from '@/components/CardIngredientCreate.vue';
 import { apiUrl } from '@/env';
+import auth0 from '@/plugins/auth0';
 import router from '@/router';
 import axios from 'axios';
 import { h } from 'vue';
@@ -25,6 +26,7 @@ describe('Submit', () => {
 
   describe('Success', () => {
     beforeEach(() => {
+      cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
       cy.intercept({ method: 'post', url: `${apiUrl}/ingredients/` }, { id: 1 });
       cy.fixture('ingredients/create/1.json')
         .as('validIngredient')
@@ -53,7 +55,7 @@ describe('Submit', () => {
           url: `${apiUrl}/ingredients/`,
           data: ingredient,
           headers: {
-            authorization: 'bearer create:ingredient'
+            authorization: `Bearer ${Cypress.env('menuManagerToken')}`
           }
         })
         .as('requestToBackEnd');
@@ -73,7 +75,7 @@ describe('Submit', () => {
           url: `${apiUrl}/ingredients/`,
           data: this.validIngredient,
           headers: {
-            authorization: 'bearer create:ingredient'
+            authorization: `Bearer ${Cypress.env('menuManagerToken')}`
           }
         })
         .as('requestToBackEnd');
@@ -98,7 +100,7 @@ describe('Submit', () => {
             url: `${apiUrl}/ingredients/`,
             data: ingredient,
             headers: {
-              authorization: 'bearer create:ingredient'
+              authorization: `Bearer ${Cypress.env('menuManagerToken')}`
             }
           })
           .as('requestToBackEnd');
@@ -162,6 +164,7 @@ describe('Submit', () => {
 
   describe('Failed', () => {
     beforeEach(() => {
+      cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
       cy.spy(axios, 'request').as('requestToBackEnd');
     });
 

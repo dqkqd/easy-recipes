@@ -13,5 +13,9 @@ export default defineConfig({
     }
   },
   viewportWidth: 800,
-  viewportHeight: 800
+  viewportHeight: 800,
+  env: {
+    menuManagerToken: 'menu-manager-token',
+    managerToken: 'manager-token'
+  }
 });

@@ -1,5 +1,6 @@
 import CardRecipeDelete from '@/components/CardRecipeDelete.vue';
 import { apiUrl } from '@/env';
+import auth0 from '@/plugins/auth0';
 import router from '@/router';
 import axios from 'axios';
 import { h } from 'vue';
@@ -35,12 +36,13 @@ describe('Cancel', () => {
 
 describe('Delete', () => {
   beforeEach(() => {
+    cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('managerToken'));
     cy.spy(axios, 'request')
       .withArgs({
         method: 'delete',
         url: `${apiUrl}/recipes/1`,
         headers: {
-          authorization: 'bearer delete:recipe'
+          authorization: `Bearer ${Cypress.env('managerToken')}`
         }
       })
       .as('requestToBackEnd');

@@ -1,5 +1,6 @@
 import CardRecipeCreate from '@/components/CardRecipeCreate.vue';
 import { apiUrl } from '@/env';
+import auth0 from '@/plugins/auth0';
 import router from '@/router';
 import axios from 'axios';
 import { h } from 'vue';
@@ -18,6 +19,7 @@ describe('Render', () => {
 
 describe('Submit', () => {
   beforeEach(() => {
+    cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
     cy.spy(router, 'push')
       .withArgs({ name: 'RecipeInfo', params: { id: 1 } })
       .as('redirectedToRecipeInfo');
@@ -51,7 +53,7 @@ describe('Submit', () => {
           url: `${apiUrl}/recipes/`,
           data: recipe,
           headers: {
-            authorization: 'bearer create:recipe'
+            authorization: `Bearer ${Cypress.env('menuManagerToken')}`
           }
         })
         .as('requestToBackEnd');
@@ -69,7 +71,7 @@ describe('Submit', () => {
           url: `${apiUrl}/recipes/`,
           data: this.validRecipe,
           headers: {
-            authorization: 'bearer create:recipe'
+            authorization: `Bearer ${Cypress.env('menuManagerToken')}`
           }
         })
         .as('requestToBackEnd');
@@ -92,7 +94,7 @@ describe('Submit', () => {
             url: `${apiUrl}/recipes/`,
             data: recipe,
             headers: {
-              authorization: 'bearer create:recipe'
+              authorization: `Bearer ${Cypress.env('menuManagerToken')}`
             }
           })
           .as('requestToBackEnd');

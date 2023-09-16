@@ -36,6 +36,7 @@ import {
   type RecipeUpdatedResponse
 } from '@/schema/recipe';
 import { replaceBase64Prefix } from '@/utils';
+import { useAuth0 } from '@auth0/auth0-vue';
 
 const props = defineProps<{
   recipe: Recipe;
@@ -57,6 +58,7 @@ const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>(
 );
 
 const { hasError } = useErrorWithTimeout(error, 2000);
+const auth = useAuth0();
 
 async function updateRecipe(name: string, image: string | null, description: string) {
   if (
@@ -64,6 +66,7 @@ async function updateRecipe(name: string, image: string | null, description: str
     props.recipe.image_uri !== image ||
     props.recipe.description !== description
   ) {
+    const token = await auth.getAccessTokenSilently();
     await execute({
       method: 'patch',
       url: `${apiUrl}/recipes/${props.recipe.id}`,
@@ -73,7 +76,7 @@ async function updateRecipe(name: string, image: string | null, description: str
         description: description
       },
       headers: {
-        authorization: 'bearer update:recipe'
+        authorization: `Bearer ${token}`
       }
     });
   }

@@ -1,5 +1,6 @@
 import RecipeDetails from '@/components/RecipeDetails.vue';
 import { apiUrl } from '@/env';
+import auth0 from '@/plugins/auth0';
 import router from '@/router';
 import { h } from 'vue';
 
@@ -34,6 +35,7 @@ it('Render properly', function () {
 
 describe('Update recipe', () => {
   beforeEach(function () {
+    cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
     cy.get('[data-test=recipe-details-update-dialog]')
       .should('not.exist')
       .get('[data-test=recipe-details-update-button]')
@@ -135,6 +137,8 @@ describe('Update recipe', () => {
 
 describe('Delete recipe', () => {
   beforeEach(function () {
+    cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('managerToken'));
+
     cy.spy(router, 'push').withArgs({ name: 'RecipeView' }).as('redirectedToRecipeVIew');
 
     cy.get('[data-test=recipe-details-delete-dialog]')
