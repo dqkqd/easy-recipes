@@ -355,7 +355,7 @@ def test_200_get_all_after_deletion(client: FlaskClient) -> None:
     for recipe_id in range(1, num_delete_datas + 1):
         response = client.delete(
             f"/recipes/{recipe_id}",
-            headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+            headers=MockAuth.header(auth.DELETE_RECIPE_PERMISSION),
         )
         assert response.status_code == 200
 
