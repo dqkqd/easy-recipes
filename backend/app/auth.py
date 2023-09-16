@@ -1,9 +1,13 @@
 from __future__ import annotations
 
+import json
+import os
 from functools import wraps
 from typing import Any, Callable
+from urllib.request import urlopen
 
 from flask import request
+from jose import jwt
 from pydantic import BaseModel
 
 from app.errors import (
@@ -19,6 +23,10 @@ DELETE_INGREDIENT_PERMISSION = "delete:ingredient"
 CREATE_RECIPE_PERMISSION = "create:recipe"
 UPDATE_RECIPE_PERMISSION = "update:recipe"
 DELETE_RECIPE_PERMISSION = "delete:recipe"
+
+AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN")
+ALGORITHMS = [os.environ.get("ALGORITHM")]
+API_AUDIENCE = os.environ.get("API_AUDIENCE")
 
 
 class Permissions(BaseModel):
@@ -41,18 +49,49 @@ def check_permissions(permission: str | None, allowed_permissions: Permissions) 
         raise InvalidPermissionError
 
 
-def verify_decode_jwt(_token: str) -> Permissions:
-    # TODO(dqk): parse token, it should raise InvalidAuthorizationTokenError on any error
-    return Permissions(
-        permissions=[
-            CREATE_INGREDIENT_PERMISSION,
-            UPDATE_INGREDIENT_PERMISSION,
-            DELETE_INGREDIENT_PERMISSION,
-            CREATE_RECIPE_PERMISSION,
-            UPDATE_RECIPE_PERMISSION,
-            DELETE_RECIPE_PERMISSION,
-        ],
-    )
+def verify_decode_jwt(token: str) -> Permissions:
+    url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
+    with urlopen(url) as jsonurl:  # noqa: S310
+        jwks = json.loads(jsonurl.read())
+        unverified_header = jwt.get_unverified_header(token)
+        keys = jwks.get("keys", [])
+
+        rsa_key = {}
+        try:
+            for key in keys:
+                if key["kid"] != unverified_header["kid"]:
+                    continue
+                rsa_key = {
+                    "kty": key["kty"],
+                    "kid": key["kid"],
+                    "use": key["use"],
+                    "n": key["n"],
+                    "e": key["e"],
+                }
+        except KeyError as e:
+            raise InvalidAuthorizationTokenError from e
+
+    if not rsa_key:
+        raise InvalidAuthorizationTokenError
+
+    try:
+        payload = jwt.decode(
+            token,
+            rsa_key,
+            algorithms=ALGORITHMS,
+            audience=API_AUDIENCE,
+            issuer=f"https://{AUTH0_DOMAIN}/",
+        )
+        permissions = payload.get("permissions", [])
+        return Permissions(permissions=permissions)
+
+    # TODO(dqk): add more error
+    except jwt.ExpiredSignatureError as e:
+        raise InvalidAuthorizationTokenError from e
+    except jwt.JWTClaimsError as e:
+        raise InvalidAuthorizationTokenError from e
+    except Exception as e:  # noqa: BLE001
+        raise InvalidAuthorizationTokenError from e
 
 
 def require(permission: str | None = None) -> Callable[..., Any]:

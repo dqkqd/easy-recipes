@@ -17,6 +17,9 @@ FILE_SERVER_MAX_CONTENT_LENGTH=1000000
 # production
 POSTGRES_HOST=database
 FILE_SERVER_HOST=fileserver
+AUTH0_DOMAIN="dev-4ficga5o3srn83ew.us.auth0.com"
+ALGORITHM="RS256"
+API_AUDIENCE="easyrecipes"
 
 # development
 TEST_POSTGRES_HOST=test_database
