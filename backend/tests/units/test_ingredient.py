@@ -172,16 +172,6 @@ def test_422_create_ingredient_with_invalid_recipes() -> None:
     raise NotImplementedError
 
 
-@pytest.mark.skip("Update after implementing authorization")
-def test_401_create_unauthorize(client: FlaskClient) -> None:  # noqa: ARG001
-    raise NotImplementedError
-
-
-@pytest.mark.skip("Update after implementing authorization")
-def test_403_create_no_permission(client: FlaskClient) -> None:  # noqa: ARG001
-    raise NotImplementedError
-
-
 def test_200_get_ingredient_basic(client: FlaskClient) -> None:
     ingredient_create = MockIngredient.random()
     response = client.post(
