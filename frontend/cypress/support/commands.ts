@@ -36,4 +36,31 @@
 //   }
 // }
 
-export {}
+import * as jose from 'jose';
+import auth0 from '../../src/plugins/auth0';
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      signJWT(enableAuth: boolean, permissions?: string[]): Promise<void>;
+    }
+  }
+}
+
+Cypress.Commands.add('signJWT', async (enableAuth: boolean, permissions: string[] = []) => {
+  const keyPair = await window.crypto.subtle.generateKey(
+    {
+      name: 'RSASSA-PKCS1-v1_5',
+      modulusLength: 2048,
+      publicExponent: new Uint8Array([1, 0, 1]),
+      hash: 'SHA-256'
+    },
+    true,
+    ['sign', 'verify']
+  );
+  const jwt = await new jose.SignJWT({ permissions: permissions })
+    .setProtectedHeader({ alg: 'RS256' })
+    .sign(keyPair.privateKey);
+  auth0.isAuthenticated.value = enableAuth;
+  cy.stub(auth0, 'getAccessTokenSilently').resolves(jwt);
+});

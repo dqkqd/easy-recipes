@@ -7,6 +7,8 @@ declare global {
   namespace Cypress {
     interface Chainable {
       mount: typeof mount;
+
+      signJWT(enableAuth: boolean, permissions?: string[]): Promise<void>;
     }
   }
 }
