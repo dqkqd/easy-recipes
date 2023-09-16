@@ -1,4 +1,6 @@
 <template>
+  <VNavigationDrawer location="left" :border="false" :elevation="0" color="grey-lighten-2" />
+  <VNavigationDrawer location="right" :border="false" :elevation="0" color="grey-lighten-2" />
   <VAppBar>
     <VAppBarTitle class="overflow-x-visible">
       <VBtn
@@ -25,22 +27,24 @@
     </VAppBarTitle>
     <VBtn
       v-if="auth.isAuthenticated.value"
-      color="black"
+      color="red-lighten-1"
       @click="logout"
       text="LOG OUT"
       class="text-h5 font-weight-black ma-2 mx-16"
       size="x-large"
+      :width="200"
       data-test="base-view-banner-button"
-      variant="outlined"
+      variant="elevated"
       density="comfortable"
     />
     <VBtn
       v-else
-      color="black"
+      color="blue-darken-1"
       @click="login"
       text="LOG IN"
       class="text-h5 font-weight-black ma-2 mx-16"
       size="x-large"
+      :width="200"
       data-test="base-view-banner-button"
       variant="elevated"
       density="comfortable"
