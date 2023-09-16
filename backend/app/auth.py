@@ -50,31 +50,28 @@ def check_permissions(permission: str | None, allowed_permissions: Permissions) 
 
 
 def verify_decode_jwt(token: str) -> Permissions:
-    url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
-    with urlopen(url) as jsonurl:  # noqa: S310
-        jwks = json.loads(jsonurl.read())
-        unverified_header = jwt.get_unverified_header(token)
-        keys = jwks.get("keys", [])
-
-        rsa_key = {}
-        try:
-            for key in keys:
-                if key["kid"] != unverified_header["kid"]:
-                    continue
-                rsa_key = {
-                    "kty": key["kty"],
-                    "kid": key["kid"],
-                    "use": key["use"],
-                    "n": key["n"],
-                    "e": key["e"],
-                }
-        except KeyError as e:
-            raise InvalidAuthorizationTokenError from e
-
-    if not rsa_key:
-        raise InvalidAuthorizationTokenError
-
     try:
+        url = f"https://{AUTH0_DOMAIN}/.well-known/jwks.json"
+        with urlopen(url) as jsonurl:  # noqa: S310
+            jwks = json.loads(jsonurl.read())
+            unverified_header = jwt.get_unverified_header(token)
+            keys = jwks.get("keys", [])
+
+            rsa_key = {}
+            try:
+                for key in keys:
+                    if key["kid"] != unverified_header["kid"]:
+                        continue
+                    rsa_key = {
+                        "kty": key["kty"],
+                        "kid": key["kid"],
+                        "use": key["use"],
+                        "n": key["n"],
+                        "e": key["e"],
+                    }
+            except KeyError as e:
+                raise InvalidAuthorizationTokenError from e
+
         payload = jwt.decode(
             token,
             rsa_key,
@@ -85,10 +82,12 @@ def verify_decode_jwt(token: str) -> Permissions:
         permissions = payload.get("permissions", [])
         return Permissions(permissions=permissions)
 
-    # TODO(dqk): add more error
-    except jwt.ExpiredSignatureError as e:
-        raise InvalidAuthorizationTokenError from e
-    except jwt.JWTClaimsError as e:
+    except (
+        jwt.JWTError,
+        jwt.JWSError,
+        jwt.ExpiredSignatureError,
+        jwt.JWTClaimsError,
+    ) as e:
         raise InvalidAuthorizationTokenError from e
     except Exception as e:  # noqa: BLE001
         raise InvalidAuthorizationTokenError from e

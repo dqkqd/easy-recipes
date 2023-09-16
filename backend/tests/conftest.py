@@ -8,6 +8,7 @@ from app import auth, create_app
 from app.auth import Permissions
 from app.config import TestingConfig
 from app.database import db
+from tests.utils import should_use_real_auth_test
 
 
 @pytest.fixture()
@@ -37,8 +38,10 @@ def app_context(app: Flask) -> Iterator[None]:  # noqa: PT004
 
 @pytest.fixture(autouse=True)
 def mock_auth(monkeypatch: pytest.MonkeyPatch) -> None:  # noqa: PT004
-    # TODO(dqk): try to run a real test if os.environ contains token.
-    def mock_return_permission(token: str) -> str:
+    if should_use_real_auth_test():
+        return
+
+    def mock_return_permission(token: str) -> Permissions:
         return Permissions(permissions=[token])
 
     monkeypatch.setattr(auth, "verify_decode_jwt", mock_return_permission)

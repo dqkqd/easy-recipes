@@ -8,9 +8,15 @@ from typing import TYPE_CHECKING, Any
 import numpy as np
 from PIL import Image
 
+from app import auth
 from app.file_server.image import ImageOnServer
 from app.schemas.ingredient import IngredientCreate
 from app.schemas.recipe import RecipeCreate
+from tests.utils import (
+    get_manager_token,
+    get_menu_manager_token,
+    should_use_real_auth_test,
+)
 
 if TYPE_CHECKING:
     from pydantic_core import Url
@@ -76,5 +82,25 @@ class MockRecipe:
 
 class MockAuth:
     @staticmethod
-    def header(token: str) -> dict[str, str]:
+    def header(permission: str) -> dict[str, str]:
+        token = permission
+        if should_use_real_auth_test():
+            menu_manager_token = get_menu_manager_token()
+            manager_token = get_manager_token()
+            if menu_manager_token is None or manager_token is None:
+                raise RuntimeError("Something wrong with authentication tokens")
+
+            match permission:
+                case (
+                    auth.CREATE_INGREDIENT_PERMISSION
+                    | auth.UPDATE_INGREDIENT_PERMISSION
+                    | auth.CREATE_RECIPE_PERMISSION
+                    | auth.UPDATE_RECIPE_PERMISSION
+                ):
+                    token = menu_manager_token
+                case auth.DELETE_INGREDIENT_PERMISSION | auth.DELETE_RECIPE_PERMISSION:
+                    token = manager_token
+                case _:
+                    pass
+
         return {"Authorization": f"Bearer {token}"}
