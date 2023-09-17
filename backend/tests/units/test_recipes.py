@@ -547,6 +547,41 @@ def test_200_add_ingredients(client: FlaskClient) -> None:
         assert [recipe.id for recipe in ingredient.recipes] == [1]
 
 
+def test_404_add_ingredients_invalid_recipe(client: FlaskClient) -> None:
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
+
+
+def test_404_add_ingredients_invalid_ingredients(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    response = client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
+
+
 def test_200_delete_ingredient(client: FlaskClient) -> None:
     client.post(
         "/recipes/",
@@ -592,3 +627,36 @@ def test_200_delete_ingredient(client: FlaskClient) -> None:
     )
     assert ingredient_ids() == [1, 2, 4]
     assert recipe_ids(5) == []
+
+
+def test_404_delete_ingredient_invalid_recipe(client: FlaskClient) -> None:
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.delete(
+        "/recipes/1/ingredients/1",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+    )
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
+
+
+def test_404_delete_ingredient_invalid_ingredients(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    response = client.delete(
+        "/recipes/1/ingredients/1",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+    )
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
