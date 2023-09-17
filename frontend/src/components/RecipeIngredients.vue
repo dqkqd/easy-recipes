@@ -6,14 +6,15 @@
     data-test="recipe-ingredients-pagination-error-dialog"
   />
 
+  <DialogLoading v-model="isLoading" data-test="recipe-ingredients-loading-dialog" />
+
   <VRow justify="center">
     <VCol
       class="font-weight-black text-h5 text-center"
       cols="9"
       data-test="recipe-ingredients-title"
+      >{{ titleMessage }}</VCol
     >
-      {{ titleMessage }}
-    </VCol>
 
     <VCol cols="3" align="center">
       <VBtn
@@ -49,6 +50,7 @@
 <script setup lang="ts">
 import CardIngredient from '@/components/CardIngredient.vue';
 import DialogError from '@/components/DialogError.vue';
+import DialogLoading from '@/components/DialogLoading.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { IngredientsResponseSchema, type IngredientsResponse } from '@/schema/ingredient';
@@ -60,7 +62,7 @@ const props = defineProps<{
 
 const currentPage = ref(1);
 
-const { result, error, execute } = useAxios<IngredientsResponse>((r) => {
+const { result, error, isLoading, execute } = useAxios<IngredientsResponse>((r) => {
   return IngredientsResponseSchema.parse(r.data);
 });
 
