@@ -17,9 +17,10 @@ describe('Render', () => {
   it('Render name less than 20 characters', function () {
     const recipe = RecipeSchema.parse(this.validRecipe);
     cy.mount(() => h(CardRecipe, { recipe: recipe }))
-      .get('[data-test="card-recipe-name"]')
+      .getTestSelector('card-recipe-name')
       .should('have.text', recipe.name)
-      .get('[data-test="card-recipe-image"] img')
+      .getTestSelector('card-recipe-image')
+      .find('img')
       .should('have.attr', 'src', recipe.image_uri);
   });
 
@@ -33,9 +34,10 @@ describe('Render', () => {
     });
 
     cy.mount(() => h(CardRecipe, { recipe: recipe }))
-      .get('[data-test="card-recipe-name"]')
+      .getTestSelector('card-recipe-name')
       .should('have.text', 'This is my first re…')
-      .get('[data-test="card-recipe-image"] img')
+      .getTestSelector('card-recipe-image')
+      .find('img')
       .should('have.attr', 'src', recipe.image_uri);
   });
 });
@@ -47,7 +49,7 @@ it('Mock move to recipe info', function () {
     .as('redirectedToRecipeInfo');
 
   cy.mount(() => h(CardRecipe, { recipe: recipe }))
-    .get('[data-test="card-to-recipe-details"]')
+    .getTestSelector('card-to-recipe-details')
     .click()
 
     .get('@redirectedToRecipeInfo')

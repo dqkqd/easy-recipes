@@ -10,23 +10,23 @@ beforeEach(() => {
 
 describe('Render', () => {
   it('Render properly', () => {
-    cy.get('[data-test=card-recipe-delete-warning]')
+    cy.getTestSelector('card-recipe-delete-warning')
       .should('be.visible')
 
-      .get('[data-test=card-recipe-delete-loading-dialog]')
+      .getTestSelector('card-recipe-delete-loading-dialog')
       .should('not.exist')
 
-      .get('[data-test=card-recipe-delete-error-dialog')
+      .getTestSelector('card-recipe-delete-error-dialog')
       .should('not.exist')
 
-      .get('[data-test=card-recipe-delete-deleted-dialog]')
+      .getTestSelector('card-recipe-delete-deleted-dialog')
       .should('not.exist');
   });
 });
 
 describe('Cancel', () => {
   it('Cancel should emit cancel event', () => {
-    cy.get('[data-test=card-warning-cancel-button]')
+    cy.getTestSelector('card-warning-cancel-button')
       .click()
       .get('@onCancel')
       .should('have.been.calledOnce');
@@ -53,14 +53,14 @@ describe('Delete', () => {
   it('Success', () => {
     cy.intercept({ method: 'delete', url: `${apiUrl}/recipes/1` }, { id: 1 });
 
-    cy.get('[data-test=card-warning-accept-button]')
+    cy.getTestSelector('card-warning-accept-button')
       .click()
 
       .get('@requestToBackEnd')
       .should('have.been.calledOnce')
-      .get('[data-test=card-recipe-delete-error-dialog]')
+      .getTestSelector('card-recipe-delete-error-dialog')
       .should('not.exist')
-      .get('[data-test=card-recipe-delete-deleted-dialog]')
+      .getTestSelector('card-recipe-delete-deleted-dialog')
       .should('be.visible')
       .should('contain.text', 'Recipe deleted')
       .should('contain.text', 'You will be redirected shortly...')
@@ -73,13 +73,13 @@ describe('Delete', () => {
   it('Failed', () => {
     cy.intercept({ method: 'delete', url: `${apiUrl}/recipes/1` }, { forceNetworkError: true });
 
-    cy.get('[data-test=card-warning-accept-button]')
+    cy.getTestSelector('card-warning-accept-button')
       .click()
 
       .get('@requestToBackEnd')
       .should('have.been.calledOnce')
 
-      .get('[data-test=card-recipe-delete-error-dialog]')
+      .getTestSelector('card-recipe-delete-error-dialog')
       .should('be.visible')
       .should('contain.text', 'Can not delete recipe')
       .should('contain.text', 'Please try again later')
@@ -94,13 +94,13 @@ describe('Delete', () => {
   it('Loading', () => {
     cy.intercept({ method: 'delete', url: `${apiUrl}/recipes/1` }, { delay: 1000 });
 
-    cy.get('[data-test=card-warning-accept-button]')
+    cy.getTestSelector('card-warning-accept-button')
       .click()
 
       .get('@requestToBackEnd')
       .should('have.been.calledOnce')
 
-      .get('[data-test=card-recipe-delete-loading-dialog]')
+      .getTestSelector('card-recipe-delete-loading-dialog')
       .should('be.visible');
   });
 });

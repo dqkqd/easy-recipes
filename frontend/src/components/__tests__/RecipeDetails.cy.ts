@@ -9,13 +9,14 @@ beforeEach(() => {
 
 describe('Render', () => {
   afterEach(function () {
-    cy.get('[data-test=recipe-details-name]')
+    cy.getTestSelector('recipe-details-name')
       .should('have.text', this.recipe.name)
 
-      .get('[data-test=recipe-details-image] img')
+      .getTestSelector('recipe-details-image')
+      .find('img')
       .should('have.attr', 'src', this.recipe.image_uri)
 
-      .get('[data-test=recipe-details-description]')
+      .getTestSelector('recipe-details-description')
       .should('have.text', this.recipe.description);
   });
 
@@ -23,10 +24,10 @@ describe('Render', () => {
     cy.signJWT(false).then(() => {
       cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
 
-        .get('[data-test=recipe-details-update-button]')
+        .getTestSelector('recipe-details-update-button')
         .should('not.exist')
 
-        .get('[data-test=recipe-details-delete-button]')
+        .getTestSelector('recipe-details-delete-button')
         .should('not.exist');
     });
   });
@@ -35,10 +36,10 @@ describe('Render', () => {
     cy.signJWT(true, ['update:recipe']).then(() => {
       cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
 
-        .get('[data-test=recipe-details-update-button]')
+        .getTestSelector('recipe-details-update-button')
         .should('be.visible')
 
-        .get('[data-test=recipe-details-delete-button]')
+        .getTestSelector('recipe-details-delete-button')
         .should('not.exist');
     });
   });
@@ -47,10 +48,10 @@ describe('Render', () => {
     cy.signJWT(true, ['delete:recipe']).then(() => {
       cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
 
-        .get('[data-test=recipe-details-update-button]')
+        .getTestSelector('recipe-details-update-button')
         .should('not.exist')
 
-        .get('[data-test=recipe-details-delete-button]')
+        .getTestSelector('recipe-details-delete-button')
         .should('be.visible');
     });
   });
@@ -59,10 +60,10 @@ describe('Render', () => {
     cy.signJWT(true, ['update:recipe', 'delete:recipe']).then(() => {
       cy.mount(() => h(RecipeDetails, { recipe: this.recipe }))
 
-        .get('[data-test=recipe-details-update-button]')
+        .getTestSelector('recipe-details-update-button')
         .should('be.visible')
 
-        .get('[data-test=recipe-details-delete-button]')
+        .getTestSelector('recipe-details-delete-button')
         .should('be.visible');
     });
   });
@@ -74,11 +75,11 @@ describe('Update recipe', () => {
       cy.mount(() => h(RecipeDetails, { recipe: this.recipe }));
     });
 
-    cy.get('[data-test=recipe-details-update-dialog]')
+    cy.getTestSelector('recipe-details-update-dialog')
       .should('not.exist')
-      .get('[data-test=recipe-details-update-button]')
+      .getTestSelector('recipe-details-update-button')
       .click()
-      .get('[data-test=recipe-details-update-dialog]')
+      .getTestSelector('recipe-details-update-dialog')
       .should('be.visible');
 
     cy.fixture('recipes/details/2.json')
@@ -89,15 +90,18 @@ describe('Update recipe', () => {
           { ...this.recipe, ...secondRecipe }
         );
 
-        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
+        cy.getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-name')
+          .find('input')
           .clear()
           .type(secondRecipe.name)
-          .get(
-            '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
-          )
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-description')
+          .find('textarea')
           .clear()
           .type(secondRecipe.description)
-          .get('[data-test=form-image-input-url] input')
+          .getTestSelector('form-image-input-url')
+          .find('input')
           .clear()
           .type(secondRecipe.image_uri);
       });
@@ -105,55 +109,59 @@ describe('Update recipe', () => {
 
   describe('Success', () => {
     afterEach(function () {
-      cy.get('[data-test=recipe-details-name]')
+      cy.getTestSelector('recipe-details-name')
         .should('have.text', this.secondRecipe.name)
 
-        .get('[data-test=recipe-details-image] img')
+        .getTestSelector('recipe-details-image')
+        .find('img')
         .should('have.attr', 'src', this.secondRecipe.image_uri)
 
-        .get('[data-test=recipe-details-description]')
+        .getTestSelector('recipe-details-description')
         .should('have.text', this.secondRecipe.description);
     });
 
     it('Update change recipe details', function () {
-      cy.get(
-        '[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]'
-      ).click();
+      cy.getTestSelector('card-recipe-update-form-recipe')
+        .findTestSelector('base-form-submit-button')
+        .click();
     });
 
     it('After updating recipe close update dialog', () => {
-      cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+      cy.getTestSelector('card-recipe-update-form-recipe')
+        .findTestSelector('base-form-submit-button')
         .click()
 
-        .get('[data-test=recipe-details-update-dialog')
+        .getTestSelector('recipe-details-update-dialog')
         .should('not.exist');
     });
 
     it('After updating recipe show success dialog', () => {
-      cy.get('[data-test=card-recipe-update-updated-dialog]')
+      cy.getTestSelector('card-recipe-update-updated-dialog')
         .should('not.exist')
-        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+        .getTestSelector('card-recipe-update-form-recipe')
+        .findTestSelector('base-form-submit-button')
         .click()
 
-        .get('[data-test=card-recipe-update-updated-dialog]')
+        .getTestSelector('card-recipe-update-updated-dialog')
         .should('be.visible')
-        .get('[data-test=card-recipe-update-updated-dialog]')
+        .getTestSelector('card-recipe-update-updated-dialog')
         .should('not.exist');
     });
   });
 
   describe('Failed', () => {
     afterEach(function () {
-      cy.get('[data-test=card-recipe-update-updated-dialog]')
+      cy.getTestSelector('card-recipe-update-updated-dialog')
         .should('not.exist')
 
-        .get('[data-test=recipe-details-name]')
+        .getTestSelector('recipe-details-name')
         .should('have.text', this.recipe.name)
 
-        .get('[data-test=recipe-details-image] img')
+        .getTestSelector('recipe-details-image')
+        .find('img')
         .should('have.attr', 'src', this.recipe.image_uri)
 
-        .get('[data-test=recipe-details-description]')
+        .getTestSelector('recipe-details-description')
         .should('have.text', this.recipe.description);
     });
 
@@ -163,12 +171,13 @@ describe('Update recipe', () => {
         { forceNetworkError: true }
       );
 
-      cy.get('[data-test=card-recipe-update-error-dialog]')
+      cy.getTestSelector('card-recipe-update-error-dialog')
         .should('not.exist')
-        .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+        .getTestSelector('card-recipe-update-form-recipe')
+        .findTestSelector('base-form-submit-button')
         .click()
 
-        .get('[data-test=card-recipe-update-error-dialog]');
+        .getTestSelector('card-recipe-update-error-dialog');
     });
   });
 });
@@ -181,13 +190,13 @@ describe('Delete recipe', () => {
 
     cy.spy(router, 'push').withArgs({ name: 'RecipeView' }).as('redirectedToRecipeVIew');
 
-    cy.get('[data-test=recipe-details-delete-dialog]')
+    cy.getTestSelector('recipe-details-delete-dialog')
       .should('not.exist')
 
-      .get('[data-test=recipe-details-delete-button]')
+      .getTestSelector('recipe-details-delete-button')
       .click()
 
-      .get('[data-test=recipe-details-delete-dialog]')
+      .getTestSelector('recipe-details-delete-dialog')
       .should('be.visible');
   });
 
@@ -196,7 +205,7 @@ describe('Delete recipe', () => {
       { method: 'delete', url: `${apiUrl}/recipes/${this.recipe.id}` },
       { id: this.recipe.id }
     );
-    cy.get('[data-test=card-warning-accept-button]')
+    cy.getTestSelector('card-warning-accept-button')
       .click()
       .get('@redirectedToRecipeVIew')
       .should('have.been.called');
@@ -208,19 +217,19 @@ describe('Delete recipe', () => {
       { forceNetworkError: true }
     );
 
-    cy.get('[data-test=card-warning-accept-button]')
+    cy.getTestSelector('card-warning-accept-button')
       .click()
 
       .get('@redirectedToRecipeVIew')
       .should('not.have.been.called')
-      .get('[data-test=recipe-details-delete-dialog]')
+      .getTestSelector('recipe-details-delete-dialog')
       .should('not.exist');
   });
 
   it('Cancel', () => {
-    cy.get('[data-test=card-warning-cancel-button]')
+    cy.getTestSelector('card-warning-cancel-button')
       .click()
-      .get('[data-test=recipe-details-delete-dialog]')
+      .getTestSelector('recipe-details-delete-dialog')
       .should('not.exist');
   });
 });

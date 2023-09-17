@@ -13,9 +13,10 @@ describe('Render', () => {
     });
 
     cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
-      .get('[data-test="card-ingredient-name"]')
+      .getTestSelector('card-ingredient-name')
       .should('have.text', ingredient.name)
-      .get('[data-test="card-ingredient-image"] img')
+      .getTestSelector('card-ingredient-image')
+      .find('img')
       .should('have.attr', 'src', ingredient.image_uri);
   });
 
@@ -29,9 +30,10 @@ describe('Render', () => {
     });
 
     cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
-      .get('[data-test="card-ingredient-name"]')
+      .getTestSelector('card-ingredient-name')
       .should('have.text', 'My first …')
-      .get('[data-test="card-ingredient-image"] img')
+      .getTestSelector('card-ingredient-image')
+      .find('img')
       .should('have.attr', 'src', ingredient.image_uri);
   });
 });
@@ -47,13 +49,13 @@ describe('Ingredient details dialog', () => {
     });
 
     cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
-      .get('[data-test=ingredient-details]')
+      .getTestSelector('ingredient-details')
       .should('not.exist')
 
-      .get('[data-test=card-to-ingredient-details]')
+      .getTestSelector('card-to-ingredient-details')
       .click()
 
-      .get('[data-test=ingredient-details]')
+      .getTestSelector('ingredient-details')
       .should('be.visible');
   });
 });

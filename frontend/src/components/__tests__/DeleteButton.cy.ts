@@ -11,7 +11,7 @@ it('Render properly', () => {
     .root()
     .should('contain', 'mdi-plus')
 
-    .get('[data-test=delete-button-dialog]')
+    .getTestSelector('delete-button-dialog')
     .should('not.exist');
 });
 
@@ -23,33 +23,35 @@ it('Render default properly', () => {
 
 it('Show dialog when clicking delete button', () => {
   cy.mount(() => h(DeleteButton))
-    .get('[data-test=delete-button]')
+    .getTestSelector('delete-button')
     .click()
-    .get('[data-test=delete-button-dialog]')
+    .getTestSelector('delete-button-dialog')
     .should('be.visible');
 });
 
 it('Close dialog when clicking cancel', () => {
   cy.mount(() => h(DeleteButton))
-    .get('[data-test=delete-button]')
+    .getTestSelector('delete-button')
     .click()
 
-    .get('[data-test=delete-button-dialog] [data-test=card-warning-cancel-button]')
+    .getTestSelector('delete-button-dialog')
+    .findTestSelector('card-warning-cancel-button')
     .click()
 
-    .get('[data-test=delete-button-dialog]')
+    .getTestSelector('delete-button-dialog')
     .should('not.exist');
 });
 
 it('Close dialog when clicking accept', () => {
   cy.mount(() => h(DeleteButton))
-    .get('[data-test=delete-button]')
+    .getTestSelector('delete-button')
     .click()
 
-    .get('[data-test=delete-button-dialog] [data-test=card-warning-accept-button]')
+    .getTestSelector('delete-button-dialog')
+    .findTestSelector('card-warning-accept-button')
     .click()
 
-    .get('[data-test=delete-button-dialog]')
+    .getTestSelector('delete-button-dialog')
     .should('not.exist');
 });
 
@@ -59,10 +61,11 @@ it('Emit accept event when clicking accept', () => {
       onAccept: cy.spy().as('onAccept')
     })
   )
-    .get('[data-test=delete-button]')
+    .getTestSelector('delete-button')
     .click()
 
-    .get('[data-test=delete-button-dialog] [data-test=card-warning-accept-button]')
+    .getTestSelector('delete-button-dialog')
+    .findTestSelector('card-warning-accept-button')
     .click()
 
     .get('@onAccept')

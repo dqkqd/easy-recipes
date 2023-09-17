@@ -10,9 +10,9 @@ describe('Render', () => {
         content: 'Success content'
       })
     )
-      .get('[data-test=dialog-success-title]')
+      .getTestSelector('dialog-success-title')
       .should('have.text', 'Success title')
-      .get('[data-test=dialog-success-content]')
+      .getTestSelector('dialog-success-content')
       .should('have.text', 'Success content');
   });
 
@@ -22,9 +22,9 @@ describe('Render', () => {
         modelValue: true
       })
     )
-      .get('[data-test=dialog-success-title]')
+      .getTestSelector('dialog-success-title')
       .should('not.exist')
-      .get('[data-test=dialog-success-content]')
+      .getTestSelector('dialog-success-content')
       .should('not.exist');
   });
 });

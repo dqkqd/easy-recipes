@@ -12,13 +12,14 @@ describe('Render', () => {
         buttonLabel: 'Button Label'
       })
     )
-      .get('[data-test=base-view-banner-image] img')
+      .getTestSelector('base-view-banner-image')
+      .find('img')
       .should('have.attr', 'src', 'https://picsum.photos/200')
 
-      .get('[data-test=base-view-banner-title]')
+      .getTestSelector('base-view-banner-title')
       .should('contain.text', 'Banner Title')
 
-      .get('[data-test=base-view-banner-button]')
+      .getTestSelector('base-view-banner-button')
       .should('be.visible');
   });
 
@@ -30,7 +31,7 @@ describe('Render', () => {
       })
     )
 
-      .get('[data-test=base-view-banner-button]')
+      .getTestSelector('base-view-banner-button')
       .should('not.exist');
   });
 });

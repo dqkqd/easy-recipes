@@ -5,13 +5,18 @@ describe('Render', () => {
   it('Render passed ingredient', () => {
     cy.fixture('ingredients/details/1.json').then((ingredient) => {
       cy.mount(() => h(FormIngredient, { ingredient: ingredient }))
-        .get('[data-test=form-ingredient] [data-test=base-form-name] input')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-name')
+        .find('input')
         .should('have.value', ingredient.name)
 
-        .get('[data-test=form-ingredient] [data-test=base-form-description] textarea')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-description')
+        .find('textarea')
         .should('have.value', ingredient.description)
 
-        .get('[data-test=form-image-input-image] img')
+        .getTestSelector('form-image-input-image')
+        .find('img')
         .should('have.attr', 'src', ingredient.image_uri);
     });
   });
@@ -27,9 +32,11 @@ describe('Submit', () => {
             onSubmit: cy.spy().as('onSubmit')
           })
         )
-          .get('[data-test=form-ingredient] [data-test=base-form-name]')
+          .getTestSelector('form-ingredient')
+          .findTestSelector('base-form-name')
           .type(recipe.name)
-          .get('[data-test=form-ingredient] [data-test=base-form-description]')
+          .getTestSelector('form-ingredient')
+          .findTestSelector('base-form-description')
           .type(recipe.description);
       });
   });
@@ -40,15 +47,22 @@ describe('Loading', () => {
     afterEach(() => {
       cy.get('.v-progress-circular')
         .should('not.exist')
-        .get('[data-test=form-ingredient] [data-test=base-form-name] input')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-name')
+        .find('input')
         .should('not.be.disabled')
-        .get('[data-test=form-ingredient] [data-test=base-form-description] textarea')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-description')
+        .find('textarea')
         .should('not.be.disabled')
-        .get('[data-test=form-image-input-file] input')
+        .getTestSelector('form-image-input-file')
+        .find('input')
         .should('not.be.disabled')
-        .get('[data-test=form-image-input-url] input')
+        .getTestSelector('form-image-input-url')
+        .find('input')
         .should('not.be.disabled')
-        .get('[data-test=form-ingredient] [data-test=base-form-submit-button]')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-submit-button')
         .should('not.be.disabled');
     });
 
@@ -65,20 +79,26 @@ describe('Loading', () => {
     afterEach(() => {
       cy.get('.v-progress-circular')
         .should('be.visible')
-        .get('[data-test=form-ingredient] [data-test=base-form-name] input')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-name')
+        .find('input')
         .should('be.disabled')
-        .get('[data-test=form-ingredient] [data-test=base-form-description] textarea')
+        .getTestSelector('form-ingredient')
+        .findTestSelector('base-form-description')
+        .find('textarea')
         .should('be.disabled')
-        .get('[data-test=form-image-input-file] input')
+        .getTestSelector('form-image-input-file')
+        .find('input')
         .should('be.disabled')
-        .get('[data-test=form-image-input-url] input')
+        .getTestSelector('form-image-input-url')
+        .find('input')
         .should('be.disabled');
 
       cy.once('fail', (err) => {
         expect(err.message).to.include('`cy.click()` failed because this element');
         expect(err.message).to.include('`pointer-events: none` prevents user mouse interaction');
       });
-      cy.get('[data-test=form-ingredient] [data-test=base-form-submit-button]').click({
+      cy.getTestSelector('form-ingredient').findTestSelector('base-form-submit-button').click({
         timeout: 100
       });
     });

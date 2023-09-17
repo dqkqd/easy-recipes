@@ -43,6 +43,8 @@ declare global {
   namespace Cypress {
     interface Chainable {
       signJWT(enableAuth: boolean, permissions?: string[]): Promise<string>;
+      getTestSelector(testSelector: string): Chainable<JQuery<Node>>;
+      findTestSelector(subject: any, testSelector: string): Chainable<JQuery<Node>>;
     }
   }
 }
@@ -65,4 +67,12 @@ Cypress.Commands.add('signJWT', async (enableAuth: boolean, permissions: string[
   cy.stub(auth0, 'getAccessTokenSilently').resolves(jwt);
 
   return jwt;
+});
+
+Cypress.Commands.add('getTestSelector', (testSelector: string) => {
+  return cy.get(`[data-test=${testSelector}]`);
+});
+
+Cypress.Commands.add('findTestSelector', { prevSubject: true }, (subject, testSelector: string) => {
+  return subject.find(`[data-test=${testSelector}]`);
 });

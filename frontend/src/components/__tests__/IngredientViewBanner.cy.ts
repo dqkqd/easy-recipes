@@ -3,18 +3,20 @@ import { h } from 'vue';
 
 describe('Render', () => {
   afterEach(() => {
-    cy.get('[data-test=ingredient-view-banner] img')
+    cy.getTestSelector('ingredient-view-banner')
+      .find('img')
       .should('have.attr', 'src', '/ingredient-cover.jpg')
 
-      .get('[data-test=ingredient-view-banner] [data-test=base-view-banner-title]')
+      .getTestSelector('ingredient-view-banner')
+      .findTestSelector('base-view-banner-title')
       .should('contain.text', 'Ready to explore more ingredients?');
   });
 
   describe('Render without create permission', () => {
     afterEach(() => {
-      cy.get('[data-test=ingredient-view-banner] [data-test=base-view-banner-button]').should(
-        'not.exist'
-      );
+      cy.getTestSelector('ingredient-view-banner')
+        .findTestSelector('base-view-banner-button')
+        .should('not.exist');
     });
 
     it('Render without authentication', () => {
@@ -34,7 +36,8 @@ describe('Render', () => {
 it('Render with create ingredient permission', () => {
   cy.signJWT(true, ['create:ingredient']).then(() => {
     cy.mount(() => h(IngredientViewBanner))
-      .get('[data-test=ingredient-view-banner] [data-test=base-view-banner-button]')
+      .getTestSelector('ingredient-view-banner')
+      .findTestSelector('base-view-banner-button')
       .should('be.visible');
   });
 });
@@ -42,11 +45,12 @@ it('Render with create ingredient permission', () => {
 it('New ingredient button', () => {
   cy.signJWT(true, ['create:ingredient']).then(() => {
     cy.mount(() => h(IngredientViewBanner))
-      .get('[data-test=ingredient-view-banner-card-ingredient-create]')
+      .getTestSelector('ingredient-view-banner-card-ingredient-create')
       .should('not.exist')
-      .get('[data-test=ingredient-view-banner] [data-test=base-view-banner-button]')
+      .getTestSelector('ingredient-view-banner')
+      .findTestSelector('base-view-banner-button')
       .click()
-      .get('[data-test=ingredient-view-banner-card-ingredient-create]')
+      .getTestSelector('ingredient-view-banner-card-ingredient-create')
       .should('be.visible');
   });
 });

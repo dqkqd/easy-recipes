@@ -10,16 +10,17 @@ beforeEach(() => {
 });
 
 it('Render properly', function () {
-  cy.get('[data-test=ingredient-details-name]')
+  cy.getTestSelector('ingredient-details-name')
     .should('have.text', this.ingredient.name)
 
-    .get('[data-test=ingredient-details-image] img')
+    .getTestSelector('ingredient-details-image')
+    .find('img')
     .should('have.attr', 'src', this.ingredient.image_uri)
 
-    .get('[data-test=ingredient-details-description]')
+    .getTestSelector('ingredient-details-description')
     .should('have.text', this.ingredient.description)
 
-    .get('[data-test=ingredient-details-like]')
+    .getTestSelector('ingredient-details-like')
     .should('be.visible');
 });
 

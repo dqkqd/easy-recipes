@@ -13,15 +13,17 @@ describe('Render', () => {
   it('Render properly', () => {
     cy.mount(() => h(BaseForm))
 
-      .get('[data-test=base-form-name] label')
+      .getTestSelector('base-form-name')
+      .find('label')
       .first()
       .should('have.text', 'Name *')
 
-      .get('[data-test=base-form-description] label')
+      .getTestSelector('base-form-description')
+      .find('label')
       .first()
       .should('have.text', 'Description')
 
-      .get('[data-test=base-form-submit-button]')
+      .getTestSelector('base-form-submit-button')
       .should('have.text', 'Submit');
   });
 
@@ -33,13 +35,16 @@ describe('Render', () => {
         image: this.form.image
       })
     )
-      .get('[data-test=base-form-name] input')
+      .getTestSelector('base-form-name')
+      .find('input')
       .should('have.value', this.form.name)
 
-      .get('[data-test=base-form-description] textarea')
+      .getTestSelector('base-form-description')
+      .find('textarea')
       .should('have.value', this.form.description)
 
-      .get('[data-test=form-image-input-image] img')
+      .getTestSelector('form-image-input-image')
+      .find('img')
       .should('have.attr', 'src', this.form.image);
   });
 });
@@ -52,23 +57,23 @@ describe('Submit', () => {
           onSubmit: cy.spy().as('onSubmit')
         })
       )
-        .get('[data-test=base-form-name]')
+        .getTestSelector('base-form-name')
         .type(this.form.name)
-        .get('[data-test=base-form-description]')
+        .getTestSelector('base-form-description')
         .type(this.form.description);
     });
 
     it('No image selected', function () {
-      cy.get('[data-test=base-form-submit-button]')
+      cy.getTestSelector('base-form-submit-button')
         .click()
         .get('@onSubmit')
         .should('have.been.calledWith', this.form.name, null, this.form.description);
     });
 
     it('Input image url', function () {
-      cy.get('[data-test=form-image-input-url]')
+      cy.getTestSelector('form-image-input-url')
         .type(this.form.image)
-        .get('[data-test=base-form-submit-button]')
+        .getTestSelector('base-form-submit-button')
         .click()
         .get('@onSubmit')
         .should('have.been.calledWith', this.form.name, this.form.image, this.form.description);
@@ -76,9 +81,10 @@ describe('Submit', () => {
 
     it('Input image file', function () {
       const file = 'cypress/fixtures/images/recipe.png';
-      cy.get('[data-test=form-image-input-file] input')
+      cy.getTestSelector('form-image-input-file')
+        .find('input')
         .selectFile(file)
-        .get('[data-test=base-form-submit-button]')
+        .getTestSelector('base-form-submit-button')
         .click()
         .get('@onSubmit')
         .should('have.been.calledOnce');
@@ -103,14 +109,14 @@ describe('Submit', () => {
       });
 
       it('Can not submit form with empty name', () => {
-        cy.get('[data-test=base-form-submit-button]')
+        cy.getTestSelector('base-form-submit-button')
           .click()
           .root()
           .should('contain.text', 'Name is required');
       });
 
       it('Can not submit form with invalid url', function () {
-        cy.get('[data-test=form-image-input-url]')
+        cy.getTestSelector('form-image-input-url')
           .type('Invalid url')
           .root()
           .should('contain.text', 'Invalid URL');
@@ -124,15 +130,19 @@ describe('Loading', () => {
     afterEach(() => {
       cy.get('.v-progress-circular')
         .should('not.exist')
-        .get('[data-test=base-form-name] input')
+        .getTestSelector('base-form-name')
+        .find('input')
         .should('not.be.disabled')
-        .get('[data-test=base-form-description] textarea')
+        .getTestSelector('base-form-description')
+        .find('textarea')
         .should('not.be.disabled')
-        .get('[data-test=form-image-input-file] input')
+        .getTestSelector('form-image-input-file')
+        .find('input')
         .should('not.be.disabled')
-        .get('[data-test=form-image-input-url] input')
+        .getTestSelector('form-image-input-url')
+        .find('input')
         .should('not.be.disabled')
-        .get('[data-test=base-form-submit-button]')
+        .getTestSelector('base-form-submit-button')
         .should('not.be.disabled');
     });
 
@@ -149,20 +159,24 @@ describe('Loading', () => {
     afterEach(() => {
       cy.get('.v-progress-circular')
         .should('be.visible')
-        .get('[data-test=base-form-name] input')
+        .getTestSelector('base-form-name')
+        .find('input')
         .should('be.disabled')
-        .get('[data-test=base-form-description] textarea')
+        .getTestSelector('base-form-description')
+        .find('textarea')
         .should('be.disabled')
-        .get('[data-test=form-image-input-file] input')
+        .getTestSelector('form-image-input-file')
+        .find('input')
         .should('be.disabled')
-        .get('[data-test=form-image-input-url] input')
+        .getTestSelector('form-image-input-url')
+        .find('input')
         .should('be.disabled');
 
       cy.once('fail', (err) => {
         expect(err.message).to.include('`cy.click()` failed because this element');
         expect(err.message).to.include('`pointer-events: none` prevents user mouse interaction');
       });
-      cy.get('[data-test=base-form-submit-button]').click({ timeout: 100 });
+      cy.getTestSelector('base-form-submit-button').click({ timeout: 100 });
     });
 
     it('Loading=true', () => {

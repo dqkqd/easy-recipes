@@ -9,25 +9,25 @@ it('Render properly', () => {
   };
 
   cy.mount(() => h(CardWarning, props))
-    .get('[data-test=card-warning-title]')
+    .getTestSelector('card-warning-title')
     .should('have.text', props.title)
 
-    .get('[data-test=card-warning-accept-button]')
+    .getTestSelector('card-warning-accept-button')
     .should('have.text', props.acceptLabel)
 
-    .get('[data-test=card-warning-cancel-button]')
+    .getTestSelector('card-warning-cancel-button')
     .should('have.text', props.cancelLabel);
 });
 
 it('Render default', () => {
   cy.mount(() => h(CardWarning))
-    .get('[data-test=card-warning-title]')
+    .getTestSelector('card-warning-title')
     .should('not.exist')
 
-    .get('[data-test=card-warning-accept-button]')
+    .getTestSelector('card-warning-accept-button')
     .should('have.text', 'Accept')
 
-    .get('[data-test=card-warning-cancel-button]')
+    .getTestSelector('card-warning-cancel-button')
     .should('have.text', 'Cancel');
 });
 
@@ -39,12 +39,12 @@ it('Emit accept and cancel when clicking', () => {
     })
   )
 
-    .get('[data-test=card-warning-accept-button]')
+    .getTestSelector('card-warning-accept-button')
     .click()
     .get('@onAccept')
     .should('have.been.calledOnce')
 
-    .get('[data-test=card-warning-cancel-button]')
+    .getTestSelector('card-warning-cancel-button')
     .click()
     .get('@onCancel')
     .should('have.been.calledOnce');

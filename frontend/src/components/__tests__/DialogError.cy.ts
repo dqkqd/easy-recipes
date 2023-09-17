@@ -10,9 +10,9 @@ describe('Render', () => {
         content: 'Error content'
       })
     )
-      .get('[data-test=dialog-error-title]')
+      .getTestSelector('dialog-error-title')
       .should('have.text', 'Error title')
-      .get('[data-test=dialog-error-content]')
+      .getTestSelector('dialog-error-content')
       .should('have.text', 'Error content');
   });
 
@@ -22,9 +22,9 @@ describe('Render', () => {
         modelValue: true
       })
     )
-      .get('[data-test=dialog-error-title]')
+      .getTestSelector('dialog-error-title')
       .should('not.exist')
-      .get('[data-test=dialog-error-content]')
+      .getTestSelector('dialog-error-content')
       .should('not.exist');
   });
 });

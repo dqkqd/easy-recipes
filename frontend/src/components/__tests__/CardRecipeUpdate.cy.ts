@@ -18,11 +18,11 @@ beforeEach(() => {
 
 describe('Render', () => {
   it('Render properly', () => {
-    cy.get('[data-test=card-recipe-update-title]')
+    cy.getTestSelector('card-recipe-update-title')
       .should('have.text', 'Update your recipe')
-      .get('[data-test=card-recipe-update-form-recipe]')
+      .getTestSelector('card-recipe-update-form-recipe')
       .should('be.visible')
-      .get('[data-test=card-recipe-update-error-dialog]')
+      .getTestSelector('card-recipe-update-error-dialog')
       .should('not.exist');
   });
 });
@@ -59,19 +59,23 @@ describe('Submit', () => {
             .as('requestToBackEnd');
         });
 
-        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
+        cy.getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-name')
+          .find('input')
           .clear()
           .type(recipe.name)
-          .get(
-            '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
-          )
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-description')
+          .find('textarea')
           .clear()
           .type(recipe.description)
-          .get('[data-test=form-image-input-url] input')
+          .getTestSelector('form-image-input-url')
+          .find('input')
           .clear()
           .type(recipe.image_uri)
 
-          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-submit-button')
           .click()
 
           .get('@onUpdated')
@@ -105,9 +109,11 @@ describe('Submit', () => {
             .as('requestToBackEnd');
         });
 
-        cy.get('[data-test=form-image-input-file] input')
+        cy.getTestSelector('form-image-input-file')
+          .find('input')
           .selectFile('cypress/fixtures/images/recipe.png')
-          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-submit-button')
           .click()
           .get('@onUpdated')
           .should('have.been.calledOnce');
@@ -124,44 +130,54 @@ describe('Submit', () => {
       cy.signJWT(true, ['update:recipe']).then(() => {
         cy.get('.v-progress-circular')
           .should('not.exist')
-          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-name')
+          .find('input')
           .should('not.be.disabled')
           .type('New name')
 
-          .get(
-            '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
-          )
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-description')
+          .find('textarea')
           .should('not.be.disabled')
-          .get('[data-test=form-image-input-file] input')
+          .getTestSelector('form-image-input-file')
+          .find('input')
           .should('not.be.disabled')
-          .get('[data-test=form-image-input-url] input')
+          .getTestSelector('form-image-input-url')
+          .find('input')
           .should('not.be.disabled')
-          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-submit-button')
           .should('not.be.disabled')
 
-          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-submit-button')
           .click()
 
           .get('.v-progress-circular')
           .should('be.visible')
-          .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-name')
+          .find('input')
           .should('be.disabled')
-          .get(
-            '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
-          )
+          .getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-description')
+          .find('textarea')
           .should('be.disabled')
-          .get('[data-test=form-image-input-file] input')
+          .getTestSelector('form-image-input-file')
+          .find('input')
           .should('be.disabled')
-          .get('[data-test=form-image-input-url] input')
+          .getTestSelector('form-image-input-url')
+          .find('input')
           .should('be.disabled');
 
         cy.once('fail', (err) => {
           expect(err.message).to.include('`cy.click()` failed because this element');
           expect(err.message).to.include('`pointer-events: none` prevents user mouse interaction');
         });
-        cy.get(
-          '[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]'
-        ).click({ timeout: 100 });
+        cy.getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-submit-button')
+          .click({ timeout: 100 });
       });
     });
   });
@@ -172,7 +188,8 @@ describe('Submit', () => {
     });
 
     afterEach(() => {
-      cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+      cy.getTestSelector('card-recipe-update-form-recipe')
+        .findTestSelector('base-form-submit-button')
         .click()
         .get('@requestToBackEnd')
         .should('not.have.been.called');
@@ -182,27 +199,32 @@ describe('Submit', () => {
 
     describe('Editting then rollback', () => {
       it('Name', function () {
-        cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input').type(
-          `{selectall}{backspace}${this.recipe.name}`
-        );
+        cy.getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-name')
+          .find('input')
+          .type(`{selectall}{backspace}${this.recipe.name}`);
       });
 
       it('Description', function () {
-        cy.get(
-          '[data-test=card-recipe-update-form-recipe] [data-test=base-form-description] textarea'
-        ).type(`{selectall}{backspace}${this.recipe.description}`);
+        cy.getTestSelector('card-recipe-update-form-recipe')
+          .findTestSelector('base-form-description')
+          .find('textarea')
+          .type(`{selectall}{backspace}${this.recipe.description}`);
       });
 
       it('Image URL', function () {
-        cy.get('[data-test=form-image-input-url] input')
+        cy.getTestSelector('form-image-input-url')
+          .find('input')
           .type(`{selectall}{backspace}${this.recipe.image_uri}`)
           .type('{selectall}{backspace}');
       });
 
       it('Image file', function () {
-        cy.get('[data-test=form-image-input-file] input')
+        cy.getTestSelector('form-image-input-file')
+          .find('input')
           .selectFile('cypress/fixtures/images/recipe.png')
-          .get('[data-test=form-image-input-file] i[role=button]')
+          .getTestSelector('form-image-input-file')
+          .find('i[role=button]')
           .click();
       });
     });
@@ -225,18 +247,21 @@ describe('Submit', () => {
         );
 
         cy.signJWT(true, ['update:recipe']).then(() => {
-          cy.get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-name] input')
+          cy.getTestSelector('card-recipe-update-form-recipe')
+            .findTestSelector('base-form-name')
+            .find('input')
             .type('{selectall}{backspace}My new recipe')
 
-            .get('[data-test=card-recipe-update-error-dialog]')
+            .getTestSelector('card-recipe-update-error-dialog')
             .should('not.exist')
-            .get('[data-test=card-recipe-update-form-recipe] [data-test=base-form-submit-button]')
+            .getTestSelector('card-recipe-update-form-recipe')
+            .findTestSelector('base-form-submit-button')
             .click()
 
-            .get('[data-test=card-recipe-update-error-dialog]')
+            .getTestSelector('card-recipe-update-error-dialog')
             .should('be.visible')
             .wait(2000)
-            .get('[data-test=card-recipe-update-error-dialog]')
+            .getTestSelector('card-recipe-update-error-dialog')
             .should('not.exist');
         });
       });

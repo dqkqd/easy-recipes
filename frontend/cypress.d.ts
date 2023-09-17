@@ -9,6 +9,8 @@ declare global {
       mount: typeof mount;
 
       signJWT(enableAuth: boolean, permissions?: string[]): Promise<string>;
+      getTestSelector(testSelector: string): Chainable<JQuery<Node>>;
+      findTestSelector(testSelector: string): Chainable<JQuery<Node>>;
     }
   }
 }
