@@ -33,6 +33,7 @@ def test_200_create_basic(client: FlaskClient) -> None:
 
     assert recipe.id == 1
     assert recipe.name == recipe_create.name
+    assert recipe.likes == 0
 
     # same image but different url
     assert isinstance(recipe_create.image_uri, Url)
@@ -185,9 +186,10 @@ def test_200_get_recipe_basic(client: FlaskClient) -> None:
     recipe = Recipe(**data)
 
     assert response.status_code == 200
-    assert recipe_create.model_dump(
-        exclude={"image_uri"},
-    ) == recipe.model_dump(exclude={"id", "image_uri"})
+    assert (
+        recipe_create.model_dump(exclude={"image_uri"}).items()
+        <= recipe.model_dump().items()
+    )
 
     assert isinstance(recipe_create.image_uri, Url)
     assert recipe_create.image_uri != recipe.image_uri
@@ -314,7 +316,7 @@ def test_200_get_all(client: FlaskClient) -> None:
 
         inserted_data.pop("image_uri")
 
-        assert response_data == inserted_data
+        assert response_data.items() >= inserted_data.items()
 
 
 def test_200_get_all_no_data(client: FlaskClient) -> None:
@@ -472,4 +474,35 @@ def test_200_recipe_update(client: FlaskClient) -> None:
     assert data.pop("id") == 1
     assert isinstance(recipe_update.image_uri, Url)
     compare_image_data_from_uri(recipe_update.image_uri, Url(data.pop("image_uri")))
-    assert data == recipe_update.model_dump(mode="json", exclude={"image_uri"})
+    assert (
+        data.items()
+        >= recipe_update.model_dump(mode="json", exclude={"image_uri"}).items()
+    )
+
+
+def test_200_like_recipe(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    response = client.get("/recipes/1")
+    data = json.loads(response.data)
+    recipe = Recipe(**data)
+
+    assert recipe.likes == 0
+
+    total_likes = 0
+    for _ in range(10):
+        response = client.post("/recipes/1/like")
+        assert response.status_code == 200
+        data = json.loads(response.data)
+
+        total_likes += 1
+        assert data == {"id": 1, "total_likes": total_likes}
+
+        response = client.get("/recipes/1")
+        data = json.loads(response.data)
+        recipe = Recipe(**data)
+        assert recipe.likes == total_likes

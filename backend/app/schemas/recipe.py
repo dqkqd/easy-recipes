@@ -54,6 +54,7 @@ class RecipeInDBBase(IDModelMixin, RecipeBase):
 
 class Recipe(RecipeInDBBase):
     ingredients: set[IngredientInDBBase] = Field(default_factory=set)
+    likes: int
 
 
 from app.schemas.ingredient import IngredientInDBBase  # noqa: TCH001, E402, F811
