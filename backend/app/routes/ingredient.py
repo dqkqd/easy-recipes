@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 from flask import Blueprint, abort, jsonify, request
@@ -41,8 +42,16 @@ def get_ingredients() -> Response:
 @api.route("/")
 @to_handleable_error
 def get_paginations() -> Response:
+    pagination_size = config.INGREDIENTS_PAGINATION_SIZE
+    with contextlib.suppress(ValueError):
+        pagination_size = request.args.get(
+            "per_page",
+            default=config.INGREDIENTS_PAGINATION_SIZE,
+            type=int,
+        )
+
     paginaged_ingredients = crud_ingredient.get_pagination(
-        config.INGREDIENTS_PAGINATION_SIZE,
+        pagination_size=pagination_size,
     )
 
     if (

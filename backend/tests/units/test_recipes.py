@@ -400,6 +400,24 @@ def test_200_get_pagination_no_param(client: FlaskClient) -> None:
     assert len(data["recipes"]) == 1
 
 
+def test_200_get_pagination_with_per_page(client: FlaskClient) -> None:
+    num_datas = 14
+    for _ in range(num_datas):
+        client.post(
+            "/recipes/",
+            headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.get("/recipes/?page=2&&per_page=5")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data["total"] == 14
+    assert data["page"] == 2
+    assert data["per_page"] == 5
+    assert len(data["recipes"]) == 5
+
+
 def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
     data = MockRecipe.random_data()
     client.post(
@@ -741,3 +759,33 @@ def test_200_get_paginated_ingredients(client: FlaskClient) -> None:
             assert len(data["ingredients"]) == config.INGREDIENTS_PAGINATION_SIZE
         else:
             assert len(data["ingredients"]) == last_page_items
+
+
+def test_200_get_pagination_ingredients_with_per_page(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    num_datas = 14
+    for _ in range(num_datas):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": list(range(1, num_datas + 1))},
+    )
+
+    response = client.get("/recipes/1/ingredients/?page=2&&per_page=5")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data["total"] == 14
+    assert data["page"] == 2
+    assert data["per_page"] == 5
+    assert len(data["ingredients"]) == 5

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import contextlib
 from typing import TYPE_CHECKING
 
 from flask import Blueprint, abort, jsonify, request
@@ -40,7 +41,15 @@ def get_recipes() -> Response:
 @api.route("/")
 @to_handleable_error
 def get_paginations() -> Response:
-    paginaged_recipes = crud_recipe.get_pagination(config.RECIPES_PAGINATION_SIZE)
+    pagination_size = config.INGREDIENTS_PAGINATION_SIZE
+    with contextlib.suppress(ValueError):
+        pagination_size = request.args.get(
+            "per_page",
+            default=config.RECIPES_PAGINATION_SIZE,
+            type=int,
+        )
+
+    paginaged_recipes = crud_recipe.get_pagination(pagination_size=pagination_size)
 
     if paginaged_recipes.page != 1 and paginaged_recipes.page > paginaged_recipes.pages:
         abort(404)
@@ -130,9 +139,17 @@ def get_ingredients(id: int) -> Response:  # noqa: A002
 @api.route("/<int:id>/ingredients/", methods=["GET"])
 @to_handleable_error
 def get_paginated_ingredients(id: int) -> Response:  # noqa: A002
+    pagination_size = config.INGREDIENTS_PAGINATION_SIZE
+    with contextlib.suppress(ValueError):
+        pagination_size = request.args.get(
+            "per_page",
+            default=config.INGREDIENTS_PAGINATION_SIZE,
+            type=int,
+        )
+
     ingredients = crud_ingredient.get_pagination_by_recipe_id(
         recipe_id=id,
-        pagination_size=config.INGREDIENTS_PAGINATION_SIZE,
+        pagination_size=pagination_size,
     )
 
     return jsonify(

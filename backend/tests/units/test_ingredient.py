@@ -397,6 +397,24 @@ def test_200_get_pagination_no_param(client: FlaskClient) -> None:
     assert len(data["ingredients"]) == 1
 
 
+def test_200_get_pagination_with_per_page(client: FlaskClient) -> None:
+    num_datas = 14
+    for _ in range(num_datas):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.get("/ingredients/?page=2&&per_page=5")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    assert data["total"] == 14
+    assert data["page"] == 2
+    assert data["per_page"] == 5
+    assert len(data["ingredients"]) == 5
+
+
 def test_404_get_page_does_not_exist(client: FlaskClient) -> None:
     data = MockIngredient.random_data()
     client.post(
