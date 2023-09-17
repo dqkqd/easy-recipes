@@ -42,7 +42,7 @@ import auth0 from '../../src/plugins/auth0';
 declare global {
   namespace Cypress {
     interface Chainable {
-      signJWT(enableAuth: boolean, permissions?: string[]): Promise<void>;
+      signJWT(enableAuth: boolean, permissions?: string[]): Promise<string>;
     }
   }
 }
@@ -63,4 +63,6 @@ Cypress.Commands.add('signJWT', async (enableAuth: boolean, permissions: string[
     .sign(keyPair.privateKey);
   auth0.isAuthenticated.value = enableAuth;
   cy.stub(auth0, 'getAccessTokenSilently').resolves(jwt);
+
+  return jwt;
 });

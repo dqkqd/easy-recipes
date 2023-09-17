@@ -1,6 +1,5 @@
 import RecipeDetails from '@/components/RecipeDetails.vue';
 import { apiUrl } from '@/env';
-import auth0 from '@/plugins/auth0';
 import router from '@/router';
 import { h } from 'vue';
 
@@ -71,7 +70,10 @@ describe('Render', () => {
 
 describe('Update recipe', () => {
   beforeEach(function () {
-    cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('menuManagerToken'));
+    cy.signJWT(true, ['update:recipe']).then(() => {
+      cy.mount(() => h(RecipeDetails, { recipe: this.recipe }));
+    });
+
     cy.get('[data-test=recipe-details-update-dialog]')
       .should('not.exist')
       .get('[data-test=recipe-details-update-button]')
@@ -173,7 +175,9 @@ describe('Update recipe', () => {
 
 describe('Delete recipe', () => {
   beforeEach(function () {
-    cy.stub(auth0, 'getAccessTokenSilently').returns(Cypress.env('managerToken'));
+    cy.signJWT(true, ['delete:recipe']).then(() => {
+      cy.mount(() => h(RecipeDetails, { recipe: this.recipe }));
+    });
 
     cy.spy(router, 'push').withArgs({ name: 'RecipeView' }).as('redirectedToRecipeVIew');
 
