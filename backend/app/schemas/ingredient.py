@@ -60,6 +60,18 @@ class Ingredient(IngredientInDBBase):
     recipes: list[RecipeInDBBase] = Field(default_factory=list)
 
 
+class AllIngredients(BaseSchema):
+    total: int
+    ingredients: list[Ingredient]
+
+
+class PaginatedIngredients(BaseSchema):
+    page: int
+    ingredients: list[Ingredient]
+    total: int
+    per_page: int
+
+
 from app.schemas.recipe import RecipeInDBBase  # noqa: TCH001, F811, E402
 
 Ingredient.model_rebuild()

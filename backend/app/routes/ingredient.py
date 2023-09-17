@@ -8,7 +8,13 @@ from app import auth, config
 from app.crud import crud_ingredient
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import Ingredient, IngredientCreate, IngredientUpdate
+from app.schemas.ingredient import (
+    AllIngredients,
+    Ingredient,
+    IngredientCreate,
+    IngredientUpdate,
+    PaginatedIngredients,
+)
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -21,13 +27,14 @@ api = Blueprint("ingredients", __name__, url_prefix="/ingredients")
 def get_ingredients() -> Response:
     ingredients = crud_ingredient.get_all()
     return jsonify(
-        {
-            "total": len(ingredients),
-            "ingredients": [
-                Ingredient.model_validate(ingredient).model_dump(mode="json")
-                for ingredient in ingredients
+        AllIngredients(
+            total=len(ingredients),
+            ingredients=[
+                Ingredient.model_validate(ingredient) for ingredient in ingredients
             ],
-        },
+        ).model_dump(
+            mode="json",
+        ),
     )
 
 
@@ -45,15 +52,15 @@ def get_paginations() -> Response:
         abort(404)
 
     return jsonify(
-        {
-            "page": paginaged_ingredients.page,
-            "ingredients": [
-                Ingredient.model_validate(ingredient).model_dump(mode="json")
+        PaginatedIngredients(
+            page=paginaged_ingredients.page,
+            ingredients=[
+                Ingredient.model_validate(ingredient)
                 for ingredient in paginaged_ingredients
             ],
-            "total": paginaged_ingredients.total,
-            "per_page": paginaged_ingredients.per_page,
-        },
+            total=paginaged_ingredients.total or 0,
+            per_page=paginaged_ingredients.per_page,
+        ).model_dump(mode="json"),
     )
 
 
