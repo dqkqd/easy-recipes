@@ -16,7 +16,7 @@
       >{{ titleMessage }}</VCol
     >
 
-    <VCol cols="3" align="center">
+    <VCol v-if="canUpdateRecipe" cols="3" align="center">
       <VBtn
         class="text-body-2"
         color="black"
@@ -48,17 +48,22 @@
 </template>
 
 <script setup lang="ts">
+import { hasPermission } from '@/auth';
 import CardIngredient from '@/components/CardIngredient.vue';
 import DialogError from '@/components/DialogError.vue';
 import DialogLoading from '@/components/DialogLoading.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
 import { IngredientsResponseSchema, type IngredientsResponse } from '@/schema/ingredient';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
   id: number;
 }>();
+
+const auth = useAuth0();
+const canUpdateRecipe = ref(false);
 
 const currentPage = ref(1);
 
@@ -99,6 +104,11 @@ const titleMessage = computed(() => {
 
 onMounted(async () => {
   getIngredientsByPages();
+  if (auth.isAuthenticated.value) {
+    auth.getAccessTokenSilently().then((token) => {
+      canUpdateRecipe.value = hasPermission('update:recipe', token);
+    });
+  }
 });
 
 watch(currentPage, async () => {

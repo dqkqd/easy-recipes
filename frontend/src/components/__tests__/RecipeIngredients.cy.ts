@@ -22,7 +22,9 @@ describe('Render', () => {
       );
     });
 
-    cy.mount(() => h(RecipeIngredients, { id: 1 }));
+    cy.signJWT(false).then(() => {
+      cy.mount(() => h(RecipeIngredients, { id: 1 }));
+    });
 
     for (let id = 1; id <= 5; ++id) {
       cy.getTestSelector(`recipe-ingredients-pagination-${id}`).should('be.visible');
@@ -30,8 +32,6 @@ describe('Render', () => {
 
     cy.getTestSelector('recipe-ingredients-title')
       .should('have.text', 'This recipe is made using these ingredients')
-      .getTestSelector('recipe-ingredients-add-ingredients-button')
-      .should('have.text', 'Add more ingredients')
       .getTestSelector('recipe-ingredients-pagination')
       .should('be.visible')
 
@@ -56,13 +56,48 @@ describe('Render', () => {
       );
     });
 
-    cy.mount(() => h(RecipeIngredients, { id: 1 }));
+    cy.signJWT(false).then(() => {
+      cy.mount(() => h(RecipeIngredients, { id: 1 }));
+    });
+
     cy.getTestSelector('recipe-ingredients-title')
       .should('have.text', 'This recipe is made without any ingredients')
-      .getTestSelector('recipe-ingredients-add-ingredients-button')
-      .should('have.text', 'Add more ingredients')
       .getTestSelector('recipe-ingredients-pagination')
       .should('not.exist');
+  });
+
+  describe('Permission', () => {
+    beforeEach(() => {
+      cy.fixture('ingredients/pages/1.json').then((firstPageIngredients) => {
+        cy.intercept(
+          { method: 'get', url: `${apiUrl}/recipes/1/ingredients/` },
+          firstPageIngredients
+        );
+      });
+    });
+
+    it('Have update permission', () => {
+      cy.signJWT(true, ['update:recipe']).then(() => {
+        cy.mount(() => h(RecipeIngredients, { id: 1 }));
+      });
+      cy.getTestSelector('recipe-ingredients-add-ingredients-button')
+        .should('be.visible')
+        .should('have.text', 'Add more ingredients');
+    });
+
+    it('No authorized', () => {
+      cy.signJWT(false).then(() => {
+        cy.mount(() => h(RecipeIngredients, { id: 1 }));
+      });
+      cy.getTestSelector('recipe-ingredients-add-ingredients-button').should('not.exist');
+    });
+
+    it('Does not have update permission', () => {
+      cy.signJWT(true, ['update:ingredient']).then(() => {
+        cy.mount(() => h(RecipeIngredients, { id: 1 }));
+      });
+      cy.getTestSelector('recipe-ingredients-add-ingredients-button').should('not.exist');
+    });
   });
 });
 
@@ -74,6 +109,7 @@ describe('Pagination', () => {
         firstPageIngredients
       );
     });
+
     cy.fixture('ingredients/pages/2.json').then((secondPageIngredients) => {
       cy.intercept(
         { method: 'get', url: `${apiUrl}/recipes/1/ingredients/?page=2` },
@@ -88,8 +124,11 @@ describe('Pagination', () => {
       })
       .as('pageTwoIngredientsRequest');
 
-    cy.mount(() => h(RecipeIngredients, { id: 1 }))
-      .getTestSelector('recipe-ingredients-loading-dialog')
+    cy.signJWT(false).then(() => {
+      cy.mount(() => h(RecipeIngredients, { id: 1 }));
+    });
+
+    cy.getTestSelector('recipe-ingredients-loading-dialog')
       .should('be.visible')
 
       .getTestSelector('recipe-ingredients-pagination-pagination')
