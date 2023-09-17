@@ -32,7 +32,7 @@ class RecipeBase(RecipeBaseAbstract):
 
 class RecipeCreate(RecipeBaseAbstract):
     image_uri: HttpUrl | Base64Bytes | None = None
-    ingredients: set[int] = Field(default_factory=set)
+    ingredients: list[int] = Field(default_factory=list)
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl | Base64Bytes) -> str:
@@ -41,7 +41,7 @@ class RecipeCreate(RecipeBaseAbstract):
 
 class RecipeUpdate(RecipeBaseAbstract):
     image_uri: HttpUrl | Base64Bytes | None = None
-    ingredients: set[int] = Field(default_factory=set)
+    ingredients: list[int] = Field(default_factory=list)
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl | Base64Bytes) -> str:
@@ -53,7 +53,7 @@ class RecipeInDBBase(IDModelMixin, RecipeBase):
 
 
 class Recipe(RecipeInDBBase):
-    ingredients: set[IngredientInDBBase] = Field(default_factory=set)
+    ingredients: list[IngredientInDBBase] = Field(default_factory=list)
     likes: int
 
 

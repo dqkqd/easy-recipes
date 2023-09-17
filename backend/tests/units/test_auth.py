@@ -225,3 +225,25 @@ def test_403_delete_recipe_invalid_permission(
     assert response.status_code == 403
     data = json.loads(response.data)
     assert data == {"code": 403, "message": "Forbidden."}
+
+
+def test_401_add_ingredients(client: FlaskClient) -> None:
+    response = client.post(
+        "/recipes/1/ingredients/",
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+
+    assert response.status_code == 401
+    data = json.loads(response.data)
+    assert data == {"code": 401, "message": "Unauthorized."}
+
+
+def test_403_add_ingredients(client: FlaskClient) -> None:
+    response = client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+    assert response.status_code == 403
+    data = json.loads(response.data)
+    assert data == {"code": 403, "message": "Forbidden."}

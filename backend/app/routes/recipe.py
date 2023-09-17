@@ -5,9 +5,10 @@ from typing import TYPE_CHECKING
 from flask import Blueprint, abort, jsonify, request
 
 from app import auth, config
-from app.crud import crud_recipe
+from app.crud import crud_ingredient, crud_recipe
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
+from app.schemas.ingredient import IngredientIds
 from app.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
 
 if TYPE_CHECKING:
@@ -105,3 +106,17 @@ def update_recipe(id: int) -> Response:  # noqa: A002
 def like_recipe(id: int) -> Response:  # noqa: A002
     recipe_db = crud_recipe.like(id)
     return jsonify({"id": id, "total_likes": recipe_db.likes})
+
+
+@api.route("/<int:id>/ingredients/", methods=["POST"])
+@to_handleable_error
+@auth.require(auth.UPDATE_RECIPE_PERMISSION)
+def add_ingredients(id: int) -> Response:  # noqa: A002
+    body = request.get_json()
+    ingredient_ids = IngredientIds(**body).ids
+    ingredients = [
+        crud_ingredient.get(id=ingredient_id) for ingredient_id in ingredient_ids
+    ]
+    recipe = crud_recipe.add_ingredients(id, ingredients=ingredients)
+
+    return jsonify(Recipe.model_validate(recipe).model_dump(mode="json"))

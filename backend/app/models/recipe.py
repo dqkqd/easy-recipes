@@ -19,7 +19,7 @@ class Recipe(BaseModelMixin):
     image_uri: Mapped[str] = mapped_column(nullable=True)
     likes: Mapped[int] = mapped_column(default=0)
 
-    ingredients: Mapped[set[Ingredient]] = relationship(
+    ingredients: Mapped[list[Ingredient]] = relationship(
         secondary=recipes_ingredients_association_table,
         back_populates="recipes",
     )

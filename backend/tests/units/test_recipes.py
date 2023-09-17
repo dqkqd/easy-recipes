@@ -8,8 +8,9 @@ from pydantic_core import Url
 
 from app import auth, config
 from app.crud import crud_recipe
+from app.schemas.ingredient import Ingredient
 from app.schemas.recipe import Recipe, RecipeUpdate
-from tests.mocks import MockAuth, MockRecipe
+from tests.mocks import MockAuth, MockIngredient, MockRecipe
 from tests.utils import compare_image_data_from_uri
 
 if TYPE_CHECKING:
@@ -506,3 +507,41 @@ def test_200_like_recipe(client: FlaskClient) -> None:
         data = json.loads(response.data)
         recipe = Recipe(**data)
         assert recipe.likes == total_likes
+
+
+def test_200_add_ingredients(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.get("recipes/1")
+    data = json.loads(response.data)
+    recipe = Recipe(**data)
+    assert len(recipe.ingredients) == 0
+
+    response = client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+    assert response.status_code == 200
+
+    response = client.get("recipes/1")
+    data = json.loads(response.data)
+    recipe = Recipe(**data)
+    assert [ingredient.id for ingredient in recipe.ingredients] == [1, 2, 3, 4, 5]
+
+    for ingredient_id in [1, 2, 3, 4, 5]:
+        response = client.get(f"/ingredients/{ingredient_id}")
+        data = json.loads(response.data)
+        ingredient = Ingredient(**data)
+        assert [recipe.id for recipe in ingredient.recipes] == [1]

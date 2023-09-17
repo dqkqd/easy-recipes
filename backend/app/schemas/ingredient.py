@@ -17,6 +17,10 @@ if TYPE_CHECKING:
     from app.schemas.recipe import RecipeInDBBase
 
 
+class IngredientIds(BaseSchema):
+    ids: list[int] = Field(default_factory=list, alias="ingredients")
+
+
 class IngredientBaseAbstract(BaseSchema):
     name: Annotated[str, AfterValidator(lambda x: x.strip()), Field(min_length=1)]
     description: str | None = None
@@ -32,7 +36,7 @@ class IngredientBase(IngredientBaseAbstract):
 
 class IngredientCreate(IngredientBaseAbstract):
     image_uri: HttpUrl | Base64Bytes | None = None
-    recipes: set[int] = Field(default_factory=set)
+    recipes: list[int] = Field(default_factory=list)
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl | Base64Bytes) -> str:
@@ -41,7 +45,7 @@ class IngredientCreate(IngredientBaseAbstract):
 
 class IngredientUpdate(IngredientBaseAbstract):
     image_uri: HttpUrl | Base64Bytes | None = None
-    recipes: set[int] = Field(default_factory=set)
+    recipes: list[int] = Field(default_factory=list)
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl | Base64Bytes) -> str:
@@ -53,7 +57,7 @@ class IngredientInDBBase(IDModelMixin, IngredientBase):
 
 
 class Ingredient(IngredientInDBBase):
-    recipes: set[RecipeInDBBase] = Field(default_factory=set)
+    recipes: list[RecipeInDBBase] = Field(default_factory=list)
 
 
 from app.schemas.recipe import RecipeInDBBase  # noqa: TCH001, F811, E402
