@@ -17,7 +17,10 @@ describe('Render', () => {
       .should('have.attr', 'src', this.recipe.image_uri)
 
       .getTestSelector('recipe-details-description')
-      .should('have.text', this.recipe.description);
+      .should('have.text', this.recipe.description)
+
+      .getTestSelector('recipe-details-like')
+      .should('be.visible');
   });
 
   it('No authentication', function () {
@@ -233,6 +236,3 @@ describe('Delete recipe', () => {
       .should('not.exist');
   });
 });
-
-it('Show number of people liked if there are any');
-it('Do not show number of people liked if there are none');

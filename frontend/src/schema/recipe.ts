@@ -5,7 +5,8 @@ export const RecipeBaseSchema = z.object({
   id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
-  image_uri: z.string().url().nullable()
+  image_uri: z.string().url().nullable(),
+  likes: z.number()
 });
 
 export const RecipeSchema = RecipeBaseSchema.extend({
@@ -40,6 +41,11 @@ export const RecipeDeletedResponseSchema = z.object({
   id: z.number()
 });
 
+export const RecipeLikedResponseSchema = z.object({
+  id: z.number(),
+  total_likes: z.number()
+});
+
 export type RecipeBase = z.infer<typeof RecipeBaseSchema>;
 export type Recipe = z.infer<typeof RecipeSchema>;
 export type RecipeCreate = z.infer<typeof RecipeCreateSchema>;
@@ -49,3 +55,4 @@ export type RecipesResponse = z.infer<typeof RecipesResponseSchema>;
 export type RecipeCreatedResponse = z.infer<typeof RecipeCreatedResponseSchema>;
 export type RecipeUpdatedResponse = z.infer<typeof RecipeUpdatedResponseSchema>;
 export type RecipeDeletedResponse = z.infer<typeof RecipeDeletedResponseSchema>;
+export type RecipeLikedResponse = z.infer<typeof RecipeLikedResponseSchema>;

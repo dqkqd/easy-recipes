@@ -27,17 +27,9 @@
           </VCard>
         </VSheet>
 
-        <VRow align="center">
+        <VRow>
           <VCol cols="8" data-test="recipe-details-like">
-            <VHover v-slot="{ isHovering, props }" close-delay="200">
-              <VIcon
-                icon="mdi-heart"
-                v-bind="props"
-                :color="isHovering ? 'red-darken-1' : 'red-lighten-2'"
-                :size="40"
-              />
-              <span class="mx-2 font-weight-bold">0 people like this</span>
-            </VHover>
+            <RecipeLikeButton :recipe="recipe" />
           </VCol>
 
           <VCol v-if="canUpdateRecipe">
@@ -78,6 +70,7 @@ import { hasPermission } from '@/auth';
 import CardRecipeDelete from '@/components/CardRecipeDelete.vue';
 import CardRecipeUpdate from '@/components/CardRecipeUpdate.vue';
 import DialogSuccess from '@/components/DialogSuccess.vue';
+import RecipeLikeButton from '@/components/RecipeLikeButton.vue';
 import { useImage } from '@/composables';
 import { type Recipe } from '@/schema/recipe';
 import { useAuth0 } from '@auth0/auth0-vue';

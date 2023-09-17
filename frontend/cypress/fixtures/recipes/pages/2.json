@@ -6,35 +6,40 @@
       "name": "My sixth recipe",
       "description": "My sixth description",
       "image_uri": "https://picsum.photos/200",
-      "ingredients": []
+      "ingredients": [],
+      "likes": 5
     },
     {
       "id": 7,
       "name": "My seventh recipe",
       "description": "My seventh description",
       "image_uri": "https://picsum.photos/200",
-      "ingredients": []
+      "ingredients": [],
+      "likes": 5
     },
     {
       "id": 8,
       "name": "My eighth recipe",
       "description": "My eighth description",
       "image_uri": "https://picsum.photos/200",
-      "ingredients": []
+      "ingredients": [],
+      "likes": 5
     },
     {
       "id": 9,
       "name": "My nineth recipe",
       "description": "My nineth description",
       "image_uri": "https://picsum.photos/200",
-      "ingredients": []
+      "ingredients": [],
+      "likes": 5
     },
     {
       "id": 10,
       "name": "My tenth recipe",
       "description": "My tenth description",
       "image_uri": "https://picsum.photos/200",
-      "ingredients": []
+      "ingredients": [],
+      "likes": 5
     }
   ],
   "total": 34,

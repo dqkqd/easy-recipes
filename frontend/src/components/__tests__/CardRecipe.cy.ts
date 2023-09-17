@@ -9,7 +9,8 @@ beforeEach(() => {
     name: 'My first recipe',
     description: 'My first description',
     image_uri: 'https://picsum.photos/200',
-    ingredients: []
+    ingredients: [],
+    likes: 2
   }).as('validRecipe');
 });
 
@@ -30,7 +31,8 @@ describe('Render', () => {
       name: 'This is my first recipe',
       description: 'My first description',
       image_uri: 'https://picsum.photos/200',
-      ingredients: []
+      ingredients: [],
+      likes: 3
     });
 
     cy.mount(() => h(CardRecipe, { recipe: recipe }))
