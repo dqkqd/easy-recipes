@@ -15,7 +15,13 @@ from app.schemas.ingredient import (
     IngredientIds,
     PaginatedIngredients,
 )
-from app.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
+from app.schemas.recipe import (
+    AllRecipes,
+    PaginatedRecipes,
+    Recipe,
+    RecipeCreate,
+    RecipeUpdate,
+)
 
 if TYPE_CHECKING:
     from werkzeug import Response
@@ -28,13 +34,12 @@ api = Blueprint("recipes", __name__, url_prefix="/recipes")
 def get_recipes() -> Response:
     recipes = crud_recipe.get_all()
     return jsonify(
-        {
-            "total": len(recipes),
-            "recipes": [
-                Recipe.model_validate(recipe).model_dump(mode="json")
-                for recipe in recipes
-            ],
-        },
+        AllRecipes(
+            total=len(recipes),
+            recipes=[Recipe.model_validate(recipe) for recipe in recipes],
+        ).model_dump(
+            mode="json",
+        ),
     )
 
 
@@ -55,15 +60,12 @@ def get_paginations() -> Response:
         abort(404)
 
     return jsonify(
-        {
-            "page": paginaged_recipes.page,
-            "recipes": [
-                Recipe.model_validate(recipe).model_dump(mode="json")
-                for recipe in paginaged_recipes
-            ],
-            "total": paginaged_recipes.total,
-            "per_page": paginaged_recipes.per_page,
-        },
+        PaginatedRecipes(
+            page=paginaged_recipes.page,
+            recipes=[Recipe.model_validate(recipe) for recipe in paginaged_recipes],
+            total=paginaged_recipes.total or 0,
+            per_page=paginaged_recipes.per_page,
+        ).model_dump(mode="json"),
     )
 
 

@@ -57,6 +57,18 @@ class Recipe(RecipeInDBBase):
     likes: int
 
 
+class AllRecipes(BaseSchema):
+    total: int
+    recipes: list[Recipe]
+
+
+class PaginatedRecipes(BaseSchema):
+    page: int
+    recipes: list[Recipe]
+    total: int
+    per_page: int
+
+
 from app.schemas.ingredient import IngredientInDBBase  # noqa: TCH001, E402, F811
 
 Recipe.model_rebuild()
