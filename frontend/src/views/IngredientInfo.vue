@@ -1,11 +1,22 @@
 <template>
   <VLayout>
     <MainAppBar />
-    <VMain class="d-flex align-center justify-center"> </VMain>
+    <VMain class="d-flex align-center justify-center">
+      <VSheet :width="800" class="my-8 text-center">
+        <IngredientDetails v-if="result" :ingredient="result" />
+
+        <VContainer v-else-if="isLoading">
+          <VProgressCircular :size="50" indeterminate></VProgressCircular>
+        </VContainer>
+
+        <VContainer> //TODO </VContainer>
+      </VSheet>
+    </VMain>
   </VLayout>
 </template>
 
 <script setup lang="ts">
+import IngredientDetails from '@/components/IngredientDetails.vue';
 import MainAppBar from '@/components/MainAppBar.vue';
 import { useAxios } from '@/composables';
 import { apiUrl } from '@/env';
