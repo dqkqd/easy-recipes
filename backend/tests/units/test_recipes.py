@@ -523,10 +523,13 @@ def test_200_add_ingredients(client: FlaskClient) -> None:
             json=MockIngredient.random_data(),
         )
 
-    response = client.get("recipes/1")
-    data = json.loads(response.data)
-    recipe = Recipe(**data)
-    assert len(recipe.ingredients) == 0
+    def ingredient_ids() -> list[int]:
+        response = client.get("recipes/1")
+        data = json.loads(response.data)
+        recipe = Recipe(**data)
+        return [ingredient.id for ingredient in recipe.ingredients]
+
+    assert ingredient_ids() == []
 
     response = client.post(
         "/recipes/1/ingredients/",
@@ -535,13 +538,57 @@ def test_200_add_ingredients(client: FlaskClient) -> None:
     )
     assert response.status_code == 200
 
-    response = client.get("recipes/1")
-    data = json.loads(response.data)
-    recipe = Recipe(**data)
-    assert [ingredient.id for ingredient in recipe.ingredients] == [1, 2, 3, 4, 5]
+    assert ingredient_ids() == [1, 2, 3, 4, 5]
 
-    for ingredient_id in [1, 2, 3, 4, 5]:
+    for ingredient_id in ingredient_ids():
         response = client.get(f"/ingredients/{ingredient_id}")
         data = json.loads(response.data)
         ingredient = Ingredient(**data)
         assert [recipe.id for recipe in ingredient.recipes] == [1]
+
+
+def test_200_delete_ingredient(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    def ingredient_ids() -> list[int]:
+        response = client.get("recipes/1")
+        data = json.loads(response.data)
+        recipe = Recipe(**data)
+        return [ingredient.id for ingredient in recipe.ingredients]
+
+    def recipe_ids(ingredient_id: int) -> list[int]:
+        response = client.get(f"/ingredients/{ingredient_id}")
+        data = json.loads(response.data)
+        ingredient = Ingredient(**data)
+        return [recipe.id for recipe in ingredient.recipes]
+
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+
+    client.delete(
+        "/recipes/1/ingredients/3",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+    )
+    assert ingredient_ids() == [1, 2, 4, 5]
+    assert recipe_ids(3) == []
+
+    client.delete(
+        "/recipes/1/ingredients/5",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+    )
+    assert ingredient_ids() == [1, 2, 4]
+    assert recipe_ids(5) == []

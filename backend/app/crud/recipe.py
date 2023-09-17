@@ -43,3 +43,17 @@ class CRUDRecipe(
             db.session.commit()
             db.session.refresh(recipe_db)
             return recipe_db
+
+    def delete_ingredient(
+        self,
+        id: int,  # noqa: A002
+        ingredient: Ingredient,
+    ) -> Recipe:
+        recipe_db = self.get(id=id)
+        recipe_db.ingredients = [
+            item for item in recipe_db.ingredients if item.id != ingredient.id
+        ]
+        with safe_db() as db:
+            db.session.commit()
+            db.session.refresh(recipe_db)
+            return recipe_db

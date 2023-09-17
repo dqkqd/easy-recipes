@@ -120,3 +120,12 @@ def add_ingredients(id: int) -> Response:  # noqa: A002
     recipe = crud_recipe.add_ingredients(id, ingredients=ingredients)
 
     return jsonify(Recipe.model_validate(recipe).model_dump(mode="json"))
+
+
+@api.route("/<int:id>/ingredients/<int:ingredient_id>", methods=["DELETE"])
+@to_handleable_error
+@auth.require(auth.UPDATE_RECIPE_PERMISSION)
+def delete_ingredient(id: int, ingredient_id: int) -> Response:  # noqa: A002
+    ingredient = crud_ingredient.get(id=ingredient_id)
+    recipe = crud_recipe.delete_ingredient(id, ingredient=ingredient)
+    return jsonify(Recipe.model_validate(recipe).model_dump(mode="json"))
