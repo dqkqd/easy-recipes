@@ -8,7 +8,12 @@ from app import auth, config
 from app.crud import crud_ingredient, crud_recipe
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import AllIngredients, Ingredient, IngredientIds
+from app.schemas.ingredient import (
+    AllIngredients,
+    Ingredient,
+    IngredientIds,
+    PaginatedIngredients,
+)
 from app.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
 
 if TYPE_CHECKING:
@@ -108,7 +113,7 @@ def like_recipe(id: int) -> Response:  # noqa: A002
     return jsonify({"id": id, "total_likes": recipe_db.likes})
 
 
-@api.route("/<int:id>/ingredients/", methods=["GET"])
+@api.route("/<int:id>/ingredients/all", methods=["GET"])
 @to_handleable_error
 def get_ingredients(id: int) -> Response:  # noqa: A002
     recipe = crud_recipe.get(id=id)
@@ -118,6 +123,26 @@ def get_ingredients(id: int) -> Response:  # noqa: A002
             ingredients=[
                 Ingredient.model_validate(ingredient) for ingredient in recipe.ingredients
             ],
+        ).model_dump(mode="json"),
+    )
+
+
+@api.route("/<int:id>/ingredients/", methods=["GET"])
+@to_handleable_error
+def get_paginated_ingredients(id: int) -> Response:  # noqa: A002
+    ingredients = crud_ingredient.get_pagination_by_recipe_id(
+        recipe_id=id,
+        pagination_size=config.INGREDIENTS_PAGINATION_SIZE,
+    )
+
+    return jsonify(
+        PaginatedIngredients(
+            page=ingredients.page,
+            ingredients=[
+                Ingredient.model_validate(ingredient) for ingredient in ingredients
+            ],
+            total=ingredients.total or 0,
+            per_page=ingredients.per_page,
         ).model_dump(mode="json"),
     )
 

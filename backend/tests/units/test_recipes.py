@@ -602,7 +602,7 @@ def test_200_get_ingredients(client: FlaskClient) -> None:
         json={"ingredients": [1, 2, 3]},
     )
 
-    response = client.get("/recipes/1/ingredients/")
+    response = client.get("/recipes/1/ingredients/all")
     assert response.status_code == 200
     data = json.loads(response.data)
     recipe_ingredients = AllIngredients(**data)
@@ -619,7 +619,7 @@ def test_200_get_ingredients(client: FlaskClient) -> None:
 
 def test_404_get_ingredients_invalid_recipe(client: FlaskClient) -> None:
     response = client.get(
-        "/recipes/1/ingredients/",
+        "/recipes/1/ingredients/all",
     )
     data = json.loads(response.data)
     assert data == {"code": 404, "message": "Resources not found."}
@@ -704,3 +704,40 @@ def test_404_delete_ingredient_invalid_ingredients(client: FlaskClient) -> None:
     data = json.loads(response.data)
     assert data == {"code": 404, "message": "Resources not found."}
     assert response.status_code == 404
+
+
+def test_200_get_paginated_ingredients(client: FlaskClient) -> None:
+    total_pages = 2
+    last_page_items = config.INGREDIENTS_PAGINATION_SIZE // 2
+    num_datas = total_pages * config.INGREDIENTS_PAGINATION_SIZE + last_page_items
+
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    for _ in range(num_datas):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": list(range(1, num_datas + 1))},
+    )
+
+    for page in range(1, total_pages + 2):
+        response = client.get(f"/recipes/1/ingredients/?page={page}")
+        assert response.status_code == 200
+        data = json.loads(response.data)
+        assert data["total"] == num_datas
+
+        assert data["page"] == page
+        if page != total_pages + 1:
+            assert len(data["ingredients"]) == config.INGREDIENTS_PAGINATION_SIZE
+        else:
+            assert len(data["ingredients"]) == last_page_items
