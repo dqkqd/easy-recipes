@@ -8,7 +8,7 @@ from pydantic_core import Url
 
 from app import auth, config
 from app.crud import crud_recipe
-from app.schemas.ingredient import Ingredient
+from app.schemas.ingredient import AllIngredients, Ingredient
 from app.schemas.recipe import Recipe, RecipeUpdate
 from tests.mocks import MockAuth, MockIngredient, MockRecipe
 from tests.utils import compare_image_data_from_uri
@@ -576,6 +576,50 @@ def test_404_add_ingredients_invalid_ingredients(client: FlaskClient) -> None:
         "/recipes/1/ingredients/",
         headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
         json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
+
+
+def test_200_get_ingredients(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3]},
+    )
+
+    response = client.get("/recipes/1/ingredients/")
+    assert response.status_code == 200
+    data = json.loads(response.data)
+    recipe_ingredients = AllIngredients(**data)
+
+    ingredients = []
+    for ingredient_id in [1, 2, 3]:
+        response = client.get(f"/ingredients/{ingredient_id}")
+        data = json.loads(response.data)
+        ingredients.append(Ingredient(**data))
+
+    assert recipe_ingredients.ingredients == ingredients
+    assert len(recipe_ingredients.ingredients) == 3
+
+
+def test_404_get_ingredients_invalid_recipe(client: FlaskClient) -> None:
+    response = client.get(
+        "/recipes/1/ingredients/",
     )
     data = json.loads(response.data)
     assert data == {"code": 404, "message": "Resources not found."}

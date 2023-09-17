@@ -8,7 +8,7 @@ from app import auth, config
 from app.crud import crud_ingredient, crud_recipe
 from app.errors import to_handleable_error
 from app.file_server.image import ImageOnServer
-from app.schemas.ingredient import IngredientIds
+from app.schemas.ingredient import AllIngredients, Ingredient, IngredientIds
 from app.schemas.recipe import Recipe, RecipeCreate, RecipeUpdate
 
 if TYPE_CHECKING:
@@ -106,6 +106,20 @@ def update_recipe(id: int) -> Response:  # noqa: A002
 def like_recipe(id: int) -> Response:  # noqa: A002
     recipe_db = crud_recipe.like(id)
     return jsonify({"id": id, "total_likes": recipe_db.likes})
+
+
+@api.route("/<int:id>/ingredients/", methods=["GET"])
+@to_handleable_error
+def get_ingredients(id: int) -> Response:  # noqa: A002
+    recipe = crud_recipe.get(id=id)
+    return jsonify(
+        AllIngredients(
+            total=len(recipe.ingredients),
+            ingredients=[
+                Ingredient.model_validate(ingredient) for ingredient in recipe.ingredients
+            ],
+        ).model_dump(mode="json"),
+    )
 
 
 @api.route("/<int:id>/ingredients/", methods=["POST"])
