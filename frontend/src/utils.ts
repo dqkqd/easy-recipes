@@ -1,5 +1,5 @@
 export const supportedImages = ['image/png', 'image/jpg', 'image/jpeg'];
-
+export const RECIPE_INGREDIENT_PER_PAGE = 9;
 export function replaceBase64Prefix(base64Img: string | null) {
   for (const supportedImage of supportedImages) {
     const base64ImagePrefix = `data:${supportedImage};base64,`;
