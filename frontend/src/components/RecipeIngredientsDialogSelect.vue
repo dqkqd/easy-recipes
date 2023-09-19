@@ -14,6 +14,7 @@
         >Add more ingredients</VToolbarTitle
       >
       <VBtn
+        @click="select"
         color="black"
         variant="elevated"
         class="ma-8"
@@ -62,6 +63,10 @@ import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
   selectedIds: number[];
+}>();
+
+const emit = defineEmits<{
+  (e: 'select', selectedIds: number[]): void;
 }>();
 
 const selectedIngredientIds = ref([...props.selectedIds]);
@@ -115,6 +120,10 @@ function toggleSelect(id: number) {
   } else {
     selectedIngredientIds.value.push(id);
   }
+}
+
+function select() {
+  emit('select', selectedIngredientIds.value);
 }
 </script>
 

@@ -315,3 +315,53 @@ describe('Pagination', () => {
     }
   });
 });
+
+describe('Select button', () => {
+  beforeEach(function () {
+    cy.fixture('ingredients/pages/1.json').then((ingredients) => {
+      cy.intercept(
+        { method: 'get', url: `${apiUrl}/ingredients/*`, query: this.query },
+        ingredients
+      );
+    });
+  });
+
+  it('Emit event with the same selectedIds', () => {
+    const selectedIds = [1, 2, 5];
+    cy.mount(() =>
+      h(RecipeIngredientsDialogSelect, {
+        selectedIds,
+        onSelect: cy.spy().as('onSelect')
+      })
+    );
+
+    cy.getTestSelector('recipe-ingredients-dialog-select-card-1')
+      .click()
+      .click()
+      .getTestSelector('recipe-ingredients-dialog-select-card-3')
+      .click()
+      .click();
+
+    cy.getTestSelector('recipe-ingredients-dialog-select-add-button')
+      .click()
+      .get('@onSelect')
+      .should('have.been.calledOnceWith', [2, 5, 1]);
+  });
+
+  it('Emit selectedIds if it has been changed', () => {
+    const selectedIds = [1, 2, 5];
+    cy.mount(() =>
+      h(RecipeIngredientsDialogSelect, {
+        selectedIds,
+        onSelect: cy.spy().as('onSelect')
+      })
+    );
+
+    cy.getTestSelector('recipe-ingredients-dialog-select-card-3').click();
+
+    cy.getTestSelector('recipe-ingredients-dialog-select-add-button')
+      .click()
+      .get('@onSelect')
+      .should('have.been.calledOnceWith', [1, 2, 5, 3]);
+  });
+});
