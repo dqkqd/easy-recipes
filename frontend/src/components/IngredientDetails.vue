@@ -45,9 +45,9 @@
 
 <script setup lang="ts">
 import { useImage } from '@/composables';
-import { type Ingredient } from '@/schema/ingredient';
+import { type IngredientBase } from '@/schema/ingredient';
 
-const props = defineProps<{ ingredient: Ingredient }>();
+const props = defineProps<{ ingredient: IngredientBase }>();
 const { imageSrc, onError } = useImage(props.ingredient.image_uri);
 </script>
 

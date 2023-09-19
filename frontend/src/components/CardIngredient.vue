@@ -30,13 +30,13 @@
 
 <script setup lang="ts">
 import { useImage } from '@/composables';
-import type { Ingredient } from '@/schema/ingredient';
+import type { IngredientBase } from '@/schema/ingredient';
 import { stripText } from '@/utils';
 import { computed, ref } from 'vue';
 import IngredientDetails from './IngredientDetails.vue';
 
 const props = defineProps<{
-  ingredient: Ingredient;
+  ingredient: IngredientBase;
 }>();
 
 const dialog = ref(false);
