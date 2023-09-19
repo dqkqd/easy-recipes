@@ -1,32 +1,16 @@
 import RecipeIngredients from '@/components/RecipeIngredients.vue';
-import { apiUrl } from '@/env';
-import axios from 'axios';
+import { RECIPE_INGREDIENT_PER_PAGE } from '@/utils';
 import { h } from 'vue';
 
 describe('Render', () => {
-  beforeEach(() => {
-    cy.spy(axios, 'request')
-      .withArgs({ method: 'get', url: `${apiUrl}/recipes/1/ingredients/` })
-      .as('onMountedRequest');
-  });
-
-  afterEach(() => {
-    cy.get('@onMountedRequest').should('have.been.calledOnce');
-  });
-
   it('Render with ingredients exist', () => {
-    cy.fixture('ingredients/pages/1.json').then((firstPageIngredients) => {
-      cy.intercept(
-        { method: 'get', url: `${apiUrl}/recipes/1/ingredients/` },
-        firstPageIngredients
-      );
-    });
-
     cy.signJWT(false).then(() => {
-      cy.mount(() => h(RecipeIngredients, { id: 1 }));
+      cy.fixture('recipes/details/1.json').then((recipe) => {
+        cy.mount(() => h(RecipeIngredients, { recipe }));
+      });
     });
 
-    for (let id = 1; id <= 5; ++id) {
+    for (let id = 1; id <= RECIPE_INGREDIENT_PER_PAGE; ++id) {
       cy.getTestSelector(`recipe-ingredients-pagination-${id}`).should('be.visible');
     }
 
@@ -41,23 +25,15 @@ describe('Render', () => {
       .should('not.exist')
       .getTestSelector('recipe-ingredients-pagination-loading-dialog')
       .should('not.exist')
-
-      // < 1 2 3 4 5 ... 7 > (total 9 lis)
       .getTestSelector('recipe-ingredients-pagination-pagination')
-      .find('li')
-      .should('have.length', 9);
+      .should('be.visible');
   });
 
   it('Render without ingredients', () => {
-    cy.fixture('ingredients/pages/no-ingredients.json').then((firstPageIngredients) => {
-      cy.intercept(
-        { method: 'get', url: `${apiUrl}/recipes/1/ingredients/` },
-        firstPageIngredients
-      );
-    });
-
     cy.signJWT(false).then(() => {
-      cy.mount(() => h(RecipeIngredients, { id: 1 }));
+      cy.fixture('recipes/details/2.json').then((recipe) => {
+        cy.mount(() => h(RecipeIngredients, { recipe }));
+      });
     });
 
     cy.getTestSelector('recipe-ingredients-title')
@@ -67,98 +43,60 @@ describe('Render', () => {
   });
 
   describe('Permission', () => {
-    beforeEach(() => {
-      cy.fixture('ingredients/pages/1.json').then((firstPageIngredients) => {
-        cy.intercept(
-          { method: 'get', url: `${apiUrl}/recipes/1/ingredients/` },
-          firstPageIngredients
-        );
-      });
-    });
-
     it('Have update permission', () => {
       cy.signJWT(true, ['update:recipe']).then(() => {
-        cy.mount(() => h(RecipeIngredients, { id: 1 }));
+        cy.fixture('recipes/details/1.json').then((recipe) => {
+          cy.mount(() => h(RecipeIngredients, { recipe }));
+        });
       });
-      cy.getTestSelector('recipe-ingredients-add-ingredients-button')
+
+      cy.getTestSelector('recipe-ingredients-dialog-button')
         .should('be.visible')
         .should('have.text', 'Add more ingredients');
     });
 
     it('No authorized', () => {
       cy.signJWT(false).then(() => {
-        cy.mount(() => h(RecipeIngredients, { id: 1 }));
+        cy.fixture('recipes/details/1.json').then((recipe) => {
+          cy.mount(() => h(RecipeIngredients, { recipe }));
+        });
       });
-      cy.getTestSelector('recipe-ingredients-add-ingredients-button').should('not.exist');
+
+      cy.getTestSelector('recipe-ingredients-dialog-button').should('not.exist');
     });
 
     it('Does not have update permission', () => {
       cy.signJWT(true, ['update:ingredient']).then(() => {
-        cy.mount(() => h(RecipeIngredients, { id: 1 }));
+        cy.fixture('recipes/details/1.json').then((recipe) => {
+          cy.mount(() => h(RecipeIngredients, { recipe }));
+        });
       });
-      cy.getTestSelector('recipe-ingredients-add-ingredients-button').should('not.exist');
+
+      cy.getTestSelector('recipe-ingredients-dialog-button').should('not.exist');
     });
   });
 });
 
 describe('Pagination', () => {
   it('Move to second page', () => {
-    cy.fixture('ingredients/pages/1.json').then((firstPageIngredients) => {
-      cy.intercept(
-        { method: 'get', url: `${apiUrl}/recipes/1/ingredients/` },
-        firstPageIngredients
-      );
-    });
-
-    cy.fixture('ingredients/pages/2.json').then((secondPageIngredients) => {
-      cy.intercept(
-        { method: 'get', url: `${apiUrl}/recipes/1/ingredients/?page=2` },
-        secondPageIngredients
-      );
-    });
-
-    cy.spy(axios, 'request')
-      .withArgs({
-        method: 'get',
-        url: `${apiUrl}/recipes/1/ingredients/?page=2`
-      })
-      .as('pageTwoIngredientsRequest');
-
-    cy.signJWT(false).then(() => {
-      cy.mount(() => h(RecipeIngredients, { id: 1 }));
-    });
-
-    cy.getTestSelector('recipe-ingredients-loading-dialog')
-      .should('be.visible')
-
-      .getTestSelector('recipe-ingredients-pagination-pagination')
-      .find('li button span')
-      .each(($elem) => {
-        if ($elem.text() === '2') {
-          cy.wrap($elem).wait(1000).click();
-        }
+    cy.signJWT(true, ['update:ingredient']).then(() => {
+      cy.fixture('recipes/details/1.json').then((recipe) => {
+        cy.mount(() => h(RecipeIngredients, { recipe }));
       });
-    cy.get('@pageTwoIngredientsRequest')
-      .should('have.been.calledOnce')
-      .getTestSelector('recipe-ingredients-loading-dialog')
-      .should('be.visible');
-
-    Cypress.on('uncaught:exception', () => {
-      return false;
     });
+
+    cy.getTestSelector('recipe-ingredients-pagination-10')
+      .should('not.exist')
+
+      .getTestSelector('recipe-ingredients-pagination')
+      .findTestSelector('recipe-ingredients-pagination-pagination')
+      .find('button[aria-label="Next page"]')
+      .click()
+
+      .getTestSelector('recipe-ingredients-pagination-10')
+      .should('be.visible');
   });
 });
 
-describe('Error', () => {
-  it('Show error dialog when unable to load ingredients', () => {
-    cy.intercept(
-      { method: 'get', url: `${apiUrl}/recipes/1/ingredients/` },
-      { forceNetworkError: true }
-    );
-    cy.mount(() => h(RecipeIngredients))
-      .getTestSelector('recipe-ingredients-pagination-error-dialog')
-      .should('be.visible')
-      .should('contain.text', 'Unable to load ingredients')
-      .should('contain.text', 'Please try again later...');
-  });
-});
+it('Updated ingredients should be changed in pagination pages');
+it('Updated ingredients should be changed in select dialog');

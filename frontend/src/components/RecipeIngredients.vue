@@ -1,13 +1,4 @@
 <template>
-  <DialogError
-    v-model="hasError"
-    title="Unable to load ingredients"
-    content="Please try again later..."
-    data-test="recipe-ingredients-pagination-error-dialog"
-  />
-
-  <DialogLoading v-model="isLoading" data-test="recipe-ingredients-loading-dialog" />
-
   <VRow justify="center">
     <VCol
       class="font-weight-black text-h5 text-center"
@@ -17,19 +8,18 @@
     >
 
     <VCol v-if="canUpdateRecipe" cols="3" align="center">
-      <VBtn
-        class="text-body-2"
-        color="black"
-        text="Add more ingredients"
-        data-test="recipe-ingredients-add-ingredients-button"
+      <RecipeIngredientsDialog
+        :recipeId="recipe.id"
+        :selectedIngredientIds="selectedIngredientIds"
+        @updated="updatedIngredients"
       />
     </VCol>
   </VRow>
 
-  <div v-if="result && result.total" data-test="recipe-ingredients-pagination">
+  <div v-if="paginatedIngredients.length" data-test="recipe-ingredients-pagination">
     <VRow class="pt-5" justify="center">
       <VCol
-        v-for="ingredient in result.ingredients"
+        v-for="ingredient in paginatedIngredients"
         :key="ingredient.id"
         cols="auto"
         :data-test="`recipe-ingredients-pagination-${ingredient.id}`"
@@ -50,70 +40,67 @@
 <script setup lang="ts">
 import { hasPermission } from '@/auth';
 import CardIngredient from '@/components/CardIngredient.vue';
-import DialogError from '@/components/DialogError.vue';
-import DialogLoading from '@/components/DialogLoading.vue';
-import { useAxios } from '@/composables';
-import { apiUrl } from '@/env';
-import { IngredientsResponseSchema, type IngredientsResponse } from '@/schema/ingredient';
+import RecipeIngredientsDialog from '@/components/RecipeIngredientsDialog.vue';
+import type { IngredientBase } from '@/schema/ingredient';
+import type { Recipe } from '@/schema/recipe';
+import { RECIPE_INGREDIENT_PER_PAGE } from '@/utils';
 import { useAuth0 } from '@auth0/auth0-vue';
 import { computed, onMounted, ref, watch } from 'vue';
 
 const props = defineProps<{
-  id: number;
+  recipe: Recipe;
 }>();
 
 const auth = useAuth0();
 const canUpdateRecipe = ref(false);
-
-const currentPage = ref(1);
-
-const { result, error, isLoading, execute } = useAxios<IngredientsResponse>((r) => {
-  return IngredientsResponseSchema.parse(r.data);
-});
-
-const hasError = ref(false);
-watch(error, () => {
-  if (error.value) {
-    hasError.value = true;
-  }
-});
-
-const pageLength = computed(() => {
-  if (!result.value || result.value.per_page === 0) {
-    return 1;
-  }
-  return Math.ceil(result.value.total / result.value.per_page);
-});
-
-const getIngredientsByPages = async () => {
-  await execute({
-    method: 'get',
-    url:
-      currentPage.value === 1
-        ? `${apiUrl}/recipes/${props.id}/ingredients/`
-        : `${apiUrl}/recipes/${props.id}/ingredients/?page=${currentPage.value}`
-  });
-};
-
-const titleMessage = computed(() => {
-  if (result.value?.total === 0) {
-    return 'This recipe is made without any ingredients';
-  }
-  return 'This recipe is made using these ingredients';
-});
-
-onMounted(async () => {
-  getIngredientsByPages();
+function enableUpdatePermission() {
   if (auth.isAuthenticated.value) {
     auth.getAccessTokenSilently().then((token) => {
       canUpdateRecipe.value = hasPermission('update:recipe', token);
     });
   }
+}
+
+onMounted(async () => {
+  enableUpdatePermission();
 });
 
-watch(currentPage, async () => {
-  getIngredientsByPages();
+watch(auth.isAuthenticated, () => {
+  enableUpdatePermission();
 });
+
+const currentPage = ref(1);
+
+const selectedIngredients = ref(props.recipe.ingredients);
+const selectedIngredientIds = computed(() =>
+  selectedIngredients.value.map((ingredient) => ingredient.id)
+);
+
+function updatedIngredients(ingredients: IngredientBase[]) {
+  selectedIngredients.value = ingredients;
+  currentPage.value = 1;
+}
+
+const titleMessage = computed(() => {
+  if (selectedIngredients.value.length === 0) {
+    return 'This recipe is made without any ingredients';
+  }
+  return 'This recipe is made using these ingredients';
+});
+
+const pageLength = computed(() => {
+  if (selectedIngredients.value.length === 0) {
+    return 1;
+  }
+  return Math.ceil(selectedIngredients.value.length / RECIPE_INGREDIENT_PER_PAGE);
+});
+
+const paginatedIngredients = computed(() =>
+  selectedIngredients.value.slice(
+    (currentPage.value - 1) * RECIPE_INGREDIENT_PER_PAGE,
+    currentPage.value * RECIPE_INGREDIENT_PER_PAGE
+  )
+);
 </script>
 
 <style scoped></style>
