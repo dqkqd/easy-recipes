@@ -789,3 +789,94 @@ def test_200_get_pagination_ingredients_with_per_page(client: FlaskClient) -> No
     assert data["page"] == 2
     assert data["per_page"] == 5
     assert len(data["ingredients"]) == 5
+
+
+def test_200_update_ingredients(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    for _ in range(10):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    def ingredient_ids() -> list[int]:
+        response = client.get("recipes/1")
+        data = json.loads(response.data)
+        recipe = Recipe(**data)
+        return [ingredient.id for ingredient in recipe.ingredients]
+
+    response = client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3, 4, 5]},
+    )
+    assert ingredient_ids() == [1, 2, 3, 4, 5]
+
+    response = client.patch(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [3, 5, 7, 9]},
+    )
+    assert response.status_code == 200
+    assert ingredient_ids() == [3, 5, 7, 9]
+
+    for ingredient_id in ingredient_ids():
+        response = client.get(f"/ingredients/{ingredient_id}")
+        data = json.loads(response.data)
+        ingredient = Ingredient(**data)
+        assert [recipe.id for recipe in ingredient.recipes] == [1]
+
+
+def test_404_update_ingredients_invalid_recipe(client: FlaskClient) -> None:
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.patch(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3]},
+    )
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
+
+
+def test_404_update_ingredients_invalid_ingredient(client: FlaskClient) -> None:
+    client.post(
+        "/recipes/",
+        headers=MockAuth.header(auth.CREATE_RECIPE_PERMISSION),
+        json=MockRecipe.random_data(),
+    )
+
+    for _ in range(5):
+        client.post(
+            "/ingredients/",
+            headers=MockAuth.header(auth.CREATE_INGREDIENT_PERMISSION),
+            json=MockIngredient.random_data(),
+        )
+
+    response = client.post(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 3]},
+    )
+
+    response = client.patch(
+        "/recipes/1/ingredients/",
+        headers=MockAuth.header(auth.UPDATE_RECIPE_PERMISSION),
+        json={"ingredients": [1, 2, 10]},
+    )
+
+    data = json.loads(response.data)
+    assert data == {"code": 404, "message": "Resources not found."}
+    assert response.status_code == 404
