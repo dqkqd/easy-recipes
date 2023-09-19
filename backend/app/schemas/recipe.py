@@ -24,6 +24,7 @@ class RecipeBaseAbstract(BaseSchema):
 
 class RecipeBase(RecipeBaseAbstract):
     image_uri: HttpUrl | None = None
+    likes: int
 
     @field_serializer("image_uri", when_used="unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl) -> str:
@@ -54,7 +55,6 @@ class RecipeInDBBase(IDModelMixin, RecipeBase):
 
 class Recipe(RecipeInDBBase):
     ingredients: list[IngredientInDBBase] = Field(default_factory=list)
-    likes: int
 
 
 class AllRecipes(BaseSchema):
