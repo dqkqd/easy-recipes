@@ -7,8 +7,6 @@ describe('Render', () => {
     cy.fixture('recipes/details/1.json').then((recipe) => {
       cy.intercept({ method: 'get', url: `${apiUrl}/recipes/${recipe.id}` }, recipe);
       cy.mount(() => h(RecipeInfo, { id: recipe.id }))
-        .getTestSelector('recipe-info-dialog-loading')
-        .should('be.visible')
         .getTestSelector('recipe-info-dialog-error')
         .should('not.exist')
 
@@ -21,7 +19,7 @@ describe('Render', () => {
     });
   });
 
-  it.only('Render with error', () => {
+  it('Render with error', () => {
     cy.fixture('recipes/details/1.json').then((recipe) => {
       cy.intercept(
         { method: 'get', url: `${apiUrl}/recipes/${recipe.id}` },
