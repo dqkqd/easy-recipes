@@ -5,7 +5,8 @@ export const IngredientBaseSchema = z.object({
   id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
-  image_uri: z.string().nullable()
+  image_uri: z.string().nullable(),
+  likes: z.number()
 });
 
 export const IngredientSchema = IngredientBaseSchema.extend({
@@ -39,6 +40,12 @@ export const IngredientUpdatedResponseSchema = IngredientSchema.extend({});
 export const IngredientDeletedResponseSchema = z.object({
   id: z.number()
 });
+
+export const IngredientLikedResponseSchema = z.object({
+  id: z.number(),
+  total_likes: z.number()
+});
+
 export type IngredientBase = z.infer<typeof IngredientBaseSchema>;
 export type Ingredient = z.infer<typeof IngredientSchema>;
 
@@ -49,3 +56,5 @@ export type IngredientsResponse = z.infer<typeof IngredientsResponseSchema>;
 export type IngredientCreatedResponse = z.infer<typeof IngredientCreatedResponseSchema>;
 export type IngredientUpdatedResponse = z.infer<typeof IngredientUpdatedResponseSchema>;
 export type IngredientDeletedResponse = z.infer<typeof IngredientDeletedResponseSchema>;
+
+export type IngredientLikedResponse = z.infer<typeof IngredientLikedResponseSchema>;
