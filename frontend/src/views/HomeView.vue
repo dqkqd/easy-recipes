@@ -1,11 +1,9 @@
 <template>
-  <VApp>
-    <MainAppBar />
-  </VApp>
+  <RecipeView />
 </template>
 
 <script setup lang="ts">
-import MainAppBar from '@/components/MainAppBar.vue';
+import RecipeView from './RecipeView.vue';
 </script>
 
 <style scoped></style>
