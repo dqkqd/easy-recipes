@@ -1,0 +1,16 @@
+{
+  "id": 1,
+  "name": "My first ingredient",
+  "description": "My first ingredient description",
+  "image_uri": "https://picsum.photos/200",
+  "recipes": [
+    {
+      "id": 1,
+      "name": "My first recipe",
+      "description": "My first description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    }
+  ],
+  "likes": 10
+}

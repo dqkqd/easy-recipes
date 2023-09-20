@@ -3,6 +3,77 @@
   "name": "My first ingredient",
   "description": "My first ingredient description",
   "image_uri": "https://picsum.photos/200",
-  "recipes": [],
+  "recipes": [
+    {
+      "id": 1,
+      "name": "My first recipe",
+      "description": "My first description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 2,
+      "name": "My second recipe",
+      "description": "My second description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 3,
+      "name": "My third recipe",
+      "description": "My third description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 4,
+      "name": "My forth recipe",
+      "description": "My forth description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 5,
+      "name": "My fifth recipe",
+      "description": "My fifth description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 6,
+      "name": "My sixth recipe",
+      "description": "My sixth description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 7,
+      "name": "My seventh recipe",
+      "description": "My seventh description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 8,
+      "name": "My eighth recipe",
+      "description": "My eighth description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 9,
+      "name": "My nineth recipe",
+      "description": "My nineth description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    },
+    {
+      "id": 10,
+      "name": "My tenth recipe",
+      "description": "My tenth description",
+      "image_uri": "https://picsum.photos/200",
+      "likes": 5
+    }
+  ],
   "likes": 10
 }
