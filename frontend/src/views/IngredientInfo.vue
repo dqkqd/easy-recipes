@@ -1,33 +1,48 @@
 <template>
   <VLayout>
     <MainAppBar />
-    <VMain class="d-flex align-center justify-center">
-      <VSheet :width="800" class="my-8 text-center">
-        <IngredientDetails v-if="result" :ingredient="result" />
+    <VMain>
+      <DialogError
+        v-model="hasError"
+        title="Can not load your ingredient"
+        content="Please try again later..."
+        data-test="ingredient-info-dialog-error"
+      />
+      <DialogLoading v-model="isLoading" data-test="ingredient-info-dialog-loading" />
 
-        <VContainer v-else-if="isLoading">
-          <VProgressCircular :size="50" indeterminate></VProgressCircular>
-        </VContainer>
+      <div v-if="result">
+        <VRow justify="center" class="my-16">
+          <IngredientDetails :ingredient="result" />
+        </VRow>
 
-        <VContainer> //TODO </VContainer>
-      </VSheet>
+        <VRow justify="center">
+          <VSheet :width="800" class="my-8">
+            <VContainer class="align-center" data-test="recipe-info-recipe-ingredients">
+              <IngredientRecipes :ingredient="result" />
+            </VContainer>
+          </VSheet>
+        </VRow>
+      </div>
     </VMain>
   </VLayout>
 </template>
 
 <script setup lang="ts">
 import IngredientDetails from '@/components/IngredientDetails.vue';
+import IngredientRecipes from '@/components/IngredientRecipes.vue';
 import MainAppBar from '@/components/MainAppBar.vue';
-import { useAxios } from '@/composables';
+import { useAxios, useErrorWithTimeout } from '@/composables';
 import { apiUrl } from '@/env';
 import { IngredientSchema, type Ingredient } from '@/schema/ingredient';
 import { onMounted } from 'vue';
 
 const props = defineProps<{ id: number | string }>();
 
-const { result, isLoading, execute } = useAxios<Ingredient>((r) => {
+const { result, error, isLoading, execute } = useAxios<Ingredient>((r) => {
   return IngredientSchema.parse(r.data);
 });
+
+const { hasError } = useErrorWithTimeout(error, 2000);
 
 onMounted(async () => {
   await execute({

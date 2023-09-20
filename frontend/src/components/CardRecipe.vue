@@ -27,7 +27,7 @@
 
 <script setup lang="ts">
 import { useImage } from '@/composables';
-import type { Recipe } from '@/schema/recipe';
+import type { RecipeBase } from '@/schema/recipe';
 import { stripText } from '@/utils';
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
@@ -35,7 +35,7 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 const props = defineProps<{
-  recipe: Recipe;
+  recipe: RecipeBase;
 }>();
 
 const recipeName = computed(() => stripText(props.recipe.name, 20));
