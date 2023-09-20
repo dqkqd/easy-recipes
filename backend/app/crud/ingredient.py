@@ -18,6 +18,14 @@ class CRUDIngredient(
         IngredientUpdate,
     ],
 ):
+    def like(self, id: int, likes: int = 1) -> Ingredient:  # noqa: A002
+        ingredient = self.get(id=id)
+        ingredient.likes += likes
+        with safe_db() as db:
+            db.session.commit()
+            db.session.refresh(ingredient)
+            return ingredient
+
     def get_pagination_by_recipe_id(
         self,
         recipe_id: int,

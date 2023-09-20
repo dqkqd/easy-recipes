@@ -121,3 +121,10 @@ def update_ingredient(id: int) -> Response:  # noqa: A002
     ingredient_db = crud_ingredient.get(id=id)
     ingredient = crud_ingredient.update(ingredient_db, ingredient_update)
     return jsonify(Ingredient.model_validate(ingredient).model_dump(mode="json"))
+
+
+@api.route("/<int:id>/like", methods=["POST"])
+@to_handleable_error
+def like_ingredient(id: int) -> Response:  # noqa: A002
+    ingredient = crud_ingredient.like(id)
+    return jsonify({"id": id, "total_likes": ingredient.likes})
