@@ -20,9 +20,6 @@ it('Render properly', function () {
     .getTestSelector('ingredient-details-description')
     .should('have.text', this.ingredient.description)
 
-    .getTestSelector('ingredient-details-like')
+    .getTestSelector('ingredient-details-like-button')
     .should('be.visible');
 });
-
-it('Show number of people liked if there are any');
-it('Do not show number of people liked if there are none');

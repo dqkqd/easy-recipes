@@ -3,7 +3,7 @@
     <VRow class="my-6 mx-3" no-gutters>
       <VCol>
         <VImg
-          :height="200"
+          :height="230"
           :max-width="200"
           :src="imageSrc"
           @error="onError"
@@ -26,18 +26,7 @@
             </VCardText>
           </VCard>
         </VSheet>
-
-        <VRow align="center" justify="end" data-test="ingredient-details-like">
-          <VHover v-slot="{ isHovering, props }" close-delay="200">
-            <VIcon
-              icon="mdi-heart"
-              v-bind="props"
-              :color="isHovering ? 'red-darken-1' : 'red-lighten-2'"
-              :size="40"
-            />
-            <span class="mx-2 font-weight-bold">0 people like this</span>
-          </VHover>
-        </VRow>
+        <IngredientLikeButton :ingredient="ingredient" data-test="ingredient-details-like-button" />
       </VCol>
     </VRow>
   </VSheet>
@@ -46,6 +35,7 @@
 <script setup lang="ts">
 import { useImage } from '@/composables';
 import { type IngredientBase } from '@/schema/ingredient';
+import IngredientLikeButton from './IngredientLikeButton.vue';
 
 const props = defineProps<{ ingredient: IngredientBase }>();
 const { imageSrc, onError } = useImage(props.ingredient.image_uri);
