@@ -6,35 +6,40 @@
       "name": "My first ingredient",
       "description": "My first description",
       "image_uri": "https://picsum.photos/200",
-      "recipes": []
+      "recipes": [],
+      "likes": 10
     },
     {
       "id": 2,
       "name": "My second ingredient",
       "description": "My second description",
       "image_uri": "https://picsum.photos/200",
-      "recipes": []
+      "recipes": [],
+      "likes": 10
     },
     {
       "id": 3,
       "name": "My third ingredient",
       "description": "My third description",
       "image_uri": "https://picsum.photos/200",
-      "recipes": []
+      "recipes": [],
+      "likes": 10
     },
     {
       "id": 4,
       "name": "My forth ingredient",
       "description": "My forth description",
       "image_uri": "https://picsum.photos/200",
-      "recipes": []
+      "recipes": [],
+      "likes": 10
     },
     {
       "id": 5,
       "name": "My fifth ingredient",
       "description": "My fifth description",
       "image_uri": "https://picsum.photos/200",
-      "recipes": []
+      "recipes": [],
+      "likes": 10
     }
   ],
   "total": 34,
