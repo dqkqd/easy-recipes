@@ -77,7 +77,7 @@ const selectedIngredientIds = computed(() =>
 );
 
 function updatedIngredients(ingredients: IngredientBase[]) {
-  selectedIngredients.value = ingredients;
+  selectedIngredients.value = [...ingredients].sort((a, b) => a.id - b.id);
   currentPage.value = 1;
 }
 
