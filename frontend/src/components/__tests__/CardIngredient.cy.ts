@@ -1,4 +1,5 @@
 import CardIngredient from '@/components/CardIngredient.vue';
+import router from '@/router';
 import { IngredientSchema } from '@/schema/ingredient';
 import { h } from 'vue';
 
@@ -9,7 +10,8 @@ describe('Render', () => {
       name: 'Ingredient',
       description: 'My first ingredient description',
       image_uri: 'https://picsum.photos/200',
-      recipes: []
+      recipes: [],
+      likes: 10
     });
 
     cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
@@ -26,7 +28,8 @@ describe('Render', () => {
       name: 'My first ingredient',
       description: 'My first ingredient description',
       image_uri: 'https://picsum.photos/200',
-      recipes: []
+      recipes: [],
+      likes: 10
     });
 
     cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
@@ -45,17 +48,20 @@ describe('Ingredient details dialog', () => {
       name: 'Ingredient',
       description: 'My first ingredient description',
       image_uri: 'https://picsum.photos/200',
-      recipes: []
+      recipes: [],
+      likes: 10
     });
 
+    cy.spy(router, 'push')
+      .withArgs({ name: 'IngredientInfo', params: { id: 1 } })
+      .as('redirectedToIngredientInfo');
+
     cy.mount(() => h(CardIngredient, { ingredient: ingredient }))
-      .getTestSelector('ingredient-details')
-      .should('not.exist')
 
       .getTestSelector('card-to-ingredient-details')
       .click()
 
-      .getTestSelector('ingredient-details')
-      .should('be.visible');
+      .get('@redirectedToIngredientInfo')
+      .should('be.called');
   });
 });
