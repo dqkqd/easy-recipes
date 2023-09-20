@@ -1,4 +1,5 @@
 import IngredientDetails from '@/components/IngredientDetails.vue';
+import { stripText } from '@/utils';
 import { h } from 'vue';
 
 beforeEach(() => {
@@ -18,7 +19,7 @@ it('Render properly', function () {
     .should('have.attr', 'src', this.ingredient.image_uri)
 
     .getTestSelector('ingredient-details-description')
-    .should('have.text', this.ingredient.description)
+    .should('have.text', stripText(this.ingredient.description, 180))
 
     .getTestSelector('ingredient-details-like-button')
     .should('be.visible');

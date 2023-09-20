@@ -1,10 +1,10 @@
 <template>
-  <VSheet border data-test="ingredient-details">
+  <VSheet border data-test="ingredient-details" width="600">
     <VRow class="my-6 mx-3" no-gutters>
       <VCol>
         <VImg
           :height="230"
-          :max-width="200"
+          :width="230"
           :src="imageSrc"
           @error="onError"
           class="align-end"
@@ -22,7 +22,7 @@
             </VCardTitle>
             <VDivider />
             <VCardText class="text-left text-body-2" data-test="ingredient-details-description">
-              {{ ingredient.description }}
+              {{ ingredientDescription }}
             </VCardText>
           </VCard>
         </VSheet>
@@ -35,9 +35,12 @@
 <script setup lang="ts">
 import { useImage } from '@/composables';
 import { type IngredientBase } from '@/schema/ingredient';
+import { stripText } from '@/utils';
+import { computed } from 'vue';
 import IngredientLikeButton from './IngredientLikeButton.vue';
 
 const props = defineProps<{ ingredient: IngredientBase }>();
+const ingredientDescription = computed(() => stripText(props.ingredient.description ?? '', 180));
 const { imageSrc, onError } = useImage(props.ingredient.image_uri);
 </script>
 
