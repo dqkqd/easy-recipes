@@ -18,12 +18,11 @@ class BaseConfig:
     postgres_password = os.environ.get("POSTGRES_PASSWORD")
     postgres_port = os.environ.get("POSTGRES_PORT")
     postgres_db = os.environ.get("POSTGRES_DB")
-    file_server_port = os.environ.get("FILE_SERVER_PORT")
     file_server_images_directory = os.environ.get("FILE_SERVER_IMAGES_DIRECTORY")
     default_ingredient_image_name = "default-ingredient-image.jpg"
     default_recipe_image_name = "default-recipe-image.jpg"
     postgres_host: str | None = None
-    file_server_host: str | None = None
+    FILE_SERVER_HOST: str | None = None
 
     DEBUG = int(os.environ.get("DEBUG", 0))
 
@@ -37,7 +36,7 @@ class BaseConfig:
 
     @property
     def FILE_SERVER_URL(self) -> str:  # noqa: N802
-        return f"http://{self.file_server_host}:{self.file_server_port}/"
+        return f"http://{self.FILE_SERVER_HOST}/"
 
     SECRET_KEY = secrets.token_urlsafe(256)
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -49,12 +48,12 @@ class BaseConfig:
 
 class Config(BaseConfig):
     postgres_host = os.environ.get("POSTGRES_HOST")
-    file_server_host = os.environ.get("FILE_SERVER_HOST")
+    FILE_SERVER_HOST = os.environ.get("FILE_SERVER_HOST")
 
 
 class TestingConfig(BaseConfig):
     postgres_host = os.environ.get("TEST_POSTGRES_HOST")
-    file_server_host = os.environ.get("TEST_FILE_SERVER_HOST")
+    FILE_SERVER_HOST = os.environ.get("TEST_FILE_SERVER_HOST")
 
     DEBUG = True
     TESTING = True

@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import socket
 from typing import TYPE_CHECKING, Annotated
 
+from flask import current_app
 from pydantic import (
     AfterValidator,
     Base64Bytes,
@@ -30,8 +32,20 @@ class IngredientBase(IngredientBaseAbstract):
     image_uri: HttpUrl | None = None
     likes: int
 
-    @field_serializer("image_uri", when_used="unless-none")
+    @field_serializer("image_uri", when_used="json-unless-none")
     def serialize_image_uri(self, image_uri: HttpUrl) -> str:
+        file_server_host = current_app.config["FILE_SERVER_HOST"]
+        if image_uri.host == file_server_host:
+            image_uri = image_uri.build(
+                scheme=image_uri.scheme,
+                username=image_uri.username,
+                password=image_uri.password,
+                host=socket.gethostbyname(file_server_host),
+                port=image_uri.port,
+                path=image_uri.path,
+                query=image_uri.query,
+                fragment=image_uri.fragment,
+            )
         return str(image_uri)
 
 
