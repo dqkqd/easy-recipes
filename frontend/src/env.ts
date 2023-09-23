@@ -1,10 +1,10 @@
 const env = import.meta.env;
-let _apiUrl = '';
-let _fileServerURL = '';
+let _apiUrl = env.VITE_API_HOST;
+let _fileServerURL = env.VITE_FILE_SERVER_HOST;
 
 export const defaultImage = '/no-image-icon.png';
 
-if (env.MODE == 'development') {
+if (env.MODE === 'development') {
   _apiUrl = `http://${env.VITE_API_HOST_DEV}`;
   _fileServerURL = `http://${env.VITE_FILE_SERVER_HOST}`;
 }
