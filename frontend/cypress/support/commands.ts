@@ -37,8 +37,7 @@
 // }
 
 import * as jose from 'jose';
-import auth0 from '../../src/plugins/auth0';
-
+import { removeJWT, setJWT } from '../../src/stores/auth';
 declare global {
   namespace Cypress {
     interface Chainable {
@@ -63,8 +62,12 @@ Cypress.Commands.add('signJWT', async (enableAuth: boolean, permissions: string[
   const jwt = await new jose.SignJWT({ permissions: permissions })
     .setProtectedHeader({ alg: 'RS256' })
     .sign(keyPair.privateKey);
-  auth0.isAuthenticated.value = enableAuth;
-  cy.stub(auth0, 'getAccessTokenSilently').resolves(jwt);
+
+  if (enableAuth) {
+    setJWT(jwt);
+  } else {
+    removeJWT();
+  }
 
   return jwt;
 });

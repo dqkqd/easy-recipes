@@ -38,7 +38,7 @@ import { useAxios, useErrorWithTimeout } from '@/composables';
 import { apiUrl } from '@/env';
 import type { IngredientBase } from '@/schema/ingredient';
 import { RecipeUpdatedResponseSchema, type RecipeUpdatedResponse } from '@/schema/recipe';
-import { useAuth0 } from '@auth0/auth0-vue';
+import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
 
 const props = defineProps<{
@@ -50,6 +50,8 @@ const emit = defineEmits<{
   (e: 'updated', ingredients: IngredientBase[]): void;
 }>();
 
+const auth = useAuthStore();
+
 const dialog = ref(false);
 const updated = ref(false);
 
@@ -58,7 +60,6 @@ const { result, isLoading, error, execute } = useAxios<RecipeUpdatedResponse>((r
 });
 
 const { hasError } = useErrorWithTimeout(error, 2000);
-const auth = useAuth0();
 
 async function selectIngredients(selectedIds: number[]) {
   dialog.value = false;
@@ -67,7 +68,6 @@ async function selectIngredients(selectedIds: number[]) {
     return;
   }
 
-  const token = await auth.getAccessTokenSilently();
   await execute({
     method: 'patch',
     url: `${apiUrl}/recipes/${props.recipeId}/ingredients/`,
@@ -75,7 +75,7 @@ async function selectIngredients(selectedIds: number[]) {
       ingredients: selectedIds
     },
     headers: {
-      authorization: `Bearer ${token}`
+      authorization: `Bearer ${auth.token}`
     }
   });
 

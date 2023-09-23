@@ -1,6 +1,5 @@
 import { VApp } from 'vuetify/components';
 // ***********************************************************
-import auth0 from '../../src/plugins/auth0';
 import vuetify from '../../src/plugins/vuetify';
 
 // This example support/component.ts is processed and
@@ -23,6 +22,7 @@ import './commands';
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
 
+import { createTestingPinia } from '@pinia/testing';
 import { mount } from 'cypress/vue';
 import { h } from 'vue';
 import router from '../../src/router';
@@ -62,12 +62,16 @@ Cypress.Commands.add('mount', (component, options = {}) => {
     }
   });
 
-  // Add auth
   options.global.plugins.push({
     install(app) {
-      app.use(auth0);
+      app.use(
+        createTestingPinia({
+          createSpy: cy.spy
+        })
+      );
     }
   });
+
   return mount(() => h(VApp, {}, component), options);
 });
 

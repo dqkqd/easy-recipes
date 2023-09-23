@@ -26,7 +26,7 @@
       />
     </VAppBarTitle>
     <VBtn
-      v-if="auth.isAuthenticated.value"
+      v-if="auth.isLoggedIn"
       color="red-lighten-1"
       @click="logout"
       text="LOG OUT"
@@ -53,17 +53,18 @@
 </template>
 
 <script setup lang="ts">
-import { useAuth0 } from '@auth0/auth0-vue';
+import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 const router = useRouter();
-const auth = useAuth0();
+
+const auth = useAuthStore();
 
 function login() {
-  auth.loginWithRedirect();
+  auth.login();
 }
 
 function logout() {
-  auth.logout({ logoutParams: { returnTo: window.location.origin } });
+  auth.logout();
 }
 </script>
 

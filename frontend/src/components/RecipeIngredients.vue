@@ -7,7 +7,7 @@
       >{{ titleMessage }}</VCol
     >
 
-    <VCol v-if="canUpdateRecipe" cols="3" align="center">
+    <VCol v-if="user.canUpdateRecipe" cols="3" align="center">
       <RecipeIngredientsDialog
         :recipeId="recipe.id"
         :selectedIngredientIds="selectedIngredientIds"
@@ -38,36 +38,19 @@
 </template>
 
 <script setup lang="ts">
-import { hasPermission } from '@/auth';
 import CardIngredient from '@/components/CardIngredient.vue';
 import RecipeIngredientsDialog from '@/components/RecipeIngredientsDialog.vue';
 import type { IngredientBase } from '@/schema/ingredient';
 import type { Recipe } from '@/schema/recipe';
+import { useUserStore } from '@/stores/user';
 import { RECIPE_INGREDIENT_PER_PAGE } from '@/utils';
-import { useAuth0 } from '@auth0/auth0-vue';
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref } from 'vue';
 
 const props = defineProps<{
   recipe: Recipe;
 }>();
 
-const auth = useAuth0();
-const canUpdateRecipe = ref(false);
-function enableUpdatePermission() {
-  if (auth.isAuthenticated.value) {
-    auth.getAccessTokenSilently().then((token) => {
-      canUpdateRecipe.value = hasPermission('update:recipe', token);
-    });
-  }
-}
-
-onMounted(async () => {
-  enableUpdatePermission();
-});
-
-watch(auth.isAuthenticated, () => {
-  enableUpdatePermission();
-});
+const user = useUserStore();
 
 const currentPage = ref(1);
 
