@@ -32,4 +32,8 @@ def create_app(config_cls: type[BaseConfig] = Config) -> Flask:
 
     app.register_error_handler(ApplicationHTTPError, handle_error)
 
+    from app.cli import sample_cli
+
+    app.cli.add_command(sample_cli)
+
     return app
