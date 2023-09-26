@@ -15,8 +15,8 @@ class Config(BaseConfig):
     FILE_SERVER_ENCRYPT_KEY = os.environ.get("FILE_SERVER_ENCRYPT_KEY")
     FILE_SERVER_PASSWORD = os.environ.get("FILE_SERVER_PASSWORD")
     AUTHORIZATION_SCHEME = os.environ.get("FILE_SERVER_AUTHORIZATION_SCHEME")
-    FILE_SERVER_REQUEST_TIMEOUT = float(os.environ.get("FILE_SERVER_REQUEST_TIMEOUT"))
-    MAX_CONTENT_LENGTH = int(os.environ.get("FILE_SERVER_MAX_CONTENT_LENGTH"))
+    FILE_SERVER_REQUEST_TIMEOUT = float(os.environ.get("FILE_SERVER_REQUEST_TIMEOUT", 5.0))
+    MAX_CONTENT_LENGTH = int(os.environ.get("FILE_SERVER_MAX_CONTENT_LENGTH", 1_000_000))
 
 
 class TestingConfig(BaseConfig):
