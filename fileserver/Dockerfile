@@ -4,12 +4,11 @@ FROM python:3.11-alpine
 WORKDIR /fileserver
 
 RUN pip install --upgrade pip
-
 COPY ./pyproject.toml .
-RUN pip install ".[dev]"
+RUN pip install .
 
 COPY . .
 
 EXPOSE 80
-
 ENTRYPOINT ["gunicorn", "-b", ":80", "app:create_app()"]
+

@@ -9,7 +9,6 @@ __pycache__/
 build/
 *.egg-info/
 .venv/
-.env
 .python-version
 
 .dmypy.json

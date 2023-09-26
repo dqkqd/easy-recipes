@@ -1,28 +1,26 @@
 const env = import.meta.env;
-let _apiUrl = env.VITE_API_HOST;
-let _fileServerURL = env.VITE_FILE_SERVER_HOST;
+const _apiUrl = env.VITE_API_HOST;
+
+const fileServerHost = env.VITE_FILE_SERVER_HOST;
+const fileServerHostDev = env.VITE_FILE_SERVER_HOST_DEV;
+
+const shouldConvertURL = !!env.VITE_FORCE_CONVERT_URL || env.MODE === 'development';
 
 export const defaultImage = '/no-image-icon.png';
 
-if (env.MODE === 'development') {
-  _apiUrl = `http://${env.VITE_API_HOST_DEV}`;
-  _fileServerURL = `http://${env.VITE_FILE_SERVER_HOST}`;
-}
-
-const fileServerDevURL = `http://${env.VITE_FILE_SERVER_HOST_DEV}`;
-
 export function urlToDev(url: string | null) {
-  if (!url || env.MODE !== 'development') {
+  if (!url || !shouldConvertURL) {
     return url;
   }
-  return url.replace(_fileServerURL, fileServerDevURL);
+
+  return url.replace(fileServerHost, fileServerHostDev);
 }
 
 export function urlFromDev(url: string | null) {
-  if (!url || env.MODE !== 'development') {
+  if (!url || !shouldConvertURL) {
     return url;
   }
-  return url.replace(fileServerDevURL, _fileServerURL);
+  return url.replace(fileServerHostDev, fileServerHost);
 }
 
 export const apiUrl = _apiUrl;

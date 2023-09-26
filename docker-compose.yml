@@ -1,5 +1,5 @@
 services:
-  server:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -9,18 +9,7 @@ services:
       - 8000:8080
     depends_on:
       - fileserver
-      - test_fileserver
       - database
-      - test_database
-
-  database:
-    image: postgres:15.4-alpine
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
-    env_file:
-      - env-file.example
-    ports:
-      - 5433:5432
 
   fileserver:
     build:
@@ -33,21 +22,12 @@ services:
     ports:
       - 6432:80
 
-  test_database:
+  database:
     image: postgres:15.4-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
     env_file:
       - env-file.example
-    ports:
-      - 5434:5432
-
-  test_fileserver:
-    build:
-      context: ./fileserver
-      dockerfile: Dockerfile
-    env_file:
-      - env-file.example
-    ports:
-      - 6433:80
 
   frontend:
     build:
