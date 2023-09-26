@@ -1,0 +1,22 @@
+services:
+  backendtest:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.testing
+    env_file:
+      - env-file.testing
+    depends_on:
+      - fileservertest
+      - databasetest
+
+  fileservertest:
+    build:
+      context: ./fileserver
+      dockerfile: Dockerfile.testing
+    env_file:
+      - env-file.testing
+
+  databasetest:
+    image: postgres:15.4-alpine
+    env_file:
+      - env-file.testing

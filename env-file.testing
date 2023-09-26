@@ -1,0 +1,26 @@
+# share config
+POSTGRES_DB=postgresdbtest
+POSTGRES_USER=postgrestest
+POSTGRES_PASSWORD=postgrestest
+POSTGRES_PORT=5432
+
+FILE_SERVER_IMAGES_DIRECTORY=images
+# this is just a sample Fernet key
+# https://github.com/pyca/cryptography
+FILE_SERVER_ENCRYPT_KEY=DZd3mOJJSgohhvx0SKZ84jllhNswcxt6Ry4Noz9aabQ=
+FILE_SERVER_PASSWORD=password
+FILE_SERVER_AUTHORIZATION_SCHEME=FERNET_TOKEN
+FILE_SERVER_REQUEST_TIMEOUT=5
+FILE_SERVER_MAX_CONTENT_LENGTH=1000000 # 1MB
+
+# testing
+TEST_POSTGRES_HOST=databasetest
+TEST_FILE_SERVER_HOST=fileservertest
+
+# testing with real token might be slow
+USE_REAL_AUTH_TEST=0
+MENU_MANAGER_TOKEN=
+MANAGER_TOKEN=
+
+# debug mode
+DEBUG=1

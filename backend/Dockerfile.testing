@@ -1,0 +1,17 @@
+FROM python:3.11-alpine
+
+# set a directory for the app
+WORKDIR /backend
+
+RUN pip install --upgrade pip
+COPY ./pyproject.toml .
+RUN pip install ".[dev]"
+
+COPY . .
+
+RUN mypy .
+RUN ruff .
+RUN black .
+
+EXPOSE 8080
+ENTRYPOINT ["gunicorn", "-b", ":8080", "app:create_app()"]
