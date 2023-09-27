@@ -4,6 +4,8 @@ Easy-recipes is a web application which allow people to make their own recipes a
 This is my final project for udacity fullstack development course.
 The project is written using [Flask](https://flask.palletsprojects.com/) for backend and [Vue](https://vuejs.org/) for frontend.
 
+You can check this out at [http://aa53903bebabb47bab9ad5b927e0612e-1634006276.us-west-2.elb.amazonaws.com/](http://aa53903bebabb47bab9ad5b927e0612e-1634006276.us-west-2.elb.amazonaws.com/)
+
 ## Table of Contents
 
 * **[Getting started](#getting-started)**
@@ -13,8 +15,13 @@ The project is written using [Flask](https://flask.palletsprojects.com/) for bac
     * [Fileserver](#fileserver)
     * [API server](#api-server)
   * [Frontend](#frontend)
-* **[Roles and permissions](#roles-and-permissions)**
 * **[Deployment](#deployment)**
+  * [Upload docker image](#upload-docker-image)
+  * [Create EKS cluster](#create-eks-cluster)
+  * [Set up EBS for database](#set-up-ebs-for-database)
+  * [Deploy database](#deploy-database)
+  * [Deploy backend and frontend](#deploy-backend-and-frontend)
+* **[Roles and permissions](#roles-and-permissions)**
 * **[API Reference](#api-reference)**
   * [Recipes](#recipes)
   * [Ingredients](#ingredients)
@@ -197,6 +204,111 @@ Then run the command below to start development.
 npm run dev
 ```
 
+## Deployment
+
+Application is deployed in [AWS](https://aws.amazon.com/) using [EKS](https://aws.amazon.com/eks/) and [Kubernetes](https://kubernetes.io/).
+
+### Upload docker image
+
+You should build 3 docker images in `fileserver`, `backend` and `frontend` folder.
+Then push them into docker hub and substitute those image in **TODO**.
+
+### Create EKS cluster
+
+```bash
+eksctl create cluster --name easy-recipes --nodes=2 --node-volume-size=8 --version=1.27 --instance-types=t3.medium --region=us-west-2 
+```
+
+### Set up EBS for database
+
+You can follow along [AWS documnet](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) on how to set up ebs.
+Here's a summary:
+
+Set up oidc id for cluster:
+
+```bash
+eksctl utils associate-iam-oidc-provider --cluster easy-recipes --approve
+```
+
+Set up IAM service account for ebs:
+
+```bash
+eksctl create iamserviceaccount \
+  --name ebs-csi-controller-sa \
+  --namespace kube-system \
+  --cluster easy-recipes \
+  --role-name AmazonEKS_EBS_CSI_DriverRole \
+  --role-only \
+  --attach-policy-arn arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy \
+  --approve
+```
+
+Apply `aws-ebs-csi-driver` to `your-aws-id`.
+
+```bash
+eksctl create addon --name aws-ebs-csi-driver --cluster easy-recipes --service-account-role-arn arn:aws:iam::<your-aws-id>:role/AmazonEKS_EBS_CSI_DriverRole --force
+```
+
+Wait until all `ebs-csi` pods are running
+
+```bash
+kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-ebs-csi-driver
+```
+
+### Deploy database
+
+Deploy your database using these command:
+
+```bash
+kubectl apply -k deploy/database
+```
+
+### Deploy backend and frontend
+
+#### Apply kubernetes config
+
+Substitute your docker image in [backend.yml](./deploy/backend/backend.yml), [fileserver.yml](./deploy/backend/fileserver.yml) and [frontend.yml](./deploy/frontend.yml)
+Then deploy your backend and frontend using these commands:
+
+```bash
+kubectl apply -k deploy/backend
+kubectl apply -f deploy/frontend.yml
+```
+
+Make sure all your backend pods are running
+
+```bash
+kubectl get pods
+```
+
+#### Migration
+
+Go inside your backend pods and migrate database.
+
+```bash
+kubectl exec -it pod/backend-<random-id> -- flask db upgrade
+```
+
+#### Change environment variables
+
+Get your external ip address
+
+```bash
+kubectl get services
+```
+
+In [backend's env file](./deploy/backend/env-file.backend.example)
+
+* Change `FILE_SERVER_HOST` with fileserver external ip address.
+
+In [frontend's env file](./frontend/.env.production), you need to change some variables:
+
+* Set `VITE_FORCE_CONVERT_URL=false`.
+* Change `VITE_API_HOST` with backend external ip address.
+* Change `VITE_AUTH0_CALLBACK_URL` with frontend external ip address.
+
+Then, go to your auth0 application setting and change Callback URL with the same value as `VITE_AUTH0_CALLBACK_URL`.
+
 ## Roles and permissions
 
 Application includes 6 permissions and 2 roles.
@@ -242,8 +354,6 @@ VITE_AUTH0_ALGORITHM=
 VITE_AUTH0_API_AUDIENCE=
 VITE_AUTH0_CLIENT_ID=
 ```
-
-## Deployment
 
 ## API Reference
 
