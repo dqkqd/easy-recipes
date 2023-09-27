@@ -1,8 +1,11 @@
 # Easy-recipes
 
+Easy-recipes is a web application which allow people to make their own recipes and share with others.
+This is my final project for udacity fullstack development course.
+The project is written using [Flask](https://flask.palletsprojects.com/) for backend and [Vue](https://vuejs.org/) for frontend.
+
 ## Table of Contents
 
-* **[Motivation](#motivation)**
 * **[Getting started](#getting-started)**
   * [Login](#login)
 * **[Development](#development)**
@@ -16,12 +19,6 @@
   * [Recipes](#recipes)
   * [Ingredients](#ingredients)
   * [Errors](#errors)
-
-## Motivation
-
-Easy-recipes is a web application which allow people to make their own recipes and share with others.
-This is my final project for udacity fullstack development course.
-The project is written using [Flask](https://flask.palletsprojects.com/) for backend and [Vue](https://vuejs.org/) for frontend.
 
 ## Getting started
 
