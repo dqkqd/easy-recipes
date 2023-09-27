@@ -179,7 +179,7 @@ To get start, go to frontend folder and install necessary packages
 
 ```bash
 cd frontend
-npm run install
+npm install
 ```
 
 All the tests in frontend are mocked, so you can run it without setting up api server, authentication, etc.
