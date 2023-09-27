@@ -4,7 +4,7 @@ const _apiUrl = env.VITE_API_HOST;
 const fileServerHost = env.VITE_FILE_SERVER_HOST;
 const fileServerHostDev = env.VITE_FILE_SERVER_HOST_DEV;
 
-const shouldConvertURL = !!env.VITE_FORCE_CONVERT_URL || env.MODE === 'development';
+const shouldConvertURL = env.VITE_FORCE_CONVERT_URL === 'true' || env.MODE === 'development';
 
 export const defaultImage = '/no-image-icon.png';
 
