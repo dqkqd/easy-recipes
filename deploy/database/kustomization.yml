@@ -1,0 +1,8 @@
+configMapGenerator:
+  - name: env-file-database
+    envs:
+      - env-file.database.example
+resources:
+  - storage.yml
+  - pvc.yml
+  - postgres.yml

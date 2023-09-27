@@ -1,0 +1,7 @@
+configMapGenerator:
+  - name: env-file-backend
+    envs:
+      - env-file.backend.example
+resources:
+  - fileserver.yml
+  - backend.yml
