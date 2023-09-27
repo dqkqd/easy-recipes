@@ -9,5 +9,5 @@ RUN pip install .
 
 COPY . .
 
-EXPOSE 8080
-ENTRYPOINT ["gunicorn", "-b", ":8080", "app:create_app()"]
+EXPOSE 80
+ENTRYPOINT ["gunicorn", "-b", ":80", "app:create_app()"]
