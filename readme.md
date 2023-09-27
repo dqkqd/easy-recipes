@@ -314,20 +314,20 @@ curl 'http://localhost:8000/recipes/?per_page=2&page=2'
   "per_page": 2,
   "recipes": [
     {
-      "description": "Very delicous pumpkin soup",
       "id": 3,
+      "name": "Pumpkin soup",
+      "description": "Very delicous pumpkin soup",
       "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
       "ingredients": [
         {
-          "description": "Very delicous pumpkin",
           "id": 4,
-          "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
-          "likes": 0,
           "name": "Pumpkin"
+          "description": "Very delicous pumpkin",
+          "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
+          "likes": 0
         }
       ],
-      "likes": 0,
-      "name": "Pumpkin soup"
+      "likes": 0
     }
   ],
   "total": 3
@@ -1036,4 +1036,4 @@ curl -X POST 'http://localhost:8000/recipes/' \
   "code": 415,
   "message": "Invalid image."
 }
-`
+```
