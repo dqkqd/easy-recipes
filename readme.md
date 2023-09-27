@@ -3,12 +3,19 @@
 ## Table of Contents
 
 * **[Motivation](#motivation)**
+* **[Getting started](#getting-started)**
+  * [Login](#login)
 * **[Development](#development)**
   * [Backend](#backend)
     * [Fileserver](#fileserver)
     * [API server](#api-server)
   * [Frontend](#frontend)
+* **[Roles and permissions](#roles-and-permissions)**
+* **[Deployment](#deployment)**
 * **[API Reference](#api-reference)**
+  * [Recipes](#recipes)
+  * [Ingredients](#ingredients)
+  * [Errors](#errors)
 
 ## Motivation
 
@@ -27,8 +34,7 @@ You now can set up the environment using docker compose.
 docker compose up --force-recreate --build
 ```
 
-You should wait a few seconds for database initialization.
-Then open another terminal, run the command below to apply migrations.
+You should wait a few seconds for database initialization, then open another terminal, run the command below to apply migrations.
 
 ```bash
 docker compose exec backend flask db upgrade
@@ -36,11 +42,18 @@ docker compose exec backend flask db upgrade
 
 Your application is now live at [http://localhost:4173/](http://localhost:4173/).
 
-However, your application will come with no recipes and ingredients. You can add some sample using the command below.
+However, it would come with no data. You can add sample data using the command below, or you can [login](#login) and create your own.
 
 ```bash
 docker compose exec backend flask sample add 
 ```
+
+### Login
+
+To add recipes and ingredients, you need to login as a user with specific role.
+If you want to set up your own authentication, please refer to [Roles and permissions](#roles-and-permissions).
+Or, you can use default users using email and password provided in [credentials](./credentials).
+*Email and password provided in credentials file might be changed or inactivated in the future*
 
 ## Development
 
@@ -89,7 +102,7 @@ FILE_SERVER_PASSWORD=password
 FILE_SERVER_AUTHORIZATION_SCHEME=FERNET_TOKEN
 ```
 
-See [environment variables example](./env-file.example) on how to set other environment variables for fileserver.
+See [environment variables example](./env-file.example) on how to set other environment variables (optional) for fileserver.
 
 #### API server
 
@@ -149,7 +162,7 @@ During developing, you need to run fileserver first, because *api server* will n
 Normally, testing *api server* will use mocking authentication, if you need to test with the real authentication.
 You need to set up [auth0](https://auth0.com/) and provide proper tokens in environment variables.
 
-You then need to set `USE_REAL_AUTH_TEST=1` and provide two tokens for two roles. See [API Reference](#api-reference) for roles definition.
+You then need to set `USE_REAL_AUTH_TEST=1` and provide two tokens for two roles. See [Roles and permissions](#roles-and-permissions) for roles definition and [tials](./credentials) for provided tokens.
 
 ```bash
 # testing with real token might be slow
@@ -158,12 +171,12 @@ MENU_MANAGER_TOKEN=
 MANAGER_TOKEN=
 ```
 
-Testing with real authentication will be very slow, so it's not recommend.
+*Testing with real authentication will be very slow, so it's not recommend.*
 
 ### Frontend
 
 **Easy recipes**'s frontend is developing using [Vue](https://vuejs.org/) and [TypeScript](https://www.typescriptlang.org/).
-You should have the latest [Nodejs 20.7](https://nodejs.org/en) installed to develop frontend.
+You should have latest [Nodejs](https://nodejs.org/en) installed to develop frontend.
 
 To get start, go to frontend folder and install necessary packages
 
@@ -173,26 +186,854 @@ npm run install
 ```
 
 All the tests in frontend are mocked, so you can run it without setting up api server, authentication, etc.
-You can run the test suite using command below
+You can run the test suite using the command below.
 
 ```bash
 npm run test:component
 ```
 
-## API Reference
+Frontend will automatically start when you run docker compose as specified in [getting started](#getting-started).
+If you want to develop without running inside docker (recommend way), you can delete the `frontend` container inside [docker compose config](./docker-compose.yml).
+Then run the command below to start development.
+
+```bash
+npm run dev
+```
+
+## Roles and permissions
 
 Application includes 6 permissions and 2 roles.
 
 **Permissions**:
 
-* Create recipe
-* Update recipe
-* Delete recipe
-* Create ingredient
-* Update ingredient
-* Delete ingredient
+* Create recipe: `create:recipe`
+* Update recipe: `update:recipe`
+* Delete recipe: `delete:recipe`
+* Create ingredient: `create:ingredient`
+* Update ingredient: `update:ingredient`
+* Delete ingredient: `delete:ingredient`
 
 **Roles**:
 
 * Menu manager: Can perform create, update.
 * Manager: Can perform create, update and delete.
+
+### Set up authentication
+
+To set up your own authentication,
+you need to have an [auth0](https://auth0.com/).
+
+After creating your account,
+you can create [auth0 application](https://auth0.com/docs/get-started/applications/application-settings) and
+[auth0 api](https://auth0.com/docs/get-started/apis/api-settings) to get start.
+*Remember to create roles and permissions when setting up your auth0 api.*
+
+When you finished you set up, change corresponding environment variables in [env-file](./env-file.example) and [frontend/.env](./frontend/.env).
+
+```bash
+# env-file
+AUTH0_DOMAIN=
+ALGORITHM=
+API_AUDIENCE=
+```
+
+```bash
+# frontend/.env
+VITE_AUTH0_CALLBACK_URL=
+VITE_AUTH0_DOMAIN=
+VITE_AUTH0_ALGORITHM=
+VITE_AUTH0_API_AUDIENCE=
+VITE_AUTH0_CLIENT_ID=
+```
+
+## Deployment
+
+## API Reference
+
+If you setup properly follow the steps in [Getting started](#getting-started),
+your api server should live at [http://localhost:8000/](http://localhost:8000/).
+Or if you want to test with deployed api server,
+please refer to [Deployment](#deployment) for the real api sever.
+
+### Recipes
+
+#### `GET /recipes/all`
+
+* Description: Get all recipes in the database.
+* Permission: Not required
+* Request example:
+
+```bash
+curl 'http://localhost:8000/recipes/all'
+```
+
+* Response example:
+
+```json
+{
+  "recipes": [
+    {
+      "description": "Very delicous pumpkin soup",
+      "id": 8,
+      "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
+      "ingredients": [
+        {
+          "description": "Very delicous pumpkin",
+          "id": 8,
+          "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
+          "likes": 4,
+          "name": "Pumpkin"
+        }
+      ],
+      "likes": 5,
+      "name": "Pumpkin soup"
+    }
+  ],
+  "total": 1
+}
+```
+
+#### `GET /recipes`
+
+* Description: Get recipes from the database with pagination.
+* Permission: Not required
+* Query parameters:
+  * `per_page` (**integer**: optional, **default**: 12): maximum how many recipes you want to receive in your response.
+  * `page`: (**integer**: optional, **default**: 1): paginating recipes response.
+* Request example:
+
+```bash
+curl 'http://localhost:8000/recipes/?per_page=2&page=2'
+```
+
+* Response example:
+
+```json
+{
+  "page": 2,
+  "per_page": 2,
+  "recipes": [
+    {
+      "description": "Very delicous pumpkin soup",
+      "id": 3,
+      "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
+      "ingredients": [
+        {
+          "description": "Very delicous pumpkin",
+          "id": 4,
+          "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
+          "likes": 0,
+          "name": "Pumpkin"
+        }
+      ],
+      "likes": 0,
+      "name": "Pumpkin soup"
+    }
+  ],
+  "total": 3
+}
+```
+
+#### `GET /recipes/<id>`
+
+* Description: Get specific recipe from database.
+* Permission: Not required
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to get.
+* Request example:
+
+```bash
+curl 'http://localhost:8000/recipes/2'
+```
+
+* Response example:
+
+```json
+{
+  "id": 2,
+  "name": "Orange juice",
+  "description": "Very delicous orange juice",
+  "image_uri": "https://images.unsplash.com/photo-1613478223719-2ab802602423",
+  "ingredients": [
+    {
+      "id": 3,
+      "name": "Orange",
+      "description": "Very delicous orange",
+      "image_uri": "https://images.unsplash.com/photo-1582979512210-99b6a53386f9",
+      "likes": 0,
+    }
+  ],
+  "likes": 0,
+}
+```
+
+#### `POST /recipes`
+
+* Description: Create new recipe.
+* Permission: **create recipe**.
+* Request body:
+  * `name` (**string**: required): name of the recipe.
+  * `description` (**string**: optional): description of the recipe.
+  * `image_uri`: (**string**: optional): url of the recipe.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X POST 'http://localhost:8000/recipes/' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name":"my recipe", "description":"my description", "image_uri":"https://picsum.photos/200"}'
+```
+
+* Response example:
+
+```json
+{
+  "id": 4
+}
+```
+
+#### `PATCH /recipes/<id>`
+
+* Description: Update recipe information.
+* Permission: **update recipe**.
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to update.
+* Request body:
+  * `name` (**string**: optional): new name of the recipe.
+  * `description` (**string**: optional): new description of the recipe.
+  * `image_uri`: (**string**: optional): new url of the recipe.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X PATCH 'http://localhost:8000/recipes/4' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name":"my new recipe", "description":"my new description", "image_uri":"https://picsum.photos/300"}'
+```
+
+* Response example:
+
+```json
+{
+  "id": 4,
+  "name": "my new recipe",
+  "description": "my new description",
+  "image_uri": "http://your-recipe-image-url-in-fileserver",
+  "ingredients": [],
+  "likes": 0
+}
+```
+
+#### `DELETE /recipes/<id>`
+
+* Description: Delete recipe.
+* Permission: **delete recipe**.
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to delete.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X DELETE 'http://localhost:8000/recipes/4' \
+  -H 'Authorization: Bearer <token>'
+```
+
+* Response example:
+
+```json
+{
+  "id": 4
+}
+```
+
+#### `POST /recipes/<id>/like`
+
+* Description: Like recipe.
+* Permission: Not required.
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to like.
+* Request example:
+
+```bash
+curl -X POST 'http://localhost:8000/recipes/2/like'
+```
+
+* Response example:
+
+```json
+{
+  "id": 2,
+  "total_likes": 1
+}
+```
+
+#### `GET /recipes/<id>/ingredients/all`
+
+* Description: Get all ingredients of a recipe
+* Permission: Not required
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to get ingredients.
+* Request example:
+
+```bash
+curl 'http://localhost:8000/recipes/1/ingredients/all'
+```
+
+* Response example:
+
+```json
+{
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Apple",
+      "description": "Very delicous apple",
+      "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
+      "likes": 0,
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Apple pie",
+          "description": "Very delicous apple pie",
+          "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+          "likes": 0
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Flour",
+      "description": "Very expensive flour",
+      "image_uri": "https://images.unsplash.com/photo-1627485937980-221c88ac04f9",
+      "likes": 0,
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Apple pie",
+          "description": "Very delicous apple pie",
+          "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+          "likes": 0
+        }
+      ]
+    }
+  ],
+  "total": 2
+}
+```
+
+#### `GET /recipes/<id>/ingredients`
+
+* Description: Get ingredients of a recipe with pagination.
+* Permission: Not required
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to get ingredients.
+* Query parameters:
+  * `per_page` (**integer**: optional, **default**: 30): maximum how many ingredients you want to receive in your response.
+  * `page`: (**integer**: optional, **default**: 1): paginating ingredients response.
+* Request example:
+
+```bash
+curl 'http://localhost:8000/recipes/1/ingredients/?per_page=1&page=2'
+```
+
+* Response example:
+
+```json
+{
+  "ingredients": [
+    {
+      "id": 2,
+      "name": "Flour",
+      "description": "Very expensive flour",
+      "image_uri": "https://images.unsplash.com/photo-1627485937980-221c88ac04f9",
+      "likes": 0,
+      "recipes": [
+        {
+          "id": 1,
+          "name": "Apple pie",
+          "description": "Very delicous apple pie",
+          "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+          "likes": 0
+        }
+      ]
+    }
+  ],
+  "page": 2,
+  "per_page": 1,
+  "total": 2
+}
+```
+
+#### `POST /recipes/<id>/ingredients`
+
+* Description: Add ingredients into recipe.
+* Permission: **update recipe**.
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to add ingredients.
+* Request body:
+  * `ingredients` (**array of integer**: required): ingredient's ids you want to add to the recipe.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X POST 'http://localhost:8000/recipes/1/ingredients/' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"ingredients":[1,2,3]}'
+```
+
+* Response example:
+
+```json
+{
+  "id": 1,
+  "name": "Apple pie",
+  "description": "Very delicous apple pie",
+  "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Apple",
+      "description": "Very delicous apple",
+      "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
+      "likes": 0
+    },
+    {
+      "id": 2,
+      "name": "Flour",
+      "description": "Very expensive flour",
+      "image_uri": "https://images.unsplash.com/photo-1627485937980-221c88ac04f9",
+      "likes": 0
+    },
+    {
+      "id": 3,
+      "name": "Orange",
+      "description": "Very delicous orange",
+      "image_uri": "https://images.unsplash.com/photo-1582979512210-99b6a53386f9",
+      "likes": 0
+    }
+  ],
+  "likes": 0
+}
+```
+
+#### `PATCH /recipes/<id>/ingredients`
+
+* Description: Update ingredients of a recipe.
+* Permission: **update recipe**.
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to update ingredients.
+* Request body:
+  * `ingredients` (**array of integer**: required): ingredient's ids you want to update into the recipe.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X PATCH 'http://localhost:8000/recipes/1/ingredients/' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"ingredients":[1,2]}'
+```
+
+* Response example:
+
+```json
+{
+  "id": 1,
+  "name": "Apple pie",
+  "description": "Very delicous apple pie",
+  "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Apple",
+      "description": "Very delicous apple",
+      "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
+      "likes": 0
+    },
+    {
+      "id": 2,
+      "name": "Flour",
+      "description": "Very expensive flour",
+      "image_uri": "https://images.unsplash.com/photo-1627485937980-221c88ac04f9",
+      "likes": 0
+    },
+  ],
+  "likes": 0
+}
+```
+
+#### `DELETE /recipes/<id>/ingredients/<ingredient_id>`
+
+* Description: Delete ingredient from a recipe.
+* Permission: **update recipe**.
+* Parameters:
+  * `id` (**integer**: required): id of the recipe you want to delete ingredient.
+  * `ingredient_id` (**integer**: required): id of the ingredient.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X DELETE 'http://localhost:8000/recipes/1/ingredients/2' \
+  -H 'Authorization: Bearer <token>'
+```
+
+* Response example:
+
+```json
+{
+  "id": 1,
+  "name": "Apple pie",
+  "description": "Very delicous apple pie",
+  "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+  "ingredients": [
+    {
+      "id": 1,
+      "name": "Apple",
+      "description": "Very delicous apple",
+      "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
+      "likes": 0
+    }
+  ],
+  "likes": 0
+}
+```
+
+### Ingredients
+
+#### `GET /ingredients/all`
+
+* Description: Get all ingredients in the database.
+* Permission: Not required
+* Request example:
+
+```bash
+curl 'http://localhost:8000/ingredients/all'
+```
+
+* Response example:
+
+```json
+{
+  "ingredients": [
+    {
+      "id": 4,
+      "name": "Pumpkin",
+      "description": "Very delicous pumpkin",
+      "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
+      "likes": 0,
+      "recipes": [
+        {
+          "id": 3,
+          "name": "Pumpkin soup",
+          "description": "Very delicous pumpkin soup",
+          "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
+          "likes": 0
+        }
+      ]
+    }
+  ],
+  "total": 1
+}
+```
+
+#### `GET /ingredients`
+
+* Description: Get ingredients from the database with pagination.
+* Permission: Not required
+* Query parameters:
+  * `per_page` (**integer**: optional, **default**: 12): maximum how many ingredients you want to receive in your response.
+  * `page`: (**integer**: optional, **default**: 1): paginating ingredients response.
+* Request example:
+
+```bash
+curl 'http://localhost:8000/ingredients/?per_page=2&page=2'
+```
+
+* Response example:
+
+```json
+{
+  "ingredients": [
+    {
+      "id": 3,
+      "name": "Orange",
+      "description": "Very delicous orange",
+      "image_uri": "https://images.unsplash.com/photo-1582979512210-99b6a53386f9",
+      "likes": 0,
+      "recipes": [
+        {
+          "id": 2,
+          "name": "Orange juice",
+          "description": "Very delicous orange juice",
+          "image_uri": "https://images.unsplash.com/photo-1613478223719-2ab802602423",
+          "likes": 1
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Pumpkin",
+      "description": "Very delicous pumpkin",
+      "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
+      "likes": 0,
+      "recipes": [
+        {
+          "id": 3,
+          "name": "Pumpkin soup",
+          "description": "Very delicous pumpkin soup",
+          "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
+          "likes": 0
+        }
+      ]
+    }
+  ],
+  "page": 2,
+  "per_page": 2,
+  "total": 4
+}
+```
+
+#### `GET /ingredients/<id>`
+
+* Description: Get specific ingredient from database.
+* Permission: Not required
+* Parameters:
+  * `id` (**integer**: required): id of the ingredient you want to get.
+* Request example:
+
+```bash
+curl 'http://localhost:8000/ingredients/2'
+```
+
+* Response example:
+
+```json
+{
+  "id": 2,
+  "name": "Flour",
+  "description": "Very expensive flour",
+  "image_uri": "https://images.unsplash.com/photo-1627485937980-221c88ac04f9",
+  "likes": 0,
+  "recipes": [
+    {
+      "id": 1,
+      "name": "Apple pie",
+      "description": "Very delicous apple pie",
+      "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
+      "likes": 0,
+    }
+  ]
+}
+```
+
+#### `POST /ingredients`
+
+* Description: Create new ingredient.
+* Permission: **create ingredient**.
+* Request body:
+  * `name` (**string**: required): name of the ingredient.
+  * `description` (**string**: optional): description of the ingredient.
+  * `image_uri`: (**string**: optional): url of the ingredient.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X POST 'http://localhost:8000/ingredients/' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name":"my ingredient", "description":"my description", "image_uri":"https://picsum.photos/200"}'
+```
+
+* Response example:
+
+```json
+{
+  "id": 5
+}
+```
+
+#### `PATCH /ingredients/<id>`
+
+* Description: Update ingredient information.
+* Permission: **update ingredient**.
+* Parameters:
+  * `id` (**integer**: required): id of the ingredient you want to update.
+* Request body:
+  * `name` (**string**: optional): new name of the ingredient.
+  * `description` (**string**: optional): new description of the ingredient.
+  * `image_uri`: (**string**: optional): new url of the ingredient.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X PATCH 'http://localhost:8000/ingredients/4' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name":"my new ingredient", "description":"my new description", "image_uri":"https://picsum.photos/300"}'
+```
+
+* Response example:
+
+```json
+
+{
+  "id": 4,
+  "name": "my new ingredient",
+  "description": "my new description",
+  "image_uri": "http://your-ingredient-image-url-in-fileserver",
+  "likes": 0,
+  "recipes": [
+    {
+      "id": 3,
+      "name": "Pumpkin soup",
+      "description": "Very delicous pumpkin soup",
+      "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
+      "likes": 0
+    }
+  ]
+}
+```
+
+#### `DELETE /ingredients/<id>`
+
+* Description: Delete ingredient.
+* Permission: **delete ingredient**.
+* Parameters:
+  * `id` (**integer**: required): id of the ingredient you want to delete.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X DELETE 'http://localhost:8000/ingredients/5' \
+  -H 'Authorization: Bearer <token>'
+```
+
+* Response example:
+
+```json
+{
+  "id": 5
+}
+```
+
+#### `POST /ingredients/<id>/like`
+
+* Description: Like ingredient.
+* Permission: Not required.
+* Parameters:
+  * `id` (**integer**: required): id of the ingredient you want to like.
+* Request example:
+
+```bash
+curl -X POST 'http://localhost:8000/ingredients/2/like'
+```
+
+* Response example:
+
+```json
+{
+  "id": 2,
+  "total_likes": 2
+}
+```
+
+### Errors
+
+#### 404 Not Found
+
+* Description: get recipe or ingredient which does not exist in database.
+* Reponse:
+
+```json
+{
+  "code": 404,
+  "message": "Resources not found."
+}
+```
+
+#### 401 Unauthorized
+
+* Description: Attempt to create/update/delete resource without logging in.
+* Request example:
+
+```bash
+curl -X POST 'http://localhost:8000/recipes/' \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"my recipe", "description":"my description", "image_uri":"https://picsum.photos/200"}'
+```
+
+* Reponse:
+
+```json
+{
+  "code": 401,
+  "message": "Unauthorized."
+}
+```
+
+#### 403 Forbidden
+
+* Description: Attempt to manipulate resource with different permission.
+* Request example:
+refer to [credientials](./credentials) for menu manager's token.
+
+```bash
+curl -X DELETE 'http://localhost:8000/recipes/4' \
+  -H 'Authorization: Bearer <menu-manager-token>'
+```
+
+* Reponse:
+
+```json
+{
+  "code": 403,
+  "message": "Forbidden."
+}
+```
+
+#### 422 Unprocessable
+
+* Description: Request with incorrect resource, e.g: create recipe without name.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X POST 'http://localhost:8000/recipes/' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name":"", "description":"my description", "image_uri":"https://picsum.photos/200"}'
+```
+
+* Reponse:
+
+```json
+{
+  "code": 422,
+  "message": "Invalid name."
+}
+```
+
+#### 415 Unsupported Media Type
+
+* Description: Request with invalid resource, e.g: create recipe using invalid image.
+* Request example:
+refer to [credientials](./credentials) for token.
+
+```bash
+curl -X POST 'http://localhost:8000/recipes/' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <token>' \
+  -d '{"name":"", "description":"my description", "image_uri":"https://example.com/"}'
+```
+
+* Reponse:
+
+```json
+{
+  "code": 415,
+  "message": "Invalid image."
+}
+`
