@@ -58,7 +58,8 @@ docker compose exec backend flask sample add
 To add recipes and ingredients, you need to login as a user with specific role.
 If you want to set up your own authentication, please refer to [Roles and permissions](#roles-and-permissions).
 Or, you can use default users using email and password provided in [credentials](./credentials).
-*Email and password provided in credentials file might be changed or inactivated in the future*
+
+*Email and password provided in credentials file might be changed or inactivated in the future without notice.*
 
 ## Development
 
@@ -70,7 +71,7 @@ in order to develop without setting up database, changing port and hosts.
 
 **Easy recipes**'s backend consists of two parts.
 
-* Filesever: live at `fileserver` folder.
+* Fileserver: live at `fileserver` folder.
 * API server: live at `backend` folder.
 
 Both of them use [pytest](https://pytest.org/) for testing, [ruff](https://docs.astral.sh/ruff/) for linting, [mypy](https://mypy-lang.org/) for type-checking and [black](https://black.readthedocs.io/en/stable/) for formatting.
@@ -167,7 +168,7 @@ During developing, you need to run fileserver first, because *api server* will n
 Normally, testing *api server* will use mocking authentication, if you need to test with the real authentication.
 You need to set up [auth0](https://auth0.com/) and provide proper tokens in environment variables.
 
-You then need to set `USE_REAL_AUTH_TEST=1` and provide two tokens for two roles. See [Roles and permissions](#roles-and-permissions) for roles definition and [tials](./credentials) for provided tokens.
+You would then need to set `USE_REAL_AUTH_TEST=1` and provide two tokens for two roles. See [Roles and permissions](#roles-and-permissions) for roles definition and [credentials](./credentials) for provided tokens.
 
 ```bash
 # testing with real token might be slow
@@ -212,7 +213,7 @@ Application is deployed in [AWS](https://aws.amazon.com/) using [EKS](https://aw
 ### Upload docker image
 
 You should build 3 docker images in `fileserver`, `backend` and `frontend` folder.
-Then push them into docker hub and substitute those image in **TODO**.
+Then push them into docker hub and substitute those image in [fileserver deployment](./deploy/backend/fileserver.yml), [backend deployment](./deploy/backend/backend.yml) and [frontend deployment](./deploy/frontend.yml).
 
 ### Create EKS cluster
 
@@ -222,7 +223,7 @@ eksctl create cluster --name easy-recipes --nodes=2 --node-volume-size=8 --versi
 
 ### Set up EBS for database
 
-You can follow along [AWS documnet](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) on how to set up ebs.
+You can follow along [AWS document](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html) on how to set up ebs.
 Here's a summary:
 
 Set up oidc id for cluster:
@@ -250,7 +251,7 @@ Apply `aws-ebs-csi-driver` to `your-aws-id`.
 eksctl create addon --name aws-ebs-csi-driver --cluster easy-recipes --service-account-role-arn arn:aws:iam::<your-aws-id>:role/AmazonEKS_EBS_CSI_DriverRole --force
 ```
 
-Wait until all `ebs-csi` pods are running
+Wait until all `ebs-csi` pods are running then follow the next steps.
 
 ```bash
 kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-ebs-csi-driver
@@ -258,7 +259,7 @@ kubectl get pods -n kube-system -l app.kubernetes.io/name=aws-ebs-csi-driver
 
 ### Deploy database
 
-Deploy your database using these command:
+Deploy your database using command below:
 
 ```bash
 kubectl apply -k deploy/database
@@ -268,7 +269,7 @@ kubectl apply -k deploy/database
 
 #### Apply kubernetes config
 
-Substitute your docker image in [backend.yml](./deploy/backend/backend.yml), [fileserver.yml](./deploy/backend/fileserver.yml) and [frontend.yml](./deploy/frontend.yml)
+Substitute your docker image in [backend.yml](./deploy/backend/backend.yml), [fileserver.yml](./deploy/backend/fileserver.yml) and [frontend.yml](./deploy/frontend.yml).
 Then deploy your backend and frontend using these commands:
 
 ```bash
@@ -307,8 +308,10 @@ In [frontend's env file](./frontend/.env.production), you need to change some va
 * Set `VITE_FORCE_CONVERT_URL=false`.
 * Change `VITE_API_HOST` with backend external ip address.
 * Change `VITE_AUTH0_CALLBACK_URL` with frontend external ip address.
+* Rebuild your docker file again to take the new effect.
+* Go to your auth0 application setting and change Callback URL with the same value as `VITE_AUTH0_CALLBACK_URL`.
 
-Then, go to your auth0 application setting and change Callback URL with the same value as `VITE_AUTH0_CALLBACK_URL`.
+After that you need to rollout backend and frontend pods to make sure it has the newest setting.
 
 ## Roles and permissions
 
@@ -331,14 +334,15 @@ Application includes 6 permissions and 2 roles.
 ### Set up authentication
 
 To set up your own authentication,
-you need to have an [auth0](https://auth0.com/).
+you need to have an [auth0 account](https://auth0.com/).
 
 After creating your account,
 you can create [auth0 application](https://auth0.com/docs/get-started/applications/application-settings) and
 [auth0 api](https://auth0.com/docs/get-started/apis/api-settings) to get start.
+
 *Remember to create roles and permissions when setting up your auth0 api.*
 
-When you finished you set up, change corresponding environment variables in [env-file](./env-file.example) and [frontend/.env](./frontend/.env).
+When you finished your set up, change corresponding environment variables in [env-file](./env-file.example) and [frontend/.env](./frontend/.env).
 
 ```bash
 # env-file
@@ -358,7 +362,7 @@ VITE_AUTH0_CLIENT_ID=
 
 ## API Reference
 
-If you setup properly follow the steps in [Getting started](#getting-started),
+If you setup properly followed the steps in [Getting started](#getting-started),
 your api server should live at [http://localhost:8000/](http://localhost:8000/).
 Or if you want to test with deployed api server,
 please refer to [Deployment](#deployment) for the real api sever.
@@ -381,12 +385,12 @@ curl 'http://localhost:8000/recipes/all'
 {
   "recipes": [
     {
-      "description": "Very delicous pumpkin soup",
+      "description": "Very delicious pumpkin soup",
       "id": 8,
       "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
       "ingredients": [
         {
-          "description": "Very delicous pumpkin",
+          "description": "Very delicious pumpkin",
           "id": 8,
           "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
           "likes": 4,
@@ -424,13 +428,13 @@ curl 'http://localhost:8000/recipes/?per_page=2&page=2'
     {
       "id": 3,
       "name": "Pumpkin soup",
-      "description": "Very delicous pumpkin soup",
+      "description": "Very delicious pumpkin soup",
       "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
       "ingredients": [
         {
           "id": 4,
           "name": "Pumpkin"
-          "description": "Very delicous pumpkin",
+          "description": "Very delicious pumpkin",
           "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
           "likes": 0
         }
@@ -460,13 +464,13 @@ curl 'http://localhost:8000/recipes/2'
 {
   "id": 2,
   "name": "Orange juice",
-  "description": "Very delicous orange juice",
+  "description": "Very delicious orange juice",
   "image_uri": "https://images.unsplash.com/photo-1613478223719-2ab802602423",
   "ingredients": [
     {
       "id": 3,
       "name": "Orange",
-      "description": "Very delicous orange",
+      "description": "Very delicious orange",
       "image_uri": "https://images.unsplash.com/photo-1582979512210-99b6a53386f9",
       "likes": 0,
     }
@@ -484,7 +488,7 @@ curl 'http://localhost:8000/recipes/2'
   * `description` (**string**: optional): description of the recipe.
   * `image_uri`: (**string**: optional): url of the recipe.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X POST 'http://localhost:8000/recipes/' \
@@ -512,7 +516,7 @@ curl -X POST 'http://localhost:8000/recipes/' \
   * `description` (**string**: optional): new description of the recipe.
   * `image_uri`: (**string**: optional): new url of the recipe.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X PATCH 'http://localhost:8000/recipes/4' \
@@ -541,7 +545,7 @@ curl -X PATCH 'http://localhost:8000/recipes/4' \
 * Parameters:
   * `id` (**integer**: required): id of the recipe you want to delete.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X DELETE 'http://localhost:8000/recipes/4' \
@@ -597,14 +601,14 @@ curl 'http://localhost:8000/recipes/1/ingredients/all'
     {
       "id": 1,
       "name": "Apple",
-      "description": "Very delicous apple",
+      "description": "Very delicious apple",
       "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
       "likes": 0,
       "recipes": [
         {
           "id": 1,
           "name": "Apple pie",
-          "description": "Very delicous apple pie",
+          "description": "Very delicious apple pie",
           "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
           "likes": 0
         }
@@ -620,7 +624,7 @@ curl 'http://localhost:8000/recipes/1/ingredients/all'
         {
           "id": 1,
           "name": "Apple pie",
-          "description": "Very delicous apple pie",
+          "description": "Very delicious apple pie",
           "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
           "likes": 0
         }
@@ -661,7 +665,7 @@ curl 'http://localhost:8000/recipes/1/ingredients/?per_page=1&page=2'
         {
           "id": 1,
           "name": "Apple pie",
-          "description": "Very delicous apple pie",
+          "description": "Very delicious apple pie",
           "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
           "likes": 0
         }
@@ -683,7 +687,7 @@ curl 'http://localhost:8000/recipes/1/ingredients/?per_page=1&page=2'
 * Request body:
   * `ingredients` (**array of integer**: required): ingredient's ids you want to add to the recipe.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X POST 'http://localhost:8000/recipes/1/ingredients/' \
@@ -698,13 +702,13 @@ curl -X POST 'http://localhost:8000/recipes/1/ingredients/' \
 {
   "id": 1,
   "name": "Apple pie",
-  "description": "Very delicous apple pie",
+  "description": "Very delicious apple pie",
   "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
   "ingredients": [
     {
       "id": 1,
       "name": "Apple",
-      "description": "Very delicous apple",
+      "description": "Very delicious apple",
       "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
       "likes": 0
     },
@@ -718,7 +722,7 @@ curl -X POST 'http://localhost:8000/recipes/1/ingredients/' \
     {
       "id": 3,
       "name": "Orange",
-      "description": "Very delicous orange",
+      "description": "Very delicious orange",
       "image_uri": "https://images.unsplash.com/photo-1582979512210-99b6a53386f9",
       "likes": 0
     }
@@ -736,7 +740,7 @@ curl -X POST 'http://localhost:8000/recipes/1/ingredients/' \
 * Request body:
   * `ingredients` (**array of integer**: required): ingredient's ids you want to update into the recipe.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X PATCH 'http://localhost:8000/recipes/1/ingredients/' \
@@ -751,13 +755,13 @@ curl -X PATCH 'http://localhost:8000/recipes/1/ingredients/' \
 {
   "id": 1,
   "name": "Apple pie",
-  "description": "Very delicous apple pie",
+  "description": "Very delicious apple pie",
   "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
   "ingredients": [
     {
       "id": 1,
       "name": "Apple",
-      "description": "Very delicous apple",
+      "description": "Very delicious apple",
       "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
       "likes": 0
     },
@@ -781,7 +785,7 @@ curl -X PATCH 'http://localhost:8000/recipes/1/ingredients/' \
   * `id` (**integer**: required): id of the recipe you want to delete ingredient.
   * `ingredient_id` (**integer**: required): id of the ingredient.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X DELETE 'http://localhost:8000/recipes/1/ingredients/2' \
@@ -794,13 +798,13 @@ curl -X DELETE 'http://localhost:8000/recipes/1/ingredients/2' \
 {
   "id": 1,
   "name": "Apple pie",
-  "description": "Very delicous apple pie",
+  "description": "Very delicious apple pie",
   "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
   "ingredients": [
     {
       "id": 1,
       "name": "Apple",
-      "description": "Very delicous apple",
+      "description": "Very delicious apple",
       "image_uri": "https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6",
       "likes": 0
     }
@@ -829,14 +833,14 @@ curl 'http://localhost:8000/ingredients/all'
     {
       "id": 4,
       "name": "Pumpkin",
-      "description": "Very delicous pumpkin",
+      "description": "Very delicious pumpkin",
       "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
       "likes": 0,
       "recipes": [
         {
           "id": 3,
           "name": "Pumpkin soup",
-          "description": "Very delicous pumpkin soup",
+          "description": "Very delicious pumpkin soup",
           "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
           "likes": 0
         }
@@ -868,14 +872,14 @@ curl 'http://localhost:8000/ingredients/?per_page=2&page=2'
     {
       "id": 3,
       "name": "Orange",
-      "description": "Very delicous orange",
+      "description": "Very delicious orange",
       "image_uri": "https://images.unsplash.com/photo-1582979512210-99b6a53386f9",
       "likes": 0,
       "recipes": [
         {
           "id": 2,
           "name": "Orange juice",
-          "description": "Very delicous orange juice",
+          "description": "Very delicious orange juice",
           "image_uri": "https://images.unsplash.com/photo-1613478223719-2ab802602423",
           "likes": 1
         }
@@ -884,14 +888,14 @@ curl 'http://localhost:8000/ingredients/?per_page=2&page=2'
     {
       "id": 4,
       "name": "Pumpkin",
-      "description": "Very delicous pumpkin",
+      "description": "Very delicious pumpkin",
       "image_uri": "https://images.unsplash.com/photo-1570586437263-ab629fccc818",
       "likes": 0,
       "recipes": [
         {
           "id": 3,
           "name": "Pumpkin soup",
-          "description": "Very delicous pumpkin soup",
+          "description": "Very delicious pumpkin soup",
           "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
           "likes": 0
         }
@@ -929,7 +933,7 @@ curl 'http://localhost:8000/ingredients/2'
     {
       "id": 1,
       "name": "Apple pie",
-      "description": "Very delicous apple pie",
+      "description": "Very delicious apple pie",
       "image_uri": "https://images.unsplash.com/photo-1562007908-17c67e878c88",
       "likes": 0,
     }
@@ -946,7 +950,7 @@ curl 'http://localhost:8000/ingredients/2'
   * `description` (**string**: optional): description of the ingredient.
   * `image_uri`: (**string**: optional): url of the ingredient.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X POST 'http://localhost:8000/ingredients/' \
@@ -974,7 +978,7 @@ curl -X POST 'http://localhost:8000/ingredients/' \
   * `description` (**string**: optional): new description of the ingredient.
   * `image_uri`: (**string**: optional): new url of the ingredient.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X PATCH 'http://localhost:8000/ingredients/4' \
@@ -997,7 +1001,7 @@ curl -X PATCH 'http://localhost:8000/ingredients/4' \
     {
       "id": 3,
       "name": "Pumpkin soup",
-      "description": "Very delicous pumpkin soup",
+      "description": "Very delicious pumpkin soup",
       "image_uri": "https://images.unsplash.com/photo-1476718406336-bb5a9690ee2a",
       "likes": 0
     }
@@ -1012,7 +1016,7 @@ curl -X PATCH 'http://localhost:8000/ingredients/4' \
 * Parameters:
   * `id` (**integer**: required): id of the ingredient you want to delete.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X DELETE 'http://localhost:8000/ingredients/5' \
@@ -1053,7 +1057,7 @@ curl -X POST 'http://localhost:8000/ingredients/2/like'
 #### 404 Not Found
 
 * Description: get recipe or ingredient which does not exist in database.
-* Reponse:
+* Response:
 
 ```json
 {
@@ -1073,7 +1077,7 @@ curl -X POST 'http://localhost:8000/recipes/' \
   -d '{"name":"my recipe", "description":"my description", "image_uri":"https://picsum.photos/200"}'
 ```
 
-* Reponse:
+* Response:
 
 ```json
 {
@@ -1086,14 +1090,14 @@ curl -X POST 'http://localhost:8000/recipes/' \
 
 * Description: Attempt to manipulate resource with different permission.
 * Request example:
-refer to [credientials](./credentials) for menu manager's token.
+refer to [credentials](./credentials) for menu manager's token.
 
 ```bash
 curl -X DELETE 'http://localhost:8000/recipes/4' \
   -H 'Authorization: Bearer <menu-manager-token>'
 ```
 
-* Reponse:
+* Response:
 
 ```json
 {
@@ -1106,7 +1110,7 @@ curl -X DELETE 'http://localhost:8000/recipes/4' \
 
 * Description: Request with incorrect resource, e.g: create recipe without name.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X POST 'http://localhost:8000/recipes/' \
@@ -1115,7 +1119,7 @@ curl -X POST 'http://localhost:8000/recipes/' \
   -d '{"name":"", "description":"my description", "image_uri":"https://picsum.photos/200"}'
 ```
 
-* Reponse:
+* Response:
 
 ```json
 {
@@ -1128,7 +1132,7 @@ curl -X POST 'http://localhost:8000/recipes/' \
 
 * Description: Request with invalid resource, e.g: create recipe using invalid image.
 * Request example:
-refer to [credientials](./credentials) for token.
+refer to [credentials](./credentials) for token.
 
 ```bash
 curl -X POST 'http://localhost:8000/recipes/' \
@@ -1137,7 +1141,7 @@ curl -X POST 'http://localhost:8000/recipes/' \
   -d '{"name":"", "description":"my description", "image_uri":"https://example.com/"}'
 ```
 
-* Reponse:
+* Response:
 
 ```json
 {
